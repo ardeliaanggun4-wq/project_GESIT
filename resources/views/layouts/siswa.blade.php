@@ -3,62 +3,74 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>GESIT · @yield('title', 'Beranda')</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@yield('title', 'Beranda') · GESIT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.head')
 </head>
-<body class="min-h-screen">
+<body class="has-bottomnav">
+    @include('partials.icons')
+    <a href="#konten" class="skip-link">Lewati ke konten utama</a>
+
+    @php
+        $menu = [
+            ['siswa.beranda', 'Beranda', 'home'],
+            ['siswa.ajukan', 'Ajukan pinjam', 'plus'],
+        ];
+    @endphp
+
     <header class="topbar">
-        <div class="mx-auto max-w-6xl px-5 flex items-center justify-between gap-4 h-16">
-            <a href="{{ route('siswa.beranda') }}" class="brand">
-                <span class="brand-mark">G</span>
-                <span>
-                    <span class="brand-name">GESIT</span>
-                    <span class="brand-sub hidden sm:block">Gerakan Sarana Inventaris Terpadu</span>
-                </span>
+        <div class="topbar-in">
+            <a href="{{ route('siswa.beranda') }}" class="brand" aria-label="GESIT, ke Beranda">
+                <span class="brand-mark"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span>
+                <span class="brand-name">GESIT</span>
             </a>
 
-            <div class="user-chip flex items-center gap-3">
-                <span class="avatar">{{ auth()->user()->initials() }}</span>
-                <div class="hidden sm:block leading-tight">
-                    <div class="text-sm font-semibold">{{ auth()->user()->name }}</div>
-                    <div class="mono-label">{{ auth()->user()->kelas_jabatan }}</div>
+            {{-- Menu atas: hanya tampil di layar lebar. Di HP memakai navigasi bawah. --}}
+            <nav class="top-nav" aria-label="Menu utama">
+                @foreach ($menu as [$rute, $label, $ikon])
+                    @php $aktif = request()->routeIs($rute); @endphp
+                    <a href="{{ route($rute) }}" class="top-link {{ $aktif ? 'is-active' : '' }}" @if ($aktif) aria-current="page" @endif>{{ $label }}</a>
+                @endforeach
+                <span class="top-link is-soon" aria-disabled="true">Panduan <span class="soon-tag">Segera hadir</span></span>
+            </nav>
+
+            <div class="top-user">
+                <div class="who">
+                    <b>{{ auth()->user()->name }}</b>
+                    <span>{{ auth()->user()->kelas_jabatan }}</span>
                 </div>
+                <span class="avatar" aria-hidden="true">{{ auth()->user()->initials() }}</span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="btn btn-ghost btn-sm">Keluar</button>
+                    <button type="submit" class="btn btn-ghost btn-sm" aria-label="Keluar dari akun">
+                        <svg class="ico ico-sm" aria-hidden="true"><use href="#i-logout"/></svg>
+                        <span class="hidden sm:inline">Keluar</span>
+                    </button>
                 </form>
             </div>
         </div>
-
-        <nav class="mx-auto max-w-6xl px-3 nav" aria-label="Menu siswa">
-            @php
-                $menu = [
-                    ['siswa.beranda', 'Beranda'],
-                    ['siswa.ajukan', 'Ajukan Pinjam'],
-                    [null, 'Profil'],
-                    [null, 'Panduan'],
-                ];
-            @endphp
-            @foreach ($menu as $i => [$rute, $label])
-                <a href="{{ $rute ? route($rute) : '#' }}"
-                   class="nav-link {{ $rute && request()->routeIs($rute) ? 'is-active' : '' }}">
-                    <span class="nav-no">0{{ $i + 1 }}</span>{{ $label }}
-                </a>
-            @endforeach
-        </nav>
     </header>
 
-    <main class="mx-auto max-w-6xl px-5 py-10">
-        @if (session('status'))
-            <div class="flash mb-6" role="status">
-                <span>{{ session('status') }}</span>
-                <span class="mono-label">tutup ×</span>
-            </div>
-        @endif
+    <main id="konten" class="main-siswa" tabindex="-1">
         @yield('content')
     </main>
 
+    {{-- Navigasi bawah untuk HP --}}
+    <nav class="bottomnav" aria-label="Menu utama">
+        @foreach ($menu as [$rute, $label, $ikon])
+            @php $aktif = request()->routeIs($rute); @endphp
+            <a href="{{ route($rute) }}" class="bn-item {{ $aktif ? 'is-active' : '' }}" @if ($aktif) aria-current="page" @endif>
+                <svg class="ico" aria-hidden="true"><use href="#i-{{ $ikon }}"/></svg>{{ $label }}
+            </a>
+        @endforeach
+        <span class="bn-item is-soon" aria-disabled="true">
+            <svg class="ico" aria-hidden="true"><use href="#i-book"/></svg>Panduan
+            <span class="soon-tag" style="font-size:.6875rem;line-height:1.3">Segera</span>
+        </span>
+    </nav>
+
+    @include('partials.toast')
     @include('partials.motion')
+    @stack('scripts')
 </body>
 </html>

@@ -31,7 +31,11 @@ class DataAlatController extends Controller
 
         $alat = $query->orderBy('nama')->paginate(6)->withQueryString();
 
-        return view('admin.data-alat', compact('alat'));
+        // Jumlah alat per kategori (untuk chip ringkasan di atas tabel)
+        $hitung = Alat::selectRaw('kategori, count(*) as total')->groupBy('kategori')->pluck('total', 'kategori');
+        $totalSemua = $hitung->sum();
+
+        return view('admin.data-alat', compact('alat', 'hitung', 'totalSemua'));
     }
 
     public function store(Request $request)

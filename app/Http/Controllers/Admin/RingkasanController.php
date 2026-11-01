@@ -14,7 +14,7 @@ class RingkasanController extends Controller
     public function index()
     {
         $stats = [
-            'total_alat' => Alat::sum('stok') > 0 ? Alat::count() : Alat::count(),
+            'total_alat' => Alat::count(),
             'menunggu' => Peminjaman::where('status', 'menunggu')->count(),
             'sedang_dipinjam' => Peminjaman::where('status', 'dipinjam')->count(),
             'rusak_kosong' => Alat::whereIn('kondisi', ['rusak', 'stok_habis'])->count(),
@@ -41,6 +41,20 @@ class RingkasanController extends Controller
 
         $aktivitas = Peminjaman::with(['user', 'alat'])->latest()->take(5)->get();
 
-        return view('admin.ringkasan', compact('stats', 'grafik', 'kategori', 'maxKategori', 'aktivitas'));
+        // Komposisi kondisi alat (untuk bar proporsi)
+        $kondisi = Alat::selectRaw('kondisi, count(*) as total')->groupBy('kondisi')->pluck('total', 'kondisi');
+
+        // Alat yang perlu perhatian petugas
+        $butuhPerhatian = Alat::whereIn('kondisi', ['rusak', 'stok_habis', 'perlu_cek']);
+        $totalPerhatian = (clone $butuhPerhatian)->count();
+        $perhatian = $butuhPerhatian
+            ->orderByRaw("case kondisi when 'rusak' then 1 when 'stok_habis' then 2 else 3 end")
+            ->orderBy('nama')
+            ->take(5)
+            ->get();
+
+        return view('admin.ringkasan', compact(
+            'stats', 'grafik', 'kategori', 'maxKategori', 'aktivitas', 'kondisi', 'perhatian', 'totalPerhatian'
+        ));
     }
 }

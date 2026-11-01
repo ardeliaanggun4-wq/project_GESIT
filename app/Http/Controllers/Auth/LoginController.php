@@ -22,7 +22,7 @@ class LoginController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $roleHint = $request->input('role_hint', 'siswa'); // dari tab yang diklik di halaman login
+        $roleHint = $request->input('role_hint', 'siswa'); 
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()->withErrors([
@@ -32,7 +32,7 @@ class LoginController extends Controller
 
         $user = Auth::user();
 
-        // Validasi ramah: kalau user login di tab yang salah, kasih tahu (tetap berhasil login, cuma diberi info)
+        
         $cocok = $roleHint === 'admin' ? $user->role === 'admin' : in_array($user->role, ['siswa', 'guru']);
 
         if (! $cocok) {

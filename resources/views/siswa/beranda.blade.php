@@ -1,57 +1,97 @@
-{{-- Letak file: resources/views/siswa/beranda.blade.php (timpa file lama) --}}
+{{-- Letak file: resources/views/siswa/beranda.blade.php --}}
 @extends('layouts.siswa')
 @section('title', 'Beranda')
 
 @section('content')
-    @php $statusMap = ['green' => 'ok', 'yellow' => 'wait', 'red' => 'no']; @endphp
+    @php
+        $nadaStatus = ['green' => 'ok', 'yellow' => 'wait', 'red' => 'no'];
+        $namaDepan = explode(' ', trim($user->name))[0];
+    @endphp
 
-    <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
-        <div>
-            <p class="mono-label rise">Beranda</p>
+    {{-- Kotak sambutan --}}
+    <section class="hero rise mb-6">
+        <div class="hero-dots" aria-hidden="true"></div>
+        @include('partials.hero-art')
+        <div class="hero-body">
+            <p class="eyebrow">{{ now()->translatedFormat('l, j F Y') }}</p>
             <h1 class="display mt-3">
-                <span class="line"><span style="--i:0">Halo, <span class="hl">{{ explode(' ', $user->name)[0] }}</span>.</span></span>
+                <span class="line"><span style="--i:0"><span data-greet>Halo</span>,</span></span>
+                <span class="line"><span style="--i:1" class="hl">{{ $namaDepan }}.</span></span>
             </h1>
-            <p class="soft text-sm mt-4 rise" style="--i:3">Berikut status peminjaman alat kamu saat ini.</p>
+            <p class="page-lead rise" style="--i:3">
+                <span class="typed" data-type='["Berikut status peminjaman alat kamu saat ini.","Butuh alat praktik? Ajukan dari HP dalam semenit.","Ambil alat di ruang Sarpras setelah disetujui."]'>Berikut status peminjaman alat kamu saat ini.</span>
+            </p>
+            <div class="hero-actions rise" style="--i:4">
+                <a href="{{ route('siswa.ajukan') }}" class="btn btn-primary">
+                    <svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Ajukan peminjaman
+                </a>
+            </div>
         </div>
-        <a href="{{ route('siswa.ajukan') }}" class="btn btn-primary rise" style="--i:2">+ Ajukan peminjaman</a>
-    </div>
+    </section>
+
+    @if ($stats['jatuh_tempo_hari_ini'] > 0)
+        <div class="alert alert-info mb-6 rise" style="--i:2" role="status">
+            <svg class="ico" aria-hidden="true"><use href="#i-bell"/></svg>
+            <span><b>{{ $stats['jatuh_tempo_hari_ini'] }} alat jatuh tempo hari ini.</b> Kembalikan ke ruang Sarpras sebelum jam pulang sekolah.</span>
+        </div>
+    @endif
 
     {{-- Angka utama --}}
-    <div class="ledger grid-cols-1 sm:grid-cols-3 mb-10 rise" style="--i:2">
-        <div>
-            <div class="mono-label flex items-center gap-2"><i class="dot" style="background:var(--olive)"></i>Sedang dipinjam</div>
-            <div class="num mt-4" data-count="{{ $stats['sedang_dipinjam'] }}">{{ $stats['sedang_dipinjam'] }}</div>
+    <div class="stats stats-3 mb-8">
+        <div class="stat tone-ok rise" style="--i:2">
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-loan"/></svg></span>
+            <div class="stat-label">Sedang dipinjam</div>
+            <div class="stat-num" data-count="{{ $stats['sedang_dipinjam'] }}">{{ $stats['sedang_dipinjam'] }}</div>
         </div>
-        <div>
-            <div class="mono-label flex items-center gap-2"><i class="dot" style="background:var(--mustard)"></i>Menunggu verifikasi</div>
-            <div class="num mt-4" data-count="{{ $stats['menunggu'] }}">{{ $stats['menunggu'] }}</div>
+        <div class="stat tone-wait rise" style="--i:3">
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg></span>
+            <div class="stat-label">Menunggu verifikasi</div>
+            <div class="stat-num" data-count="{{ $stats['menunggu'] }}">{{ $stats['menunggu'] }}</div>
         </div>
-        <div>
-            <div class="mono-label flex items-center gap-2"><i class="dot" style="background:var(--signal)"></i>Jatuh tempo hari ini</div>
-            <div class="num mt-4" data-count="{{ $stats['jatuh_tempo_hari_ini'] }}">{{ $stats['jatuh_tempo_hari_ini'] }}</div>
+        <div class="stat tone-no {{ $stats['jatuh_tempo_hari_ini'] > 0 ? 'is-alert' : '' }} rise" style="--i:4">
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-bell"/></svg></span>
+            <div class="stat-label">Jatuh tempo hari ini</div>
+            <div class="stat-num" data-count="{{ $stats['jatuh_tempo_hari_ini'] }}">{{ $stats['jatuh_tempo_hari_ini'] }}</div>
         </div>
     </div>
 
-    <h2 class="h-sec mb-3">Riwayat peminjaman</h2>
-    <div class="card overflow-hidden rise" style="--i:3">
-        @forelse ($riwayat as $item)
-            <div class="list-row">
-                <div class="flex items-center gap-4">
-                    <div class="date-tile">
-                        <b>{{ $item->tanggal_pinjam->translatedFormat('d') }}</b>
-                        <small>{{ $item->tanggal_pinjam->translatedFormat('M') }}</small>
+    <div class="grid lg:grid-cols-3 gap-6 items-start">
+        {{-- Riwayat --}}
+        <section class="lg:col-span-2">
+            <div class="sec-head"><h2 class="t-sec">Riwayat peminjaman</h2></div>
+            <div class="card overflow-hidden rise" style="--i:5">
+                @forelse ($riwayat as $item)
+                    <div class="list-row" style="--i: {{ $loop->index }}">
+                        <div class="date-tile" aria-hidden="true">
+                            <b>{{ $item->tanggal_pinjam->translatedFormat('d') }}</b>
+                            <small>{{ $item->tanggal_pinjam->translatedFormat('M') }}</small>
+                        </div>
+                        <div class="list-main">
+                            <div class="list-title">{{ $item->alat->nama }}</div>
+                            <div class="list-sub"><span class="kode">{{ $item->alat->kode }}</span> · {{ $item->jumlah }} unit @if ($item->keperluan) · {{ $item->keperluan }} @endif</div>
+                        </div>
+                        <x-status :nilai="$item->status" />
                     </div>
-                    <div>
-                        <div class="font-semibold">{{ $item->alat->nama }}</div>
-                        <div class="text-xs soft mt-0.5"><span class="kode">{{ $item->alat->kode }}</span> · {{ $item->keperluan }}</div>
+                @empty
+                    <div class="empty">
+                        <span class="empty-ico"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg></span>
+                        <h3>Belum ada riwayat peminjaman</h3>
+                        <p>Pengajuan pertamamu akan muncul di sini lengkap dengan statusnya.</p>
+                        <a href="{{ route('siswa.ajukan') }}" class="btn btn-primary" style="margin-top:.6rem">Ajukan sekarang</a>
                     </div>
-                </div>
-                <span class="stamp stamp-{{ $statusMap[$item->statusColor()] ?? 'idle' }}" style="--i: {{ $loop->index }}">
-                    {{ $item->statusLabel() }}
-                </span>
+                @endforelse
             </div>
-        @empty
-            <div class="empty">Belum ada riwayat peminjaman.</div>
-        @endforelse
+        </section>
+
+        {{-- Alur pinjam --}}
+        <aside class="card card-pad rise" style="--i:6">
+            <div class="sec-head"><h2 class="t-sec">Alur peminjaman</h2></div>
+            <ol class="steps mt-4">
+                <li><div><b>Ajukan</b><span>Pilih alat, tanggal, dan isi keperluan.</span></div></li>
+                <li><div><b>Tunggu verifikasi</b><span>Petugas Sarpras memeriksa stok dan pengajuanmu.</span></div></li>
+                <li><div><b>Ambil alat</b><span>Datang ke ruang Sarpras setelah disetujui.</span></div></li>
+                <li><div><b>Kembalikan tepat waktu</b><span>Pastikan alat utuh sebelum tanggal rencana kembali.</span></div></li>
+            </ol>
+        </aside>
     </div>
 @endsection

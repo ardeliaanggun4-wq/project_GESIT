@@ -3,142 +3,184 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>GESIT · Masuk</title>
+    <title>Masuk · GESIT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.head')
 </head>
-<body class="min-h-screen grid md:grid-cols-[1.1fr_1fr]">
+<body>
+    @include('partials.icons')
+    <a href="#konten" class="skip-link">Lewati ke formulir masuk</a>
 
-    {{-- Panel kiri --}}
-    <section class="relative overflow-hidden p-8 md:p-12 flex flex-col justify-between gap-10"
-             style="background:#1f2e22; color:var(--paper); background-image:radial-gradient(rgba(236,231,218,.1) 1px,transparent 1px); background-size:20px 20px;">
-        <div class="brand">
-            <span class="brand-mark" style="background:var(--paper); color:var(--ink)">G</span>
-            <span class="brand-name">GESIT</span>
-        </div>
+    <div class="auth">
 
-        <div class="flex flex-col gap-10">
+        {{-- Panel cerita: rak penyimpanan alat sekolah (hanya di layar lebar) --}}
+        <section class="auth-art" aria-label="Tentang GESIT">
+            <div class="brand">
+                <span class="brand-mark"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span>
+                <span class="brand-name">GESIT</span>
+            </div>
+
             <div>
-                <h1 class="display" style="font-size:clamp(2.1rem,4.2vw,3.4rem)">
-                    <span class="line"><span style="--i:0">Pinjam alat,</span></span>
-                    <span class="line"><span style="--i:1"><span class="hl">bukan ribet.</span></span></span>
-                </h1>
-                <p class="rise mt-6 max-w-sm text-sm leading-relaxed" style="--i:5; color:rgba(236,231,218,.72)">
-                    Satu tempat untuk mengajukan, memantau, dan mengembalikan alat praktik — tanpa buku catatan yang gampang hilang.
+                <p class="auth-headline" data-split>Semua alat sekolah, tertata di satu rak.</p>
+                <p class="t-muted rise" style="--i:6;margin-top:1rem;max-width:30rem;font-size:1.0625rem">
+                    Ajukan pinjam dari HP, pantau statusnya, lalu ambil alat di ruang Sarpras begitu pengajuanmu disetujui.
                 </p>
             </div>
 
-            <div class="hidden md:flex justify-end rise pt-10 pr-6" style="--i:6">
-                <div class="tag" data-recount title="Klik untuk menghitung ulang">
-                    <div class="mono-label">Tag inventaris</div>
-                    <div class="num mt-3" style="font-size:3.4rem" data-count="{{ $totalAlat ?? 147 }}">{{ $totalAlat ?? 147 }}</div>
-                    <div class="font-semibold text-sm mt-2 leading-snug">alat aktif dipantau minggu ini</div>
-                    <div class="mt-5 flex items-center justify-between">
-                        <span class="kode muted">STOK REAL-TIME</span>
-                        <span class="stamp stamp-ok" style="--i:8">Terpantau</span>
-                    </div>
-                </div>
+            {{-- Ilustrasi buatan sendiri; dekoratif --}}
+            <svg class="rak rise" style="--i:7" viewBox="0 0 520 400" aria-hidden="true" focusable="false">
+                {{-- rangka rak --}}
+                <rect x="36" y="24" width="8" height="360" rx="3" fill="#BFB299"/>
+                <rect x="476" y="24" width="8" height="360" rx="3" fill="#BFB299"/>
+                <rect x="30" y="130" width="460" height="10" rx="4" fill="#CBBFA8"/>
+                <rect x="30" y="250" width="460" height="10" rx="4" fill="#CBBFA8"/>
+                <rect x="30" y="370" width="460" height="10" rx="4" fill="#CBBFA8"/>
+
+                {{-- rak 1: alat praktik lab --}}
+                <rect x="60" y="70" width="110" height="60" rx="8" fill="#1E8A7A"/>
+                <rect x="78" y="94" width="46" height="24" rx="5" fill="#fff"/>
+                <rect x="84" y="101" width="34" height="3" rx="1.5" fill="#BFD9D4"/>
+                <rect x="84" y="108" width="20" height="3" rx="1.5" fill="#BFD9D4"/>
+                <path d="M214 70h12v26l24 34H190l24-34z" fill="#E3F3EF" stroke="#1E8A7A" stroke-width="3" stroke-linejoin="round"/>
+                <path d="M200 116h40l10 14H190z" fill="#1E8A7A"/>
+                <rect x="282" y="88" width="44" height="42" rx="6" fill="#E3F3EF" stroke="#1E8A7A" stroke-width="3"/>
+                <path d="M284 108h40v16a4 4 0 0 1-4 4h-32a4 4 0 0 1-4-4z" fill="#1E8A7A"/>
+                <rect x="350" y="94" width="96" height="36" rx="7" fill="#E3F3EF" stroke="#1E8A7A" stroke-width="3"/>
+                <rect x="366" y="104" width="28" height="14" rx="3" fill="#1E8A7A" opacity=".85"/>
+
+                {{-- rak 2: alat olahraga --}}
+                <circle cx="104" cy="205" r="45" fill="#D9622B"/>
+                <path d="M59 205h90M104 160c-24 22-24 68 0 90M104 160c24 22 24 68 0 90" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="3"/>
+                <path d="M190 250l22-62 22 62z" fill="#D9622B"/>
+                <polygon points="199.9,222 224.1,222 227.6,232 196.4,232" fill="#fff" opacity=".85"/>
+                <rect x="184" y="246" width="56" height="4" rx="2" fill="#A4410F"/>
+                <rect x="270" y="196" width="120" height="54" rx="8" fill="#D9622B"/>
+                <rect x="288" y="212" width="46" height="24" rx="5" fill="#fff"/>
+                <rect x="294" y="219" width="34" height="3" rx="1.5" fill="#F1CDBB"/>
+                <rect x="294" y="226" width="20" height="3" rx="1.5" fill="#F1CDBB"/>
+                <ellipse cx="440" cy="205" rx="22" ry="28" fill="none" stroke="#D9622B" stroke-width="5"/>
+                <path d="M440 177v56M418 205h44" stroke="#D9622B" stroke-opacity=".45" stroke-width="2"/>
+                <path d="M440 233v17" stroke="#A4410F" stroke-width="6" stroke-linecap="round"/>
+
+                {{-- rak 3: kesenian dan multimedia --}}
+                <rect x="60" y="316" width="100" height="54" rx="8" fill="#A8479A"/>
+                <rect x="76" y="330" width="40" height="24" rx="5" fill="#fff"/>
+                <rect x="82" y="337" width="28" height="3" rx="1.5" fill="#E8CFE4"/>
+                <rect x="82" y="344" width="16" height="3" rx="1.5" fill="#E8CFE4"/>
+                <ellipse cx="210" cy="350" rx="36" ry="20" fill="#F6E8F4" stroke="#A8479A" stroke-width="3"/>
+                <circle cx="192" cy="344" r="5" fill="#1E8A7A"/>
+                <circle cx="208" cy="338" r="5" fill="#D9622B"/>
+                <circle cx="224" cy="342" r="5" fill="#C8961E"/>
+                <circle cx="196" cy="358" r="5" fill="#34507A"/>
+                <path d="M268 368l14-50" stroke="#9A7B4F" stroke-width="5" stroke-linecap="round"/>
+                <path d="M279 330l3-14" stroke="#A8479A" stroke-width="7" stroke-linecap="round"/>
+                <rect x="318" y="334" width="92" height="36" rx="8" fill="#C8961E"/>
+                <circle cx="348" cy="352" r="12" fill="#fff"/>
+                <circle cx="348" cy="352" r="6" fill="#745400"/>
+                <path d="M376 346h26M376 353h26M376 360h26" stroke="#fff" stroke-opacity=".7" stroke-width="3" stroke-linecap="round"/>
+                <rect x="428" y="300" width="46" height="70" rx="8" fill="#FBF0D5" stroke="#C8961E" stroke-width="3"/>
+                <circle cx="451" cy="322" r="7" fill="#C8961E"/>
+                <circle cx="451" cy="348" r="13" fill="#C8961E"/>
+                <circle cx="451" cy="348" r="5" fill="#FBF0D5"/>
+            </svg>
+
+            {{-- Kode warna kategori, sama dengan yang dipakai di seluruh aplikasi --}}
+            <div class="flex flex-wrap gap-2 rise" style="--i:9" aria-label="Kategori alat">
+                <x-kategori nilai="praktik_lab" />
+                <x-kategori nilai="olahraga" />
+                <x-kategori nilai="kesenian" />
+                <x-kategori nilai="multimedia" />
             </div>
-        </div>
+        </section>
 
-        <div class="mono-label" style="color:rgba(236,231,218,.45)">Gerakan Sarana Inventaris Terpadu</div>
-    </section>
-
-    {{-- Panel kanan --}}
-    <section class="flex items-center justify-center p-8">
-        <div class="w-full max-w-sm">
-
-            {{-- Pemilih peran: murni tampilan --}}
-            <div class="seg mb-8 rise" style="--i:1" role="tablist">
-                <span class="seg-pill" id="tab-pill"></span>
-                <button type="button" id="tab-siswa" role="tab" onclick="pilihPeran('siswa')">Siswa / Guru</button>
-                <button type="button" id="tab-admin" role="tab" onclick="pilihPeran('admin')">Admin / Petugas</button>
-            </div>
-
-            <h2 class="display" style="font-size:2rem">
-                <span class="line"><span style="--i:2">Masuk ke akun kamu</span></span>
-            </h2>
-            <p id="catatan-peran" class="caret text-sm soft mt-3 min-h-[1.5rem]"></p>
-
-            @if ($errors->any())
-                <div class="alert mt-5">{{ $errors->first() }}</div>
-            @endif
-
-            <form method="POST" action="{{ route('login') }}" class="space-y-6 mt-8">
-                @csrf
-                {{-- role_hint hanya untuk validasi ramah-pengguna di controller (opsional) --}}
-                <input type="hidden" name="role_hint" id="role_hint" value="siswa">
-
-                <div class="rise" style="--i:3">
-                    <label class="label" for="input-nisn">NISN / NIP</label>
-                    <input type="text" name="nisn_nip" id="input-nisn" placeholder="Contoh: 0091234567" class="field" required autofocus>
+        {{-- Formulir --}}
+        <main id="konten" class="auth-form">
+            <div class="auth-card">
+                <div class="brand auth-brand-m">
+                    <span class="brand-mark"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span>
+                    <span>
+                        <span class="brand-name">GESIT</span>
+                        <span class="brand-sub">Gerakan Sarana Inventaris Terpadu</span>
+                    </span>
                 </div>
 
-                <div class="rise" style="--i:4">
-                    <label class="label" for="input-sandi">Kata sandi</label>
-                    <div class="relative">
-                        <input type="password" name="password" id="input-sandi" placeholder="••••••••" class="field pr-14" required>
-                        <button type="button" id="lihat-sandi" class="link-act absolute right-0 top-1/2 -translate-y-1/2">Lihat</button>
+                {{-- Pemilih peran: murni tampilan, mengisi role_hint --}}
+                <div class="seg" role="group" aria-label="Masuk sebagai">
+                    <button type="button" id="peran-siswa" aria-pressed="true">Siswa / Guru</button>
+                    <button type="button" id="peran-admin" aria-pressed="false">Admin / Petugas</button>
+                </div>
+
+                <h1 class="t-page" style="margin-top:1.75rem" data-split>Masuk ke GESIT</h1>
+                <p id="catatan-peran" class="t-muted" style="margin-top:.35rem" aria-live="polite">Siswa masuk dengan NISN, guru dengan NIP.</p>
+
+                @if ($errors->any())
+                    <div class="alert" role="alert" id="galat" style="margin-top:1.25rem">
+                        <svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg>
+                        <span>{{ $errors->first() }}</span>
                     </div>
-                </div>
+                @endif
 
-                <div class="rise" style="--i:5">
-                    <button type="submit" class="btn btn-primary w-full" style="padding-block:1rem">Masuk</button>
-                </div>
+                <form method="POST" action="{{ route('login') }}" style="margin-top:1.5rem">
+                    @csrf
+                    {{-- role_hint hanya untuk validasi ramah-pengguna di controller --}}
+                    <input type="hidden" name="role_hint" id="role_hint" value="siswa">
 
-                <div class="text-center rise" style="--i:6">
-                    <a href="#" class="link-act muted">Lupa kata sandi?</a>
-                </div>
-            </form>
-        </div>
-    </section>
+                    <div>
+                        <label class="label" for="input-nisn" id="label-nisn">NISN / NIP</label>
+                        <input type="text" name="nisn_nip" id="input-nisn" class="field"
+                               inputmode="numeric" autocomplete="username"
+                               placeholder="Contoh: 0091234567"
+                               value="{{ old('nisn_nip') }}" required autofocus
+                               @if ($errors->any()) aria-invalid="true" aria-describedby="galat" @endif>
+                    </div>
+
+                    <div style="margin-top:1.25rem">
+                        <label class="label" for="input-sandi">Kata sandi</label>
+                        <div class="field-wrap">
+                            <input type="password" name="password" id="input-sandi" class="field"
+                                   style="padding-right:6rem" autocomplete="current-password" required>
+                            <button type="button" class="field-act" id="lihat-sandi" aria-controls="input-sandi" aria-pressed="false">Lihat</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top:1.75rem;min-height:3rem">Masuk</button>
+                </form>
+
+                <p class="t-small t-muted" style="margin-top:1.5rem;text-align:center">
+                    Lupa kata sandi? Minta petugas Sarpras mengatur ulang akunmu.
+                    <span class="soon-tag" style="margin-top:.4rem">Reset mandiri segera hadir</span>
+                </p>
+            </div>
+        </main>
+    </div>
 
     @include('partials.motion')
 
     <script>
-        const catatan = {
-            siswa: 'Masuk dengan NISN (siswa) atau NIP (guru).',
-            admin: 'Masuk dengan NIP petugas Sarpras.'
+        const peran = {
+            siswa: { catatan: 'Siswa masuk dengan NISN, guru dengan NIP.', label: 'NISN / NIP', contoh: 'Contoh: 0091234567' },
+            admin: { catatan: 'Petugas Sarpras masuk dengan NIP.', label: 'NIP petugas', contoh: 'Contoh: 0011234567' }
         };
-        let ketikTimer;
 
-        // Efek mengetik untuk catatan di bawah judul
-        function ketik(el, teks) {
-            clearInterval(ketikTimer);
-            if (matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = teks; return; }
-            el.textContent = '';
-            let i = 0;
-            ketikTimer = setInterval(() => {
-                el.textContent = teks.slice(0, ++i);
-                if (i >= teks.length) clearInterval(ketikTimer);
-            }, 22);
+        function pilihPeran(nama) {
+            const p = peran[nama];
+            document.getElementById('peran-siswa').setAttribute('aria-pressed', String(nama === 'siswa'));
+            document.getElementById('peran-admin').setAttribute('aria-pressed', String(nama === 'admin'));
+            document.getElementById('role_hint').value = nama;
+            document.getElementById('catatan-peran').textContent = p.catatan;
+            document.getElementById('label-nisn').textContent = p.label;
+            document.getElementById('input-nisn').placeholder = p.contoh;
         }
+        document.getElementById('peran-siswa').addEventListener('click', () => pilihPeran('siswa'));
+        document.getElementById('peran-admin').addEventListener('click', () => pilihPeran('admin'));
 
-        function pilihPeran(peran) {
-            const admin = peran === 'admin';
-            document.getElementById('tab-siswa').setAttribute('aria-selected', String(!admin));
-            document.getElementById('tab-admin').setAttribute('aria-selected', String(admin));
-            document.getElementById('tab-pill').style.transform = admin ? 'translateX(100%)' : 'translateX(0)';
-            document.getElementById('input-nisn').placeholder = admin ? 'Contoh: 0011234567' : 'Contoh: 0091234567';
-            document.getElementById('role_hint').value = peran;
-            ketik(document.getElementById('catatan-peran'), catatan[peran]);
-        }
-
-        // Tampilan awal
-        pilihPeran('siswa');
-
-        // Tampilkan / sembunyikan kata sandi
+        // Lihat / sembunyikan kata sandi
         document.getElementById('lihat-sandi').addEventListener('click', function () {
             const input = document.getElementById('input-sandi');
             const tampil = input.type === 'password';
             input.type = tampil ? 'text' : 'password';
             this.textContent = tampil ? 'Sembunyi' : 'Lihat';
-        });
-
-        // Klik tag inventaris = angka dihitung ulang
-        document.querySelector('[data-recount]')?.addEventListener('click', function () {
-            const angka = this.querySelector('[data-count]');
-            if (angka) window.countUp(angka);
+            this.setAttribute('aria-pressed', String(tampil));
         });
     </script>
 </body>
