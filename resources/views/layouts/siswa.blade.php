@@ -28,6 +28,7 @@
                     $menu = [
                         ['siswa.beranda', 'Beranda', 'home'],
                         ['siswa.ajukan', 'Ajukan Pinjam', 'plus'],
+                        ['siswa.panduan', 'Panduan', 'book'],
                     ];
                 @endphp
                 @foreach ($menu as [$rute, $label, $ikon])
@@ -36,9 +37,6 @@
                         <svg class="ico" aria-hidden="true"><use href="#i-{{ $ikon }}"/></svg>{{ $label }}
                     </a>
                 @endforeach
-                <span class="side-link is-soon" aria-disabled="true">
-                    <svg class="ico" aria-hidden="true"><use href="#i-book"/></svg>Panduan <span class="soon-tag">Segera</span>
-                </span>
 
                 {{-- Jam & tanggal --}}
                 <div class="side-card">
@@ -49,13 +47,13 @@
             </nav>
 
             <div class="side-user">
-                <div class="who">
-                    <span class="avatar" aria-hidden="true">{{ auth()->user()->initials() }}</span>
+                <a href="{{ route('profil') }}" class="who" title="Ubah foto profil" aria-label="Profil {{ auth()->user()->name }}, ubah foto">
+                    <x-avatar :user="auth()->user()" />
                     <div class="min-w-0">
                         <div class="who-name">{{ auth()->user()->name }}</div>
                         <div class="who-role">{{ auth()->user()->kelas_jabatan ?: 'Siswa' }}</div>
                     </div>
-                </div>
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="btn btn-secondary btn-sm">

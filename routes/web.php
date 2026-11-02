@@ -12,6 +12,14 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Siswa\BerandaController;
 use App\Http\Controllers\Siswa\PinjamController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Siswa\PanduanController;
+use App\Http\Controllers\ProfilController;
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profil', [ProfilController::class, 'show'])->name('profil');
+    Route::post('/profil/foto', [ProfilController::class, 'updateFoto'])->name('profil.foto');
+    Route::delete('/profil/foto', [ProfilController::class, 'hapusFoto'])->name('profil.foto.hapus');
+});
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -42,6 +50,7 @@ Route::middleware(['auth', 'role:siswa,guru'])->prefix('siswa')->name('siswa.')-
     Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
     Route::get('/ajukan', [PinjamController::class, 'create'])->name('ajukan');
     Route::post('/ajukan', [PinjamController::class, 'store'])->name('ajukan.store');
+    Route::get('/panduan', [PanduanController::class, 'index'])->name('panduan');
 });
 
 // MENU ADMIN
