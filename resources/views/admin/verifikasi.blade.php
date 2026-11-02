@@ -11,9 +11,10 @@
         ];
     @endphp
 
-    <div class="page-head" style="align-items:flex-start">
-        <div>
-            <p class="eyebrow rise">Verifikasi</p>
+    <section class="banner tone-wait rise mb-6">
+        <div class="hero-dots" aria-hidden="true"></div>
+        <div class="banner-body">
+            <p class="eyebrow">Verifikasi</p>
             <h1 class="display mt-3">
                 <span class="line"><span style="--i:0">Verifikasi <span class="hl">pengajuan</span></span></span>
             </h1>
@@ -21,11 +22,17 @@
                 <span class="typed" data-type='["Setujui atau tolak permintaan pinjam dari siswa dan guru.","Cek stok alat sebelum menyetujui.","Pengajuan terbaru selalu ada di paling atas."]'>Setujui atau tolak permintaan pinjam dari siswa dan guru.</span>
             </p>
         </div>
-        <div class="flex flex-wrap gap-2 rise" style="--i:3">
-            @foreach ($kolom as $k)
-                <span class="count tone-{{ $k['nada'] }}" style="margin-left:0;padding:3px 12px"><span data-count="{{ $k['data']->count() }}">{{ $k['data']->count() }}</span> {{ strtolower($k['judul']) }}</span>
-            @endforeach
-        </div>
+        <x-banner-art ikon="verif" :mini="['clock', 'check', 'x']" />
+    </section>
+
+    <div class="stats stats-3 mb-8">
+        @foreach ($kolom as $k)
+            <div class="stat tone-{{ $k['nada'] }} {{ $k['nada'] === 'wait' && $k['data']->count() > 0 ? 'is-alert' : '' }} rise" style="--i: {{ $loop->index + 2 }}">
+                <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-{{ $k['ikon'] }}"/></svg></span>
+                <div class="stat-label">{{ $k['judul'] }}</div>
+                <div class="stat-num" data-count="{{ $k['data']->count() }}">{{ $k['data']->count() }}</div>
+            </div>
+        @endforeach
     </div>
 
     @if ($errors->any())
@@ -105,4 +112,16 @@
             </section>
         @endforeach
     </div>
+
+    <section class="card card-pad card-accent mt-8 rise" style="--i:6">
+        <div class="attn">
+            <span class="row-ico tone-primary"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></span>
+            <h2 class="t-card">Sebelum memutuskan</h2>
+        </div>
+        <ul class="check-list">
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Periksa stok alat. Stok berkurang otomatis saat pengajuan disetujui.</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Baca keperluan dan rentang tanggal pinjam di setiap kartu.</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Pengajuan yang ditolak tetap terlihat oleh peminjam di riwayatnya.</span></li>
+        </ul>
+    </section>
 @endsection

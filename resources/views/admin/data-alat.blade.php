@@ -10,19 +10,48 @@
         $urlKategori  = fn ($nilai) => route('admin.data-alat', array_filter(array_merge(request()->except(['page', 'kategori']), ['kategori' => $nilai])));
     @endphp
 
-    <div class="page-head" style="align-items:flex-start">
-        <div>
-            <p class="eyebrow rise">Inventaris</p>
+    <section class="banner tone-primary rise mb-6">
+        <div class="hero-dots" aria-hidden="true"></div>
+        <div class="banner-body">
+            <p class="eyebrow">Inventaris</p>
             <h1 class="display mt-3">
                 <span class="line"><span style="--i:0">Data <span class="hl">Alat</span></span></span>
             </h1>
             <p class="page-lead rise" style="--i:2">
                 <span class="typed" data-type='["Kelola inventaris alat praktik, olahraga, kesenian, dan multimedia.","Cari alat lewat nama atau kodenya.","Perbarui stok dan kondisi setelah alat dikembalikan."]'>Kelola inventaris alat praktik, olahraga, kesenian, dan multimedia.</span>
             </p>
+            <div class="hero-actions rise" style="--i:3">
+                <button type="button" data-open="dlg-tambah" data-reset class="btn btn-primary">
+                    <svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Tambah alat
+                </button>
+            </div>
         </div>
-        <button type="button" data-open="dlg-tambah" data-reset class="btn btn-primary rise" style="--i:3">
-            <svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Tambah alat
-        </button>
+        <x-banner-art ikon="grid" :mini="['box', 'flask', 'ball']" />
+    </section>
+
+    <div class="stats stats-4 mb-6">
+        <div class="stat tone-primary rise" style="--i:2">
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-box"/></svg></span>
+            <div class="stat-label">Jenis alat</div>
+            <div class="stat-num" data-count="{{ $totalSemua }}">{{ $totalSemua }}</div>
+        </div>
+        <div class="stat tone-ok rise" style="--i:3">
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg></span>
+            <div class="stat-label">Total unit tersedia</div>
+            <div class="stat-num" data-count="{{ $totalStok }}">{{ $totalStok }}</div>
+        </div>
+        <a href="{{ route('admin.data-alat', ['kondisi' => 'perlu_cek']) }}" class="stat tone-wait rise" style="--i:4">
+            <svg class="ico stat-go" aria-hidden="true"><use href="#i-arrow"/></svg>
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg></span>
+            <div class="stat-label">Perlu dicek</div>
+            <div class="stat-num" data-count="{{ $kondisiHitung->get('perlu_cek', 0) }}">{{ $kondisiHitung->get('perlu_cek', 0) }}</div>
+        </a>
+        <a href="{{ route('admin.data-alat', ['kondisi' => 'rusak']) }}" class="stat tone-no rise" style="--i:5">
+            <svg class="ico stat-go" aria-hidden="true"><use href="#i-arrow"/></svg>
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-wrench"/></svg></span>
+            <div class="stat-label">Rusak</div>
+            <div class="stat-num" data-count="{{ $kondisiHitung->get('rusak', 0) }}">{{ $kondisiHitung->get('rusak', 0) }}</div>
+        </a>
     </div>
 
     @if ($errors->any())
@@ -84,10 +113,15 @@
                         <tr class="has-kat" data-kat="{{ $a->kategori }}">
                             <td><span class="kode">{{ $a->kode }}</span></td>
                             <td>
-                                <div class="alat-nama">{{ $a->nama }}</div>
-                                @if ($a->lokasi)
-                                    <div class="alat-lok"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>{{ $a->lokasi }}</div>
-                                @endif
+                                <div class="flex items-center gap-3">
+                                    <x-kat-ico :nilai="$a->kategori" />
+                                    <div>
+                                        <div class="alat-nama">{{ $a->nama }}</div>
+                                        @if ($a->lokasi)
+                                            <div class="alat-lok"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>{{ $a->lokasi }}</div>
+                                        @endif
+                                    </div>
+                                </div>
                             </td>
                             <td><x-kategori :nilai="$a->kategori" /></td>
                             <td>

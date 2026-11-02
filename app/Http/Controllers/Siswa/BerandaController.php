@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Siswa;
 // Letak file: app/Http/Controllers/Siswa/BerandaController.php
 
 use App\Http\Controllers\Controller;
+use App\Models\Alat;
 use Illuminate\Support\Facades\Auth;
 
 class BerandaController extends Controller
@@ -24,6 +25,12 @@ class BerandaController extends Controller
                 ->count(),
         ];
 
-        return view('siswa.beranda', compact('riwayat', 'stats', 'user'));
+        // Jumlah jenis & unit alat per kategori (untuk kartu kategori)
+        $kategoriAlat = Alat::selectRaw('kategori, count(*) as jenis, sum(stok) as unit')
+            ->groupBy('kategori')
+            ->get()
+            ->keyBy('kategori');
+
+        return view('siswa.beranda', compact('riwayat', 'stats', 'user', 'kategoriAlat'));
     }
 }

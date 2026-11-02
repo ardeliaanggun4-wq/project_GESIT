@@ -7,15 +7,24 @@
         $kategoriLabel = ['praktik_lab' => 'Alat Praktik Lab', 'olahraga' => 'Alat Olahraga', 'kesenian' => 'Alat Kesenian', 'multimedia' => 'Multimedia'];
     @endphp
 
-    <div class="mb-8">
-        <p class="eyebrow rise">Ajukan pinjam</p>
-        <h1 class="display mt-3">
-            <span class="line"><span style="--i:0">Formulir pengajuan</span></span>
-            <span class="line"><span style="--i:1" class="hl">peminjaman</span></span>
-        </h1>
-        <p class="page-lead rise" style="--i:3">
-            <span class="typed" data-type='["Isi selengkap mungkin agar petugas Sarpras bisa memverifikasi lebih cepat.","Pilih alat dulu, lalu cek stok yang tersedia.","Sebutkan keperluan agar pengajuanmu cepat disetujui."]'>Isi selengkap mungkin agar petugas Sarpras bisa memverifikasi lebih cepat.</span>
-        </p>
+    <section class="banner tone-ok rise mb-6">
+        <div class="hero-dots" aria-hidden="true"></div>
+        <div class="banner-body">
+            <p class="eyebrow">Ajukan pinjam</p>
+            <h1 class="display mt-3">
+                <span class="line"><span style="--i:0">Formulir pengajuan</span></span>
+                <span class="line"><span style="--i:1" class="hl">peminjaman</span></span>
+            </h1>
+            <p class="page-lead rise" style="--i:3">
+                <span class="typed" data-type='["Isi selengkap mungkin agar petugas Sarpras bisa memverifikasi lebih cepat.","Pilih alat dulu, lalu cek stok yang tersedia.","Sebutkan keperluan agar pengajuanmu cepat disetujui."]'>Isi selengkap mungkin agar petugas Sarpras bisa memverifikasi lebih cepat.</span>
+            </p>
+        </div>
+        <x-banner-art ikon="send" :mini="['calendar', 'box', 'check']" />
+    </section>
+
+    <div class="alert alert-info mb-6" id="info-kat" role="status" hidden>
+        <svg class="ico" aria-hidden="true"><use href="#i-info"/></svg>
+        <span>Menampilkan alat kategori <b id="info-kat-teks"></b>. <a href="{{ route('siswa.ajukan') }}" class="link">Tampilkan semua alat</a></span>
     </div>
 
     @if ($errors->any())
@@ -30,13 +39,17 @@
     @endif
 
     <div class="form-grid">
-        <form method="POST" action="{{ route('siswa.ajukan.store') }}" class="card rise" style="--i:2">
+        <form method="POST" action="{{ route('siswa.ajukan.store') }}" class="card card-accent rise" style="--i:2">
             @csrf
             <div class="form-head">
                 <span class="row-ico tone-primary"><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg></span>
                 <div>
                     <div class="t-card">Peminjaman alat</div>
                     <div class="t-xs t-muted">Semua kolom bertanda nomor wajib diisi</div>
+                </div>
+                <div style="margin-left:auto;text-align:right">
+                    <div class="t-xs t-muted"><b id="fp-n" class="num" style="color:var(--ink)">0</b>/5 terisi</div>
+                    <div class="track" style="width:6rem;margin-top:.35rem"><div class="fill" id="fp-bar" style="width:0;animation:none;transition:width .3s var(--ease)"></div></div>
                 </div>
             </div>
 
@@ -112,7 +125,30 @@
                 </div>
             </section>
 
+            @php
+                $grup = $daftarAlat->groupBy('kategori');
+                $maksUnit = max(1, $grup->map(fn ($g) => $g->sum('stok'))->max() ?? 0);
+            @endphp
             <section class="card card-pad rise" style="--i:4">
+                <div class="attn" style="margin-bottom:var(--s-4)">
+                    <span class="row-ico tone-ok"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg></span>
+                    <h2 class="t-card">Ketersediaan alat</h2>
+                </div>
+                <div class="space-y-4">
+                    @foreach ($kategoriLabel as $kode => $nama)
+                        @php $g = $grup->get($kode, collect()); $unit = $g->sum('stok'); @endphp
+                        <div data-kat="{{ $kode }}">
+                            <div class="flex items-center justify-between gap-3 text-sm mb-1.5">
+                                <x-kategori :nilai="$kode" />
+                                <span class="num t-small t-muted"><b style="color:var(--ink)">{{ $unit }}</b> unit · {{ $g->count() }} jenis</span>
+                            </div>
+                            <div class="track"><div class="fill" style="width: {{ ($unit / $maksUnit) * 100 }}%; --i: {{ $loop->index }}"></div></div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+
+            <section class="card card-pad card-accent rise" style="--i:5">
                 <div class="attn" style="margin-bottom:var(--s-4)">
                     <span class="row-ico tone-wait"><svg class="ico" aria-hidden="true"><use href="#i-bulb"/></svg></span>
                     <h2 class="t-card">Setelah mengirim</h2>
@@ -174,6 +210,27 @@
     };
     pilih.addEventListener('change', perbarui);
     perbarui();
+
+    // Kategori dari kartu di Beranda (?kategori=...): tampilkan hanya alat kategori itu
+    const kat = new URLSearchParams(location.search).get('kategori');
+    if (kat) {
+        const cocok = [...pilih.options].filter((o) => o.value && o.dataset.kategori === kat);
+        if (cocok.length) {
+            [...pilih.options].forEach((o) => { if (o.value && o.dataset.kategori !== kat) { o.hidden = true; o.disabled = true; } });
+            $('info-kat-teks').textContent = cocok[0].dataset.kategoriLabel;
+            $('info-kat').hidden = false;
+        }
+    }
+
+    // Penunjuk kelengkapan formulir
+    const kolom = ['alat_id', 'tgl_pinjam', 'tgl_kembali', 'jumlah', 'keperluan'];
+    const hitungIsi = () => {
+        const n = kolom.filter((id) => String($(id).value).trim() !== '').length;
+        $('fp-n').textContent = n;
+        $('fp-bar').style.width = (n / kolom.length * 100) + '%';
+    };
+    kolom.forEach((id) => ['input', 'change'].forEach((ev) => $(id).addEventListener(ev, hitungIsi)));
+    hitungIsi();
 
     // Tombol − dan +
     const ubah = (d) => {

@@ -35,7 +35,11 @@ class DataAlatController extends Controller
         $hitung = Alat::selectRaw('kategori, count(*) as total')->groupBy('kategori')->pluck('total', 'kategori');
         $totalSemua = $hitung->sum();
 
-        return view('admin.data-alat', compact('alat', 'hitung', 'totalSemua'));
+        // Ringkasan kondisi & total unit (untuk kartu angka di atas)
+        $kondisiHitung = Alat::selectRaw('kondisi, count(*) as total')->groupBy('kondisi')->pluck('total', 'kondisi');
+        $totalStok = (int) Alat::sum('stok');
+
+        return view('admin.data-alat', compact('alat', 'hitung', 'totalSemua', 'kondisiHitung', 'totalStok'));
     }
 
     public function store(Request $request)

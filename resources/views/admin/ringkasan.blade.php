@@ -71,9 +71,34 @@
         </a>
     </div>
 
+    {{-- Aksi cepat & tip --}}
+    <div class="sec-head"><h2 class="t-sec">Aksi cepat</h2></div>
+    <div class="qa-grid mb-6">
+        <a href="{{ route('admin.verifikasi') }}" class="qa tone-wait rise" style="--i:6">
+            <span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-verif"/></svg></span>
+            <div><b>Verifikasi pengajuan</b><small>{{ $stats['menunggu'] > 0 ? $stats['menunggu'] . ' menunggu keputusan' : 'Antrean kosong' }}</small></div>
+            <svg class="ico arrow" aria-hidden="true"><use href="#i-chev-right"/></svg>
+        </a>
+        <a href="{{ route('admin.data-alat') }}" class="qa tone-primary rise" style="--i:7">
+            <span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span>
+            <div><b>Kelola data alat</b><small>{{ $stats['total_alat'] }} alat terdaftar</small></div>
+            <svg class="ico arrow" aria-hidden="true"><use href="#i-chev-right"/></svg>
+        </a>
+        <a href="{{ route('admin.data-alat', ['kondisi' => 'rusak']) }}" class="qa tone-no rise" style="--i:8">
+            <span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-wrench"/></svg></span>
+            <div><b>Cek alat bermasalah</b><small>{{ $stats['rusak_kosong'] }} rusak atau stok kosong</small></div>
+            <svg class="ico arrow" aria-hidden="true"><use href="#i-chev-right"/></svg>
+        </a>
+    </div>
+
+    <div class="tipbar rise mb-8" style="--i:8">
+        <svg class="ico" aria-hidden="true"><use href="#i-bulb"/></svg>
+        <span><b>Tips:</b> <span class="tip-rot" data-rotate='["Kartu \"Menunggu verifikasi\" langsung membuka antrean pengajuan.","Stok alat otomatis berkurang saat pengajuan disetujui.","Perbarui kondisi alat setelah dikembalikan agar data tetap akurat.","Cari alat lewat nama atau kodenya di halaman Data Alat."]'>Kartu "Menunggu verifikasi" langsung membuka antrean pengajuan.</span></span>
+    </div>
+
     {{-- Grafik & kategori --}}
     <div class="grid lg:grid-cols-3 gap-6 mb-8">
-        <section class="card card-pad lg:col-span-2 rise" style="--i:5">
+        <section class="card card-pad card-accent lg:col-span-2 rise" style="--i:5">
             <div class="sec-head">
                 <h2 class="t-sec">Peminjaman 7 hari terakhir</h2>
             </div>
@@ -96,7 +121,7 @@
             </div>
         </section>
 
-        <section class="card card-pad rise" style="--i:6">
+        <section class="card card-pad card-accent rise" style="--i:6">
             <div class="sec-head"><h2 class="t-sec">Kategori paling sering dipinjam</h2></div>
             <div class="space-y-5 mt-4">
                 @forelse ($kategori as $k)
@@ -121,7 +146,7 @@
 
     {{-- Kondisi alat & perhatian --}}
     <div class="grid lg:grid-cols-2 gap-6 mb-8">
-        <section class="card card-pad rise" style="--i:6">
+        <section class="card card-pad card-accent rise" style="--i:6">
             <div class="sec-head"><h2 class="t-sec">Kondisi seluruh alat</h2></div>
             <div class="stackbar mt-4" role="img" aria-label="Perbandingan kondisi alat">
                 @foreach ($segmen as [$kunci, $nama, $warna])

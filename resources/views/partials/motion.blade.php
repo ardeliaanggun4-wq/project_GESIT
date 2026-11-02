@@ -164,6 +164,35 @@
         requestAnimationFrame(langkah);
     });
 
+    /* 6. Jam & tanggal langsung, serta tip yang berganti
+       [data-clock] : jam perangkat (tambah data-sec untuk detik)
+       [data-date]  : tanggal perangkat (data-date="pendek" tanpa tahun)
+       [data-rotate]: daftar kalimat JSON yang berganti tiap beberapa detik */
+    document.querySelectorAll('[data-clock]').forEach((el) => {
+        const tik = () => {
+            const o = { hour: '2-digit', minute: '2-digit' };
+            if (el.hasAttribute('data-sec')) o.second = '2-digit';
+            el.textContent = new Date().toLocaleTimeString('id-ID', o).replace(/\./g, ':');
+        };
+        tik();
+        setInterval(tik, 1000);
+    });
+    document.querySelectorAll('[data-date]').forEach((el) => {
+        const o = { weekday: 'long', day: 'numeric', month: el.dataset.date === 'pendek' ? 'short' : 'long' };
+        if (el.dataset.date !== 'pendek') o.year = 'numeric';
+        el.textContent = new Date().toLocaleDateString('id-ID', o);
+    });
+    document.querySelectorAll('[data-rotate]').forEach((el) => {
+        let daftar;
+        try { daftar = JSON.parse(el.dataset.rotate); } catch (err) { return; }
+        if (!Array.isArray(daftar) || daftar.length < 2 || kurangiGerak) return;
+        let i = 0;
+        setInterval(() => {
+            el.classList.add('is-swap');
+            setTimeout(() => { i = (i + 1) % daftar.length; el.textContent = daftar[i]; el.classList.remove('is-swap'); }, 300);
+        }, 5000);
+    });
+
     /* 4. Notifikasi berhasil: hilang sendiri atau saat ditutup */
     document.querySelectorAll('.toast').forEach((t) => {
         const tutup = () => { t.classList.add('is-out'); setTimeout(() => t.remove(), 300); };

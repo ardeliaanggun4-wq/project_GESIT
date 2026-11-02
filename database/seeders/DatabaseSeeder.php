@@ -21,27 +21,26 @@ class DatabaseSeeder extends Seeder
         $ardelia = User::where('nisn_nip', '0091234567')->first();
         $suryanto = User::where('nisn_nip', '0021234567')->first();
 
-        $osiloskop = Alat::where('kode', 'ALT-OSC-012')->first();
-        $proyektor = Alat::where('kode', 'ALT-PRJ-004')->first();
-        $bolaVoli = Alat::where('kode', 'ALT-BOL-021')->first();
-        $bolaBasket = Alat::where('kode', 'ALT-BSK-014')->first();
+        $mouse = Alat::where('kode', 'ALT-MS')->first();
+        $keyboard = Alat::where('kode', 'ALT-KY')->first();
+        $cpu = Alat::where('kode', 'ALT-CP')->first();
 
         Peminjaman::create([
             'kode_pengajuan' => 'PJM-0227',
             'user_id' => $ardelia->id,
-            'alat_id' => $bolaVoli->id,
-            'jumlah' => 1,
+            'alat_id' => $mouse->id,
+            'jumlah' => 20,
             'tanggal_pinjam' => now()->subDays(19),
             'tanggal_kembali_rencana' => now()->subDays(15),
-            'keperluan' => 'Ekstrakurikuler',
+            'keperluan' => 'Praktik kelas XII RPL',
             'status' => 'ditolak',
-            'catatan_admin' => 'stok kosong',
+            'catatan_admin' => 'jumlah melebihi stok',
         ]);
 
         Peminjaman::create([
             'kode_pengajuan' => 'PJM-0229',
             'user_id' => $ardelia->id,
-            'alat_id' => $osiloskop->id,
+            'alat_id' => $cpu->id,
             'jumlah' => 1,
             'tanggal_pinjam' => now()->subDays(14),
             'tanggal_kembali_rencana' => now()->subDays(10),
@@ -52,19 +51,19 @@ class DatabaseSeeder extends Seeder
         Peminjaman::create([
             'kode_pengajuan' => 'PJM-0230',
             'user_id' => $suryanto->id,
-            'alat_id' => $bolaBasket->id,
-            'jumlah' => 4,
+            'alat_id' => $keyboard->id,
+            'jumlah' => 2,
             'tanggal_pinjam' => now(),
             'tanggal_kembali_rencana' => now()->addDays(3),
-            'keperluan' => 'Latihan tim basket sekolah',
+            'keperluan' => 'Praktik komputer kelas X',
             'status' => 'menunggu',
         ]);
 
         Peminjaman::create([
             'kode_pengajuan' => 'PJM-0231',
             'user_id' => $ardelia->id,
-            'alat_id' => $proyektor->id,
-            'jumlah' => 1,
+            'alat_id' => $mouse->id,
+            'jumlah' => 3,
             'tanggal_pinjam' => now(),
             'tanggal_kembali_rencana' => now()->addDays(4),
             'keperluan' => 'Untuk kelas RPL',

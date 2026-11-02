@@ -9,6 +9,7 @@
 </head>
 <body>
     @include('partials.icons')
+    @include('partials.dekor')
     <a href="#konten" class="skip-link">Lewati ke formulir masuk</a>
 
     <div class="auth">
@@ -28,6 +29,10 @@
             </div>
 
             {{-- Ilustrasi buatan sendiri; dekoratif --}}
+            <div class="rak-wrap">
+            <span class="chip-float cf-1"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-send"/></svg>Ajukan dari HP</span>
+            <span class="chip-float cf-2"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-clock"/></svg>Pantau status</span>
+            <span class="chip-float cf-3"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-check"/></svg>Siap diambil</span>
             <svg class="rak rise" style="--i:7" viewBox="0 0 520 400" aria-hidden="true" focusable="false">
                 {{-- rangka rak --}}
                 <rect x="36" y="24" width="8" height="360" rx="3" fill="#BFB299"/>
@@ -83,6 +88,7 @@
                 <circle cx="451" cy="348" r="13" fill="#C8961E"/>
                 <circle cx="451" cy="348" r="5" fill="#FBF0D5"/>
             </svg>
+            </div>
 
             {{-- Kode warna kategori, sama dengan yang dipakai di seluruh aplikasi --}}
             <div class="flex flex-wrap gap-2 rise" style="--i:9" aria-label="Kategori alat">
@@ -95,6 +101,10 @@
 
         {{-- Formulir --}}
         <main id="konten" class="auth-form">
+            <div class="auth-corner" aria-hidden="true">
+                <svg class="ico ico-sm"><use href="#i-calendar"/></svg><span data-date="pendek">{{ now()->translatedFormat('l, j M') }}</span>
+                <svg class="ico ico-sm"><use href="#i-clock"/></svg><span data-clock>{{ now()->format('H:i') }}</span>
+            </div>
             <div class="auth-card">
                 <div class="brand auth-brand-m">
                     <span class="brand-mark"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span>
@@ -150,6 +160,12 @@
                     Lupa kata sandi? Minta petugas Sarpras mengatur ulang akunmu.
                     <span class="soon-tag" style="margin-top:.4rem">Reset mandiri segera hadir</span>
                 </p>
+
+                <ul class="feats rise" style="--i:8">
+                    <li class="tone-primary"><span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg></span><b>Ajukan</b><small>dari HP, kapan saja</small></li>
+                    <li class="tone-wait"><span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg></span><b>Pantau</b><small>status pengajuanmu</small></li>
+                    <li class="tone-ok"><span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-box"/></svg></span><b>Ambil</b><small>di ruang Sarpras</small></li>
+                </ul>
             </div>
         </main>
     </div>

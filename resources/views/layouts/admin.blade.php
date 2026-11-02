@@ -9,6 +9,7 @@
 </head>
 <body>
     @include('partials.icons')
+    @include('partials.dekor')
     <a href="#konten" class="skip-link">Lewati ke konten utama</a>
 
     <div class="shell">
@@ -45,6 +46,13 @@
                     <svg class="ico" aria-hidden="true"><use href="#i-book"/></svg>Laporan
                     <span class="soon-tag">Segera hadir</span>
                 </span>
+
+                {{-- Jam & tanggal --}}
+                <div class="side-card">
+                    <div class="sc-label"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-clock"/></svg>Waktu sekarang</div>
+                    <div class="clock" data-clock data-sec>{{ now()->format('H:i:s') }}</div>
+                    <div class="sc-date" data-date="pendek">{{ now()->translatedFormat('l, j M') }}</div>
+                </div>
             </nav>
 
             <div class="side-user">
@@ -66,6 +74,7 @@
 
         <main id="konten" class="main" tabindex="-1">
             @yield('content')
+            @include('partials.footer')
         </main>
     </div>
 

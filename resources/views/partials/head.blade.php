@@ -508,6 +508,112 @@ a.stat:hover .stat-go{transform:translateX(3px);color:var(--t-fg)}
 }
 
 /* =====================================================================
+   8c. HIASAN & ELEMEN TAMBAHAN: latar, banner halaman, kartu kategori, jam, footer
+   ===================================================================== */
+/* latar berwarna lembut di belakang semua halaman */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(38rem 26rem at 92% -6%,rgba(52,80,122,.13),transparent 62%),radial-gradient(30rem 24rem at -6% 42%,rgba(30,138,122,.10),transparent 62%),radial-gradient(28rem 22rem at 72% 108%,rgba(217,98,43,.09),transparent 62%)}
+.dekor{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.dk{position:absolute;height:auto;opacity:.32;animation:floatY 9s ease-in-out infinite}
+.dk-1{width:5.5rem;right:4%;top:18%;color:var(--c-lab)}
+.dk-2{width:2.6rem;left:3%;top:62%;color:var(--c-olah);animation-delay:-3s}
+.dk-3{width:3.4rem;right:7%;bottom:9%;color:var(--c-kes);animation-delay:-5s}
+.dk-4{width:6rem;left:42%;top:3%;color:var(--c-mm);animation-delay:-7s}
+@media (max-width:760px){.dk-3,.dk-4{display:none}}
+.main,.main-siswa{position:relative;z-index:1}
+
+/* tombol & merek sedikit lebih hidup */
+.btn-primary{background:linear-gradient(180deg,#3F5F8F,var(--primary));box-shadow:0 6px 14px -7px rgba(52,80,122,.85)}
+.btn-primary:hover{background:linear-gradient(180deg,#34507A,var(--primary-hover));transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(1px)}
+.brand-mark{background:linear-gradient(135deg,#4F72A6,var(--primary));box-shadow:0 6px 14px -6px rgba(52,80,122,.75)}
+.side-link .ico{transition:transform var(--dur)}
+.side-link:hover .ico{transform:scale(1.12)}
+.side-link.is-active{box-shadow:inset 3px 0 0 var(--primary)}
+.empty .empty-ico{box-shadow:0 0 0 8px rgba(52,80,122,.06);animation:floatY 4.5s ease-in-out infinite}
+.alert[hidden]{display:none}
+
+/* garis warna empat kategori di tepi atas kartu */
+.card-accent{position:relative;overflow:hidden}
+.card-accent::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--c-lab),var(--c-olah),var(--c-kes),var(--c-mm))}
+
+/* hiasan di kotak sambutan & kartu angka */
+.hero::before{content:"";position:absolute;right:-4rem;top:-5rem;width:16rem;height:16rem;border-radius:50%;background:radial-gradient(circle,rgba(52,80,122,.18),transparent 65%);pointer-events:none}
+.stat{overflow:hidden}
+.stat::before{content:"";position:absolute;right:-1.3rem;bottom:-1.3rem;width:5.2rem;height:5.2rem;border-radius:50%;background:var(--t-bg);opacity:.75;pointer-events:none}
+.stat::after{content:"";position:absolute;right:1.5rem;bottom:1.4rem;width:1.1rem;height:1.1rem;border-radius:50%;border:3px solid var(--t-line);pointer-events:none}
+
+/* banner halaman dalam (Ajukan, Verifikasi, Data Alat) */
+.banner{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:var(--s-5);padding:var(--s-5);border:1px solid var(--t-line);border-radius:20px;background:linear-gradient(120deg,#fff 0%,var(--t-bg) 100%)}
+.banner::before{content:"";position:absolute;right:-3rem;top:-4rem;width:14rem;height:14rem;border-radius:50%;background:radial-gradient(circle,var(--t-bg),transparent 68%);pointer-events:none}
+.banner-body{position:relative;min-width:0;max-width:36rem}
+.banner-art{position:relative;display:none;flex:none;width:11.5rem;height:9rem}
+.banner-art .big{position:absolute;right:1.4rem;top:50%;translate:0 -50%;rotate:-6deg;display:grid;place-items:center;width:5.6rem;height:5.6rem;border-radius:28px;background:var(--t-fg);color:#fff;box-shadow:0 16px 30px -12px var(--t-fg);animation:floatY 6s ease-in-out infinite}
+.banner-art .big .ico{width:2.6rem;height:2.6rem;stroke-width:1.5}
+.banner-art .mini{position:absolute;display:grid;place-items:center;width:2.7rem;height:2.7rem;border-radius:14px;background:#fff;border:1px solid var(--t-line);color:var(--t-fg);box-shadow:0 8px 18px rgba(31,41,51,.10);animation:floatY 5s ease-in-out infinite}
+.banner-art .mini-1{left:0;top:.3rem;animation-delay:-1s}
+.banner-art .mini-2{left:.8rem;bottom:.2rem;animation-delay:-2.5s}
+.banner-art .mini-3{right:0;top:-.2rem;animation-delay:-4s}
+@media (min-width:760px){.banner-art{display:block}}
+@media (max-width:640px){.banner{padding:var(--s-5) var(--s-4)}}
+
+/* ikon kategori & kartu kategori */
+.kat-ico{display:grid;place-items:center;width:2.4rem;height:2.4rem;flex:none;border-radius:12px;background:var(--kat-tint);color:var(--kat-ink);border:1px solid color-mix(in srgb,var(--kat) 28%,transparent)}
+.kat-ico .ico{width:1.2rem;height:1.2rem}
+.kat-ico.lg{width:3rem;height:3rem;border-radius:14px}
+.kat-ico.lg .ico{width:1.5rem;height:1.5rem}
+.kat-grid{display:grid;gap:var(--s-3);grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:900px){.kat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.kat-tile{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:.2rem;padding:var(--s-4);background:linear-gradient(160deg,#fff 40%,var(--kat-tint));border:1px solid var(--line);border-radius:var(--r-card);transition:transform var(--dur),box-shadow var(--dur),border-color var(--dur)}
+.kat-tile:hover{transform:translateY(-3px);border-color:var(--kat);box-shadow:0 10px 24px rgba(31,41,51,.08)}
+.kat-tile::after{content:"";position:absolute;right:-1.6rem;bottom:-1.6rem;width:5.2rem;height:5.2rem;border-radius:50%;background:var(--kat);opacity:.12;pointer-events:none}
+.kat-tile b{margin-top:.6rem;font:600 1rem/1.25 var(--font-head)}
+.kat-tile small{font-size:.875rem;color:var(--muted)}
+.kat-tile .arrow{position:absolute;right:.9rem;top:.9rem;color:var(--muted);transition:transform var(--dur),color var(--dur)}
+.kat-tile:hover .arrow{transform:translateX(3px);color:var(--kat-ink)}
+
+/* tip berganti, daftar centang, jam */
+.tip-rot{display:inline-block;transition:opacity .3s,transform .3s}
+.tip-rot.is-swap{opacity:0;transform:translateY(4px)}
+.check-list{list-style:none;padding:0;margin:var(--s-4) 0 0;display:grid;gap:.75rem}
+.check-list li{display:flex;gap:.65rem;align-items:flex-start;color:var(--ink-2)}
+.check-list .ico{margin-top:2px;color:#1D6837}
+.clock-chip{display:none;align-items:center;gap:.4rem;padding:.3rem .75rem;border-radius:var(--r-pill);background:var(--surface);border:1px solid var(--line);font-size:.875rem;font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.clock-chip .ico{color:var(--primary)}
+@media (min-width:900px){.clock-chip{display:inline-flex}}
+.side-card{position:relative;overflow:hidden;margin-top:auto;padding:1rem;border-radius:var(--r-card);background:linear-gradient(140deg,var(--primary) 0%,#4F72A6 100%);color:#fff}
+.side-card::before{content:"";position:absolute;right:-1.8rem;top:-1.8rem;width:6rem;height:6rem;border-radius:50%;background:rgba(255,255,255,.12)}
+.side-card::after{content:"";position:absolute;right:1.4rem;bottom:-1.6rem;width:4rem;height:4rem;border-radius:50%;background:rgba(255,255,255,.08)}
+.side-card .sc-label{position:relative;display:flex;align-items:center;gap:.4rem;margin-bottom:.55rem;font-size:.8125rem;font-weight:600;color:rgba(255,255,255,.85)}
+.side-card .clock{position:relative;font:600 1.65rem/1 var(--font-head);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.side-card .sc-date{position:relative;margin-top:.35rem;font-size:.875rem;color:rgba(255,255,255,.88)}
+@media (max-width:1023px){.side-card{display:none}}
+
+/* footer */
+.site-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem 1.5rem;margin-top:var(--s-7);padding-top:var(--s-4);border-top:1px dashed var(--line-strong);font-size:.875rem;color:var(--muted)}
+.foot-brand{display:inline-flex;align-items:center;gap:.6rem}
+.foot-brand b{color:var(--ink);font-family:var(--font-head)}
+.foot-kat{display:flex;flex-wrap:wrap;gap:.35rem .9rem}
+.foot-kat span{display:inline-flex;align-items:center;gap:.35rem}
+
+/* halaman masuk: hiasan & elemen tambahan */
+.auth>*{position:relative;z-index:1}
+.auth-art{position:relative;overflow:hidden}
+.auth-art::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(24rem 18rem at 100% 0,rgba(52,80,122,.16),transparent 65%),radial-gradient(22rem 18rem at 0 100%,rgba(217,98,43,.14),transparent 65%)}
+.auth-art>*{position:relative}
+.rak-wrap{position:relative;width:100%;max-width:34rem;margin:0 auto}
+.chip-float{position:absolute;z-index:2;display:inline-flex;align-items:center;gap:.45rem;padding:.4rem .85rem .4rem .6rem;border-radius:var(--r-pill);background:#fff;border:1px solid var(--line);box-shadow:0 10px 22px rgba(31,41,51,.12);font-size:.875rem;font-weight:600;color:var(--ink-2);white-space:nowrap;animation:floatY 6s ease-in-out infinite}
+.chip-float .ico{color:var(--primary)}
+.cf-1{left:-1rem;top:8%}
+.cf-2{right:-.5rem;top:44%;animation-delay:-2s}
+.cf-3{left:14%;bottom:-.6rem;animation-delay:-4s}
+.auth-corner{position:absolute;top:1rem;right:1rem;display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .8rem;border-radius:var(--r-pill);background:var(--surface);border:1px solid var(--line);font-size:.8125rem;font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.auth-corner .ico{color:var(--primary)}
+.feats{list-style:none;padding:0;margin:var(--s-6) 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem}
+.feats li{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.85rem .4rem;text-align:center;background:rgba(255,255,255,.75);border:1px solid var(--line);border-radius:var(--r-card)}
+.feats b{font:600 .9375rem var(--font-head)}
+.feats small{font-size:.8125rem;line-height:1.3;color:var(--muted)}
+
+/* =====================================================================
    9. GERAK (hemat) & AKSESIBILITAS GERAK
    ===================================================================== */
 @keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}

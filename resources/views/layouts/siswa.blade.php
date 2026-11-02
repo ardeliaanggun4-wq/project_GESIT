@@ -9,6 +9,7 @@
 </head>
 <body class="has-bottomnav">
     @include('partials.icons')
+    @include('partials.dekor')
     <a href="#konten" class="skip-link">Lewati ke konten utama</a>
 
     @php
@@ -35,6 +36,7 @@
             </nav>
 
             <div class="top-user">
+                <span class="clock-chip"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-clock"/></svg><span data-clock>{{ now()->format('H:i') }}</span></span>
                 <div class="who">
                     <b>{{ auth()->user()->name }}</b>
                     <span>{{ auth()->user()->kelas_jabatan }}</span>
@@ -53,6 +55,7 @@
 
     <main id="konten" class="main-siswa" tabindex="-1">
         @yield('content')
+        @include('partials.footer')
     </main>
 
     {{-- Navigasi bawah untuk HP --}}
