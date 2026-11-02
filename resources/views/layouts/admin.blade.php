@@ -28,6 +28,7 @@
                         ['admin.ringkasan', 'Ringkasan', 'chart'],
                         ['admin.verifikasi', 'Verifikasi', 'verif'],
                         ['admin.data-alat', 'Data Alat', 'grid'],
+                        ['admin.laporan', 'Laporan', 'book'],
                     ];
                 @endphp
                 @php $antrean = \App\Models\Peminjaman::where('status', 'menunggu')->count(); @endphp
@@ -40,12 +41,6 @@
                         @endif
                     </a>
                 @endforeach
-
-                {{-- Belum berfungsi: ditandai jelas, bukan tautan mati --}}
-                <span class="side-link is-soon" aria-disabled="true">
-                    <svg class="ico" aria-hidden="true"><use href="#i-book"/></svg>Laporan
-                    <span class="soon-tag">Segera hadir</span>
-                </span>
 
                 {{-- Jam & tanggal --}}
                 <div class="side-card">

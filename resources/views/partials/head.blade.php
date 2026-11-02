@@ -54,7 +54,7 @@
 
     /* gerak & ukuran */
     --ease:cubic-bezier(.22,.7,.2,1); --dur:.18s;
-    --tap:44px; --sidebar-w:248px; --bottomnav-h:64px;
+    --tap:44px; --sidebar-w:248px;
 }
 
 /* Kategori: pasang data-kat="praktik_lab|olahraga|kesenian|multimedia" pada elemen apa pun */
@@ -254,7 +254,7 @@ dialog.drawer[open]{animation:drawerIn .26s var(--ease)}
 .toast.is-out{opacity:0;translate:-50% 8px;transition:opacity .25s,translate .25s}
 
 /* =====================================================================
-   7. LAYOUT ADMIN (sidebar) & SISWA (top bar + bottom navigation)
+   7. LAYOUT ADMIN & SISWA (sama: sidebar di desktop, header + tab menu di HP)
    ===================================================================== */
 .shell{display:grid;grid-template-columns:var(--sidebar-w) minmax(0,1fr);min-height:100dvh}
 .sidebar{position:sticky;top:0;z-index:30;height:100dvh;display:grid;grid-template-rows:auto 1fr auto;gap:var(--s-5);padding:var(--s-5) var(--s-4);background:var(--surface);border-right:1px solid var(--line)}
@@ -274,38 +274,6 @@ dialog.drawer[open]{animation:drawerIn .26s var(--ease)}
 .page-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s-3) var(--s-4);margin-bottom:var(--s-5)}
 .page-head p{margin-top:.25rem;color:var(--muted)}
 
-.topbar{position:sticky;top:0;z-index:30;background:rgba(251,248,243,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.topbar-in{display:flex;align-items:center;gap:var(--s-4);max-width:56rem;min-height:60px;margin:0 auto;padding:0 var(--s-4)}
-.top-nav{display:none;gap:.25rem;margin-left:var(--s-5)}
-.top-link{display:inline-flex;align-items:center;gap:.5rem;min-height:var(--tap);padding:0 .9rem;border-radius:var(--r-ctl);font-weight:500;color:var(--ink-2);transition:background var(--dur),color var(--dur)}
-.top-link:hover{background:var(--surface-2);color:var(--ink)}
-.top-link.is-active{background:var(--primary-tint);color:var(--primary);font-weight:600}
-.top-link.is-soon{color:var(--muted);cursor:not-allowed}
-.top-link.is-soon:hover{background:transparent}
-.top-user{display:flex;align-items:center;gap:.65rem;margin-left:auto}
-.top-user .who{display:none;line-height:1.2}
-.top-user .who b{display:block;font-weight:600}
-.top-user .who span{font-size:.8125rem;color:var(--muted)}
-.main-siswa{max-width:56rem;margin:0 auto;padding:var(--s-5) var(--s-4) calc(var(--bottomnav-h) + env(safe-area-inset-bottom) + var(--s-5));animation:pageIn .32s var(--ease) both}
-/* Bar tombol yang menempel di atas bottom navigation (mudah dijangkau jempol) */
-.cta-bar{position:sticky;bottom:calc(var(--bottomnav-h) + env(safe-area-inset-bottom) + .75rem);z-index:20}
-
-.bottomnav{position:fixed;inset:auto 0 0 0;z-index:40;display:grid;grid-template-columns:repeat(3,1fr);padding-bottom:env(safe-area-inset-bottom);background:var(--surface);border-top:1px solid var(--line)}
-.bn-item{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:var(--bottomnav-h);font-size:.75rem;font-weight:600;color:var(--muted);transition:color var(--dur)}
-.bn-item .ico{width:1.5rem;height:1.5rem}
-.bn-item.is-active{color:var(--primary)}
-.bn-item.is-active::before{content:"";position:absolute;top:0;width:2rem;height:3px;border-radius:0 0 3px 3px;background:var(--primary)}
-.bn-item.is-soon{opacity:.65;cursor:not-allowed}
-body.has-bottomnav .toast{bottom:calc(var(--bottomnav-h) + env(safe-area-inset-bottom) + .75rem)}
-
-@media (min-width:768px){
-    .top-nav{display:flex}
-    .top-user .who{display:block}
-    .bottomnav{display:none}
-    .main-siswa{padding:var(--s-6) var(--s-5) var(--s-7)}
-    .cta-bar{bottom:1rem}
-    body.has-bottomnav .toast{bottom:1.25rem}
-}
 @media (max-width:1023px){
     .shell{display:block}
     .sidebar{height:auto;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;gap:.25rem 1rem;padding:.5rem var(--s-4) 0;border-right:0;border-bottom:1px solid var(--line)}
@@ -486,7 +454,7 @@ a.stat:hover .stat-go{transform:translateX(3px);color:var(--t-fg)}
 
 /* form pengajuan */
 .form-grid{display:grid;gap:var(--s-5);grid-template-columns:minmax(0,1fr);align-items:start}
-@media (min-width:980px){.form-grid{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}}
+@media (min-width:1180px){.form-grid{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}}
 .form-head{display:flex;align-items:center;gap:.7rem;padding:1rem 1.5rem;border-bottom:1px solid var(--line)}
 .form-head .row-ico{width:2.1rem;height:2.1rem}
 .label-no{display:inline-grid;place-items:center;width:1.4rem;height:1.4rem;margin-right:.5rem;border-radius:50%;background:var(--primary-tint);color:var(--primary-hover);font-size:.75rem;font-weight:700;vertical-align:1px}
@@ -519,7 +487,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .dk-3{width:3.4rem;right:7%;bottom:9%;color:var(--c-kes);animation-delay:-5s}
 .dk-4{width:6rem;left:42%;top:3%;color:var(--c-mm);animation-delay:-7s}
 @media (max-width:760px){.dk-3,.dk-4{display:none}}
-.main,.main-siswa{position:relative;z-index:1}
+.main{position:relative;z-index:1}
 
 /* tombol & merek sedikit lebih hidup */
 .btn-primary{background:linear-gradient(180deg,#3F5F8F,var(--primary));box-shadow:0 6px 14px -7px rgba(52,80,122,.85)}
@@ -577,9 +545,6 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .check-list{list-style:none;padding:0;margin:var(--s-4) 0 0;display:grid;gap:.75rem}
 .check-list li{display:flex;gap:.65rem;align-items:flex-start;color:var(--ink-2)}
 .check-list .ico{margin-top:2px;color:#1D6837}
-.clock-chip{display:none;align-items:center;gap:.4rem;padding:.3rem .75rem;border-radius:var(--r-pill);background:var(--surface);border:1px solid var(--line);font-size:.875rem;font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums}
-.clock-chip .ico{color:var(--primary)}
-@media (min-width:900px){.clock-chip{display:inline-flex}}
 .side-card{position:relative;overflow:hidden;margin-top:auto;padding:1rem;border-radius:var(--r-card);background:linear-gradient(140deg,var(--primary) 0%,#4F72A6 100%);color:#fff}
 .side-card::before{content:"";position:absolute;right:-1.8rem;top:-1.8rem;width:6rem;height:6rem;border-radius:50%;background:rgba(255,255,255,.12)}
 .side-card::after{content:"";position:absolute;right:1.4rem;bottom:-1.6rem;width:4rem;height:4rem;border-radius:50%;background:rgba(255,255,255,.08)}

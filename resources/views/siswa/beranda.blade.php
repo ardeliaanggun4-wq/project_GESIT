@@ -11,7 +11,7 @@
     {{-- Kotak sambutan --}}
     <section class="hero rise mb-6">
         <div class="hero-dots" aria-hidden="true"></div>
-        @include('partials.hero-art')
+        @include('partials.hero art')
         <div class="hero-body">
             <p class="eyebrow">{{ now()->translatedFormat('l, j F Y') }}</p>
             <h1 class="display mt-3">
@@ -88,7 +88,7 @@
             <div class="sec-head"><h2 class="t-sec">Riwayat peminjaman</h2></div>
             <div class="card overflow-hidden rise" style="--i:5">
                 @forelse ($riwayat as $item)
-                    <div class="list-row" style="--i: {{ $loop->index }}">
+                    <div class="list-row tone-{{ $nadaStatus[$item->statusColor()] ?? 'idle' }}" style="--i: {{ $loop->index }}">
                         <div class="date-tile" aria-hidden="true">
                             <b>{{ $item->tanggal_pinjam->translatedFormat('d') }}</b>
                             <small>{{ $item->tanggal_pinjam->translatedFormat('M') }}</small>
