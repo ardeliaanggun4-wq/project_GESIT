@@ -69,6 +69,9 @@
                                 @if ($p->tanggal_pinjam)
                                     <span><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg>{{ $p->tanggal_pinjam->translatedFormat('j M') }}@if ($p->tanggal_kembali_rencana) – {{ $p->tanggal_kembali_rencana->translatedFormat('j M') }}@endif</span>
                                 @endif
+                                @if (in_array($p->status, ['dipinjam', 'disetujui'], true) && $p->tanggal_kembali_rencana->isBefore(today()))
+                                    <span style="color:var(--danger);font-weight:600"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg>Terlambat {{ (int) abs($p->tanggal_kembali_rencana->diffInDays(today())) }} hari</span>
+                                @endif
                             </div>
 
                             @if ($p->keperluan && $p->status === 'menunggu')
@@ -97,6 +100,22 @@
                                         <button type="submit" class="btn btn-secondary btn-sm"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-x"/></svg>Tolak</button>
                                     </form>
                                 </div>
+                            @elseif (in_array($p->status, ['dipinjam', 'disetujui'], true))
+                                <div class="mt-4"><x-status :nilai="$p->status" /></div>
+                                <form method="POST" action="{{ route('admin.verifikasi.kembali', $p) }}"
+                                      class="pj-act" style="flex-wrap:wrap;align-items:center"
+                                      data-confirm data-confirm-tone="primary"
+                                      data-confirm-title="Tandai sudah dikembalikan?"
+                                      data-confirm-text="{{ $p->user->name }} mengembalikan {{ $p->jumlah }} unit {{ $p->alat->nama }}. Stok dan kondisi alat akan diperbarui."
+                                      data-confirm-ok="Ya, sudah kembali">
+                                    @csrf
+                                    <select name="kondisi_kembali" class="field" style="flex:1;min-width:9rem" aria-label="Kondisi alat saat dikembalikan">
+                                        <option value="baik">Kembali dalam kondisi baik</option>
+                                        <option value="perlu_cek">Kembali, perlu dicek</option>
+                                        <option value="rusak">Kembali dalam kondisi rusak</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary btn-sm"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-check"/></svg>Dikembalikan</button>
+                                </form>
                             @else
                                 <div class="mt-4"><x-status :nilai="$p->status" /></div>
                             @endif
@@ -121,7 +140,8 @@
         <ul class="check-list">
             <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Periksa stok alat. Stok berkurang otomatis saat pengajuan disetujui.</span></li>
             <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Baca keperluan dan rentang tanggal pinjam di setiap kartu.</span></li>
-            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Pengajuan yang ditolak tetap terlihat oleh peminjam di riwayatnya.</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Pengajuan yang ditolak tetap terlihat oleh peminjam di riwayatnya, lengkap dengan alasannya.</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Setelah alat kembali, tandai lewat kartu di kolom Disetujui agar stok bertambah lagi.</span></li>
         </ul>
     </section>
 @endsection

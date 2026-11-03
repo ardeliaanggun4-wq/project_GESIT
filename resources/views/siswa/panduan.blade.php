@@ -25,13 +25,13 @@
             ['menunggu', 'Pengajuanmu sudah terkirim dan sedang diperiksa petugas Sarpras. Alat belum bisa diambil.'],
             ['disetujui', 'Pengajuanmu diterima. Ambil alat di ruang Sarpras.'],
             ['dipinjam', 'Alat sudah menjadi tanggung jawabmu. Kembalikan sebelum tanggal rencana kembali.'],
-            ['ditolak', 'Pengajuan tidak disetujui, misalnya karena stok tidak mencukupi. Tanyakan alasannya ke petugas Sarpras, lalu ajukan ulang bila perlu.'],
+            ['ditolak', 'Pengajuan tidak disetujui, misalnya karena stok tidak mencukupi. Alasannya tampil di Riwayat. Kamu bisa mengajukan ulang bila perlu.'],
             ['selesai', 'Alat sudah dikembalikan dan peminjaman ditutup.'],
         ];
 
         $aturan = [
             ['check', 'Satu pengajuan untuk satu jenis alat. Butuh beberapa jenis alat? Kirim pengajuan terpisah.'],
-            ['calendar', 'Cek tanggal sebelum mengirim. Pengajuan yang sudah terkirim belum bisa diubah sendiri.'],
+            ['calendar', 'Cek tanggal sebelum mengirim. Pengajuan tidak bisa diubah, tetapi bisa dibatalkan di Riwayat selama masih Menunggu.'],
             ['bell', 'Beranda memberi pengingat saat ada alat yang jatuh tempo hari ini. Kembalikan sebelum jam pulang sekolah.'],
             ['wrench', 'Jaga alat tetap utuh. Bila ada kerusakan atau kehilangan, segera lapor ke petugas Sarpras.'],
         ];
@@ -39,12 +39,14 @@
         $tanya = [
             ['Stok alat yang kubutuhkan habis. Apa yang bisa dilakukan?',
              'Pengajuan untuk alat dengan stok habis bisa ditolak petugas. Pilih alat serupa yang masih tersedia, atau tanyakan ke petugas Sarpras kapan alat itu kembali ada.'],
+            ['Bagaimana aku tahu pengajuanku sudah diproses?',
+             'Menu Riwayat menampilkan angka merah bila ada perubahan status baru. Pengajuan yang baru berubah juga ditandai “Baru” di dalamnya.'],
             ['Berapa lama pengajuanku diverifikasi?',
              'Waktunya tergantung petugas Sarpras. Selama belum diproses, statusmu tetap Menunggu. Cek Beranda secara berkala.'],
             ['Aku salah mengisi pengajuan atau ingin membatalkannya.',
-             'Saat ini belum ada tombol ubah atau batal. Hubungi petugas Sarpras secepatnya sebelum pengajuan diproses, atau kirim pengajuan baru dengan data yang benar.'],
+             'Buka menu Riwayat, lalu tekan Batalkan pada pengajuan yang masih berstatus Menunggu. Setelah itu ajukan ulang dengan data yang benar. Kalau sudah disetujui, hubungi petugas Sarpras.'],
             ['Pengajuanku ditolak. Apakah bisa mengajukan lagi?',
-             'Bisa. Tanyakan dulu alasannya ke petugas Sarpras, lalu kirim pengajuan baru dengan alat, jumlah, atau tanggal yang sesuai.'],
+             'Bisa. Lihat alasan penolakannya di Riwayat, lalu kirim pengajuan baru dengan alat, jumlah, atau tanggal yang sesuai.'],
             ['Aku terlambat mengembalikan alat.',
              'Segera temui petugas Sarpras dan serahkan alatnya. Semakin cepat dilaporkan, semakin mudah diselesaikan.'],
             ['Aku tidak bisa masuk ke akun.',

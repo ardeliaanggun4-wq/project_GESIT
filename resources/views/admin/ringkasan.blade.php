@@ -197,7 +197,7 @@
         @forelse ($aktivitas as $a)
             @php $warna = $a->statusColor(); @endphp
             <div class="list-row tone-{{ $nadaStatus[$warna] ?? 'idle' }}" style="--i: {{ $loop->index }}">
-                <span class="avatar" aria-hidden="true">{{ $a->user->initials() }}</span>
+                <x-avatar :user="$a->user" />
                 <div class="list-main">
                     <div class="list-title">{{ $a->user->name }}@if($a->user->kelas_jabatan) <span class="t-muted" style="font-weight:400">· {{ $a->user->kelas_jabatan }}</span>@endif</div>
                     <div class="list-sub">

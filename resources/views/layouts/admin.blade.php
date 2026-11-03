@@ -51,13 +51,13 @@
             </nav>
 
             <div class="side-user">
-                <div class="who">
-                    <span class="avatar" aria-hidden="true">{{ auth()->user()->initials() }}</span>
+                <a href="{{ route('profil') }}" class="who" title="Ubah foto profil" aria-label="Profil {{ auth()->user()->name }}, ubah foto">
+                    <x-avatar :user="auth()->user()" />
                     <div class="min-w-0">
                         <div class="who-name">{{ auth()->user()->name }}</div>
                         <div class="who-role">Petugas Sarpras</div>
                     </div>
-                </div>
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="btn btn-secondary btn-sm">

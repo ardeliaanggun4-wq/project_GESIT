@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\LupaSandiController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Siswa\BerandaController;
 use App\Http\Controllers\Siswa\PinjamController;
+use App\Http\Controllers\Siswa\RiwayatController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Siswa\PanduanController;
 use App\Http\Controllers\ProfilController;
@@ -50,6 +51,8 @@ Route::middleware(['auth', 'role:siswa,guru'])->prefix('siswa')->name('siswa.')-
     Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
     Route::get('/ajukan', [PinjamController::class, 'create'])->name('ajukan');
     Route::post('/ajukan', [PinjamController::class, 'store'])->name('ajukan.store');
+    Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
+    Route::delete('/riwayat/{peminjaman}', [RiwayatController::class, 'batal'])->name('batal');
     Route::get('/panduan', [PanduanController::class, 'index'])->name('panduan');
 });
 
@@ -60,6 +63,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi');
     Route::post('/verifikasi/{peminjaman}/setujui', [VerifikasiController::class, 'approve'])->name('verifikasi.approve');
     Route::post('/verifikasi/{peminjaman}/tolak', [VerifikasiController::class, 'reject'])->name('verifikasi.reject');
+    Route::post('/verifikasi/{peminjaman}/kembali', [VerifikasiController::class, 'kembali'])->name('verifikasi.kembali');
 
     Route::get('/data-alat', [DataAlatController::class, 'index'])->name('data-alat');
     Route::post('/data-alat', [DataAlatController::class, 'store'])->name('data-alat.store');

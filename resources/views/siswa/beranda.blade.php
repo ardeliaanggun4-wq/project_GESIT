@@ -85,7 +85,10 @@
     <div class="grid lg:grid-cols-3 gap-6 items-start">
         {{-- Riwayat --}}
         <section class="lg:col-span-2">
-            <div class="sec-head"><h2 class="t-sec">Riwayat peminjaman</h2></div>
+            <div class="sec-head">
+                <h2 class="t-sec">Riwayat peminjaman</h2>
+                <a href="{{ route('siswa.riwayat') }}" class="link t-small">Lihat semua</a>
+            </div>
             <div class="card overflow-hidden rise" style="--i:5">
                 @forelse ($riwayat as $item)
                     <div class="list-row tone-{{ $nadaStatus[$item->statusColor()] ?? 'idle' }}" style="--i: {{ $loop->index }}">
@@ -95,7 +98,7 @@
                         </div>
                         <div class="list-main">
                             <div class="list-title">{{ $item->alat->nama }}</div>
-                            <div class="list-sub"><span class="kode">{{ $item->alat->kode }}</span> · {{ $item->jumlah }} unit @if ($item->keperluan) · {{ $item->keperluan }} @endif</div>
+                            <div class="list-sub"><span class="kode">{{ $item->alat->kode }}</span> · {{ $item->jumlah }} unit @if ($item->keperluan) · {{ $item->keperluan }} @endif @if ($item->status === 'ditolak' && $item->catatan_admin) · Alasan: {{ $item->catatan_admin }} @endif</div>
                         </div>
                         <x-status :nilai="$item->status" />
                     </div>

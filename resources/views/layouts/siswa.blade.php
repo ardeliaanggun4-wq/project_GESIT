@@ -28,13 +28,27 @@
                     $menu = [
                         ['siswa.beranda', 'Beranda', 'home'],
                         ['siswa.ajukan', 'Ajukan Pinjam', 'plus'],
+                        ['siswa.riwayat', 'Riwayat', 'loan'],
                         ['siswa.panduan', 'Panduan', 'book'],
                     ];
+                    // Pengajuan yang statusnya berubah sejak Riwayat terakhir dibuka
+                    $penggunaNav = auth()->user();
+                    $baruNav = \App\Models\Peminjaman::where('user_id', $penggunaNav->id)
+                        ->where('status', '!=', 'menunggu')
+                        ->when(
+                            $penggunaNav->notif_dilihat_at,
+                            fn ($q, $t) => $q->where('updated_at', '>', $t),
+                            fn ($q) => $q->where('updated_at', '>=', now()->subDays(7))
+                        )
+                        ->count();
                 @endphp
                 @foreach ($menu as [$rute, $label, $ikon])
                     @php $aktif = request()->routeIs($rute); @endphp
                     <a href="{{ route($rute) }}" class="side-link {{ $aktif ? 'is-active' : '' }}" @if ($aktif) aria-current="page" @endif>
                         <svg class="ico" aria-hidden="true"><use href="#i-{{ $ikon }}"/></svg>{{ $label }}
+                        @if ($rute === 'siswa.riwayat' && $baruNav > 0)
+                            <span class="nav-badge" aria-label="{{ $baruNav }} pembaruan baru">{{ $baruNav }}</span>
+                        @endif
                     </a>
                 @endforeach
 
