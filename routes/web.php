@@ -28,8 +28,8 @@ Route::get('/', function () {
             ? redirect()->route('admin.ringkasan')
             : redirect()->route('siswa.beranda');
     }
-    return redirect()->route('login');
-});
+    return view('landing');
+})->name('beranda');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
