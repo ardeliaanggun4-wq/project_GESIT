@@ -47,13 +47,13 @@ class DataAlatController extends Controller
         $validated = $request->validate([
             'kode' => ['required', 'string', 'unique:alat,kode'],
             'nama' => ['required', 'string', 'max:255'],
-            'kategori' => ['required', 'in:praktik_lab,olahraga,kesenian,multimedia'],
+            'kategori' => ['required', 'in:komputer,elektronika,perkakas,multimedia'],
             'lokasi' => ['nullable', 'string', 'max:255'],
             'stok' => ['required', 'integer', 'min:0'],
-            'kondisi' => ['required', 'in:baik,perlu_cek,rusak,stok_habis'],
+            'kondisi' => ['required', 'in:baik,stok_habis'],
         ]);
 
-        Alat::create($validated);
+        Alat::create($this->samakanStokKondisi($validated));
 
         return back()->with('status', 'Alat baru berhasil ditambahkan.');
     }
@@ -62,13 +62,13 @@ class DataAlatController extends Controller
     {
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
-            'kategori' => ['required', 'in:praktik_lab,olahraga,kesenian,multimedia'],
+            'kategori' => ['required', 'in:komputer,elektronika,perkakas,multimedia'],
             'lokasi' => ['nullable', 'string', 'max:255'],
             'stok' => ['required', 'integer', 'min:0'],
-            'kondisi' => ['required', 'in:baik,perlu_cek,rusak,stok_habis'],
+            'kondisi' => ['required', 'in:baik,stok_habis'],
         ]);
 
-        $alat->update($validated);
+        $alat->update($this->samakanStokKondisi($validated));
 
         return back()->with('status', 'Data alat berhasil diperbarui.');
     }
@@ -78,5 +78,17 @@ class DataAlatController extends Controller
         $alat->delete();
 
         return back()->with('status', 'Alat berhasil dihapus.');
+    }
+
+    // Stok dan kondisi harus selalu sejalan:
+    // kondisi "Stok Habis" -> stok otomatis 0, dan stok 0 -> kondisi otomatis "Stok Habis"
+    private function samakanStokKondisi(array $data): array
+    {
+        if ($data['kondisi'] === 'stok_habis' || (int) $data['stok'] === 0) {
+            $data['stok'] = 0;
+            $data['kondisi'] = 'stok_habis';
+        }
+
+        return $data;
     }
 }

@@ -1,11 +1,11 @@
 {{-- Letak file: resources/views/components/kategori.blade.php --}}
-{{-- Pakai: <x-kategori nilai="praktik_lab" />  (titik warna + nama kategori) --}}
+{{-- Pakai: <x-kategori nilai="komputer" />  (titik warna + nama kategori) --}}
 @props(['nilai', 'label' => null])
 @php
     $peta = [
-        'praktik_lab' => 'Alat Praktik Lab',
-        'olahraga'    => 'Alat Olahraga',
-        'kesenian'    => 'Alat Kesenian',
+        'komputer' => 'Komputer',
+        'elektronika'    => 'Elektronika',
+        'perkakas'    => 'Perkakas',
         'multimedia'  => 'Multimedia',
     ];
 @endphp

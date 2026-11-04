@@ -8,7 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Alat;
 use App\Models\Peminjaman;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class PinjamController extends Controller
 {
@@ -28,6 +30,28 @@ class PinjamController extends Controller
             'jumlah' => ['required', 'integer', 'min:1'],
             'keperluan' => ['nullable', 'string', 'max:500'],
         ]);
+
+        // Maksimal lama peminjaman
+        $lama = Carbon::parse($validated['tanggal_pinjam'])->startOfDay()
+            ->diffInDays(Carbon::parse($validated['tanggal_kembali_rencana'])->startOfDay());
+        if ($lama > Peminjaman::MAKS_HARI_PINJAM) {
+            throw ValidationException::withMessages([
+                'tanggal_kembali_rencana' => 'Maksimal peminjaman ' . Peminjaman::MAKS_HARI_PINJAM . ' hari. Pilih tanggal kembali paling lambat ' .
+                    Carbon::parse($validated['tanggal_pinjam'])->addDays(Peminjaman::MAKS_HARI_PINJAM)->translatedFormat('j F Y') . '.',
+            ]);
+        }
+
+        // Belum boleh meminjam lagi bila ada alat yang terlambat melewati batas toleransi
+        $tertahan = Auth::user()->peminjaman()
+            ->whereIn('status', ['dipinjam', 'disetujui'])
+            ->whereDate('tanggal_kembali_rencana', '<', today()->subDays(Peminjaman::MAKS_HARI_TELAT))
+            ->exists();
+        if ($tertahan) {
+            throw ValidationException::withMessages([
+                'alat_id' => 'Kamu belum bisa mengajukan peminjaman baru karena ada alat yang terlambat dikembalikan lebih dari ' .
+                    Peminjaman::MAKS_HARI_TELAT . ' hari. Kembalikan ke ruang Sarpras terlebih dahulu.',
+            ]);
+        }
 
         Peminjaman::create([
             'kode_pengajuan' => Peminjaman::generateKode(),

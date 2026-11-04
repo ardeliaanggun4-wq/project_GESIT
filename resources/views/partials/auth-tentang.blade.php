@@ -79,9 +79,9 @@
                 <p class="tt-isi">Stok setiap alat selalu diperbarui, jadi kamu tahu sebelum mengajukan apakah alatnya masih ada.</p>
             </div>
             <div class="flex flex-wrap gap-2" aria-label="Alat lab">
-                <x-kategori nilai="praktik_lab" label="Mouse" />
-                <x-kategori nilai="praktik_lab" label="Keyboard" />
-                <x-kategori nilai="praktik_lab" label="CPU" />
+                <x-kategori nilai="komputer" label="Mouse" />
+                <x-kategori nilai="komputer" label="Keyboard" />
+                <x-kategori nilai="komputer" label="Laptop" />
             </div>
         </div>
 

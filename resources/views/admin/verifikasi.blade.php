@@ -5,9 +5,9 @@
 @section('content')
     @php
         $kolom = [
-            ['judul' => 'Menunggu',  'nada' => 'wait', 'ikon' => 'clock', 'data' => $menunggu,  'kosong' => 'Tidak ada pengajuan yang menunggu.', 'sub' => 'Semua pengajuan sudah diproses.'],
-            ['judul' => 'Disetujui', 'nada' => 'ok',   'ikon' => 'check', 'data' => $disetujui, 'kosong' => 'Belum ada yang disetujui.',           'sub' => 'Pengajuan yang kamu setujui tampil di sini.'],
-            ['judul' => 'Ditolak',   'nada' => 'no',   'ikon' => 'x',     'data' => $ditolak,   'kosong' => 'Belum ada yang ditolak.',             'sub' => 'Pengajuan yang ditolak tampil di sini.'],
+            ['kunci' => 'menunggu',  'judul' => 'Menunggu',  'nada' => 'wait', 'ikon' => 'clock', 'kosong' => 'Tidak ada pengajuan yang menunggu.', 'sub' => 'Semua pengajuan sudah diproses.'],
+            ['kunci' => 'disetujui', 'judul' => 'Disetujui', 'nada' => 'ok',   'ikon' => 'check', 'kosong' => 'Belum ada yang disetujui.',           'sub' => 'Pengajuan yang kamu setujui tampil di sini.'],
+            ['kunci' => 'ditolak',   'judul' => 'Ditolak',   'nada' => 'no',   'ikon' => 'x',     'kosong' => 'Belum ada yang ditolak.',             'sub' => 'Pengajuan yang ditolak tampil di sini.'],
         ];
     @endphp
 
@@ -27,10 +27,10 @@
 
     <div class="stats stats-3 mb-8">
         @foreach ($kolom as $k)
-            <div class="stat tone-{{ $k['nada'] }} {{ $k['nada'] === 'wait' && $k['data']->count() > 0 ? 'is-alert' : '' }} rise" style="--i: {{ $loop->index + 2 }}">
+            <div class="stat tone-{{ $k['nada'] }} {{ $k['nada'] === 'wait' && $jumlah['menunggu'] > 0 ? 'is-alert' : '' }} rise" style="--i: {{ $loop->index + 2 }}">
                 <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-{{ $k['ikon'] }}"/></svg></span>
                 <div class="stat-label">{{ $k['judul'] }}</div>
-                <div class="stat-num" data-count="{{ $k['data']->count() }}">{{ $k['data']->count() }}</div>
+                <div class="stat-num" data-count="{{ $jumlah[$k['kunci']] }}">{{ $jumlah[$k['kunci']] }}</div>
             </div>
         @endforeach
     </div>
@@ -42,17 +42,30 @@
         </div>
     @endif
 
-    <div class="cols-3">
+    <nav class="mb-6 rise" style="--i:2" aria-label="Saring berdasarkan status">
+        <div class="filters">
+            @foreach ($kolom as $k)
+                <a href="{{ route('admin.verifikasi', ['status' => $k['kunci']]) }}"
+                   class="filter-chip {{ $filter === $k['kunci'] ? 'is-on' : '' }}"
+                   @if ($filter === $k['kunci']) aria-current="page" @endif>
+                    {{ $k['judul'] }} <span class="n">{{ $jumlah[$k['kunci']] }}</span>
+                </a>
+            @endforeach
+        </div>
+    </nav>
+
+    <div>
         @foreach ($kolom as $k)
-            <section class="tone-{{ $k['nada'] }} rise" style="--i: {{ $loop->index + 2 }}">
+            @continue($k['kunci'] !== $filter)
+            <section class="tone-{{ $k['nada'] }} rise" style="--i: 2">
                 <div class="col-head">
                     <span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-{{ $k['ikon'] }}"/></svg></span>
                     <h2 class="t-sec">{{ $k['judul'] }}</h2>
-                    <span class="count">{{ $k['data']->count() }}</span>
+                    <span class="count">{{ $jumlah[$k['kunci']] }}</span>
                 </div>
 
-                <div class="space-y-4">
-                    @forelse ($k['data'] as $p)
+                <div class="pj-grid">
+                    @forelse ($daftar as $p)
                         <article class="pj" style="animation: riseIn .5s var(--ease) both; animation-delay: {{ 0.3 + $loop->index * 0.07 }}s; opacity: 0">
                             <div class="pj-top">
                                 <span class="avatar" aria-hidden="true">{{ $p->user->initials() }}</span>
@@ -70,7 +83,7 @@
                                     <span><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg>{{ $p->tanggal_pinjam->translatedFormat('j M') }}@if ($p->tanggal_kembali_rencana) – {{ $p->tanggal_kembali_rencana->translatedFormat('j M') }}@endif</span>
                                 @endif
                                 @if (in_array($p->status, ['dipinjam', 'disetujui'], true) && $p->tanggal_kembali_rencana->isBefore(today()))
-                                    <span style="color:var(--danger);font-weight:600"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg>Terlambat {{ (int) abs($p->tanggal_kembali_rencana->diffInDays(today())) }} hari</span>
+                                    <span style="color:var(--danger);font-weight:600"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg>Terlambat {{ $p->hariTerlambat() }} hari@if ($p->melewatiBatasTelat()) · melewati batas {{ \App\Models\Peminjaman::MAKS_HARI_TELAT }} hari @endif</span>
                                 @endif
                             </div>
 
@@ -103,17 +116,12 @@
                             @elseif (in_array($p->status, ['dipinjam', 'disetujui'], true))
                                 <div class="mt-4"><x-status :nilai="$p->status" /></div>
                                 <form method="POST" action="{{ route('admin.verifikasi.kembali', $p) }}"
-                                      class="pj-act" style="flex-wrap:wrap;align-items:center"
+                                      class="pj-act"
                                       data-confirm data-confirm-tone="primary"
                                       data-confirm-title="Tandai sudah dikembalikan?"
-                                      data-confirm-text="{{ $p->user->name }} mengembalikan {{ $p->jumlah }} unit {{ $p->alat->nama }}. Stok dan kondisi alat akan diperbarui."
+                                      data-confirm-text="{{ $p->user->name }} mengembalikan {{ $p->jumlah }} unit {{ $p->alat->nama }}. Stok alat akan bertambah lagi."
                                       data-confirm-ok="Ya, sudah kembali">
                                     @csrf
-                                    <select name="kondisi_kembali" class="field" style="flex:1;min-width:9rem" aria-label="Kondisi alat saat dikembalikan">
-                                        <option value="baik">Kembali dalam kondisi baik</option>
-                                        <option value="perlu_cek">Kembali, perlu dicek</option>
-                                        <option value="rusak">Kembali dalam kondisi rusak</option>
-                                    </select>
                                     <button type="submit" class="btn btn-primary btn-sm"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-check"/></svg>Dikembalikan</button>
                                 </form>
                             @else
@@ -141,7 +149,7 @@
             <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Periksa stok alat. Stok berkurang otomatis saat pengajuan disetujui.</span></li>
             <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Baca keperluan dan rentang tanggal pinjam di setiap kartu.</span></li>
             <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Pengajuan yang ditolak tetap terlihat oleh peminjam di riwayatnya, lengkap dengan alasannya.</span></li>
-            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Setelah alat kembali, tandai lewat kartu di kolom Disetujui agar stok bertambah lagi.</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Setelah alat kembali, tandai lewat kartu di tab Disetujui agar stok bertambah lagi.</span></li>
         </ul>
     </section>
 @endsection

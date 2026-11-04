@@ -12,6 +12,8 @@
     @include('partials.dekor')
     <a href="#konten" class="skip-link">Lewati ke konten utama</a>
 
+    @include('partials.sidebar-toggle')
+
     <div class="shell">
         <aside class="sidebar">
             <a href="{{ route('admin.ringkasan') }}" class="brand side-brand" aria-label="GESIT, ke halaman Ringkasan">

@@ -11,13 +11,31 @@ use Illuminate\Support\Facades\DB;
 
 class VerifikasiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $menunggu = Peminjaman::with(['user', 'alat'])->where('status', 'menunggu')->latest()->get();
-        $disetujui = Peminjaman::with(['user', 'alat'])->whereIn('status', ['disetujui', 'dipinjam'])->latest()->take(10)->get();
-        $ditolak = Peminjaman::with(['user', 'alat'])->where('status', 'ditolak')->latest()->take(10)->get();
+        // Filter status: default "menunggu" supaya pengajuan yang perlu diproses selalu tampil paling atas
+        $filter = in_array($request->query('status'), ['menunggu', 'disetujui', 'ditolak'], true)
+            ? $request->query('status')
+            : 'menunggu';
 
-        return view('admin.verifikasi', compact('menunggu', 'disetujui', 'ditolak'));
+        $statusFilter = [
+            'menunggu' => ['menunggu'],
+            'disetujui' => ['disetujui', 'dipinjam'],
+            'ditolak' => ['ditolak'],
+        ];
+
+        $jumlah = [];
+        foreach ($statusFilter as $kunci => $daftarStatus) {
+            $jumlah[$kunci] = Peminjaman::whereIn('status', $daftarStatus)->count();
+        }
+
+        $daftar = Peminjaman::with(['user', 'alat'])
+            ->whereIn('status', $statusFilter[$filter])
+            ->latest()
+            ->take(50)
+            ->get();
+
+        return view('admin.verifikasi', compact('filter', 'jumlah', 'daftar'));
     }
 
     public function approve(Peminjaman $peminjaman)
@@ -52,41 +70,24 @@ class VerifikasiController extends Controller
         return back()->with('status', "Pengajuan {$peminjaman->kode_pengajuan} ditolak.");
     }
 
-    // Tandai alat sudah dikembalikan: stok bertambah lagi dan kondisi alat diperbarui
+    // Tandai alat sudah dikembalikan: stok bertambah lagi dan kondisi alat kembali "baik" bila sebelumnya habis
     public function kembali(Request $request, Peminjaman $peminjaman)
     {
         if (! in_array($peminjaman->status, ['dipinjam', 'disetujui'], true)) {
             return back()->withErrors(['kembali' => 'Hanya peminjaman yang sedang berjalan yang bisa ditandai dikembalikan.']);
         }
 
-        $validated = $request->validate([
-            'kondisi_kembali' => ['required', 'in:baik,perlu_cek,rusak'],
-        ]);
-        $kondisi = $validated['kondisi_kembali'];
-
-        DB::transaction(function () use ($peminjaman, $kondisi) {
+        DB::transaction(function () use ($peminjaman) {
             $alat = $peminjaman->alat;
 
-            if ($kondisi === 'rusak') {
-                // Unit yang rusak tidak dikembalikan ke stok, alat ditandai rusak agar ditindaklanjuti
-                $alat->update(['kondisi' => 'rusak']);
-            } else {
-                $alat->increment('stok', $peminjaman->jumlah);
-                if ($kondisi === 'perlu_cek') {
-                    $alat->update(['kondisi' => 'perlu_cek']);
-                } elseif ($alat->kondisi === 'stok_habis') {
-                    $alat->update(['kondisi' => 'baik']);
-                }
+            $alat->increment('stok', $peminjaman->jumlah);
+            if ($alat->kondisi === 'stok_habis') {
+                $alat->update(['kondisi' => 'baik']);
             }
 
             $peminjaman->update([
                 'status' => 'selesai',
                 'tanggal_kembali_aktual' => now()->toDateString(),
-                'catatan_admin' => match ($kondisi) {
-                    'perlu_cek' => 'Dikembalikan, alat perlu dicek.',
-                    'rusak' => 'Dikembalikan dalam kondisi rusak.',
-                    default => $peminjaman->catatan_admin,
-                },
             ]);
         });
 

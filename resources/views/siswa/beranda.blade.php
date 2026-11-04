@@ -57,7 +57,7 @@
 
     {{-- Jelajahi kategori --}}
     @php
-        $tiles = ['praktik_lab' => 'Alat Praktik Lab', 'olahraga' => 'Alat Olahraga', 'kesenian' => 'Alat Kesenian', 'multimedia' => 'Multimedia'];
+        $tiles = ['komputer' => 'Komputer', 'elektronika' => 'Elektronika', 'perkakas' => 'Perkakas', 'multimedia' => 'Multimedia'];
     @endphp
     <section class="mb-8">
         <div class="sec-head">

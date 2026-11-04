@@ -4,7 +4,7 @@
 
 @section('content')
     @php
-        $kategoriLabel = ['praktik_lab' => 'Alat Praktik Lab', 'olahraga' => 'Alat Olahraga', 'kesenian' => 'Alat Kesenian', 'multimedia' => 'Multimedia'];
+        $kategoriLabel = ['komputer' => 'Komputer', 'elektronika' => 'Elektronika', 'perkakas' => 'Perkakas', 'multimedia' => 'Multimedia'];
     @endphp
 
     <section class="banner tone-ok rise mb-6">
@@ -78,6 +78,7 @@
                     <div>
                         <label class="label" for="tgl_kembali"><span class="label-no">3</span>Rencana kembali</label>
                         <input id="tgl_kembali" type="date" name="tanggal_kembali_rencana" value="{{ old('tanggal_kembali_rencana') }}" class="field" required>
+                        <p class="hint">Maksimal {{ \App\Models\Peminjaman::MAKS_HARI_PINJAM }} hari dari tanggal pinjam.</p>
                     </div>
                 </div>
 
@@ -156,11 +157,47 @@
                 <ol class="steps">
                     <li><div><b>Menunggu verifikasi</b><span>Status bisa kamu pantau di Beranda.</span></div></li>
                     <li><div><b>Disetujui</b><span>Ambil alat di ruang Sarpras.</span></div></li>
-                    <li><div><b>Kembalikan</b><span>Sesuai tanggal rencana kembali.</span></div></li>
+                    <li><div><b>Kembalikan</b><span>Sesuai tanggal rencana kembali. Terlambat maksimal {{ \App\Models\Peminjaman::MAKS_HARI_TELAT }} hari.</span></div></li>
                 </ol>
             </section>
         </aside>
     </div>
+
+    {{-- Daftar alat yang bisa dipinjam --}}
+    @php
+        $tersedia = $daftarAlat->where('stok', '>', 0)->count();
+    @endphp
+    <section class="mt-8 rise" style="--i:5" aria-labelledby="daftar-alat-judul">
+        <div class="sec-head">
+            <h2 class="t-sec" id="daftar-alat-judul">Daftar alat</h2>
+            <span class="t-small t-muted">{{ $tersedia }} dari {{ $daftarAlat->count() }} jenis alat tersedia · tekan alat untuk memilihnya</span>
+        </div>
+        <div class="card" style="overflow:hidden">
+            @forelse ($daftarAlat as $alat)
+                @php $habis = $alat->stok <= 0; @endphp
+                <button type="button" class="list-row alat-pilih {{ $habis ? 'is-habis' : '' }}" data-pilih="{{ $alat->id }}"
+                        @disabled($habis) style="width:100%;text-align:left;background:transparent;border-left:0;border-right:0;border-top:0;{{ $habis ? 'opacity:.55;cursor:not-allowed' : 'cursor:pointer' }}">
+                    <x-kat-ico :nilai="$alat->kategori" />
+                    <div class="list-main">
+                        <div class="list-title">{{ $alat->nama }}</div>
+                        <div class="list-sub"><span class="kode">{{ $alat->kode }}</span> · {{ $alat->lokasi ?: 'Lokasi belum diisi' }}</div>
+                    </div>
+                    <x-kategori :nilai="$alat->kategori" class="hidden sm:inline-flex" />
+                    @if ($habis)
+                        <x-status nilai="stok_habis" />
+                    @else
+                        <span class="num" style="font-weight:600;white-space:nowrap">{{ $alat->stok }} <span class="t-small t-muted" style="font-weight:400">unit</span></span>
+                    @endif
+                </button>
+            @empty
+                <div class="empty">
+                    <span class="empty-ico"><svg class="ico" aria-hidden="true"><use href="#i-box"/></svg></span>
+                    <h3>Belum ada alat terdaftar</h3>
+                    <p class="t-small">Hubungi petugas Sarpras.</p>
+                </div>
+            @endforelse
+        </div>
+    </section>
 @endsection
 
 @push('scripts')
@@ -182,7 +219,22 @@
     const selaraskan = () => {
         kembali.min = pinjam.value || hariIni;
         if (kembali.value && kembali.value < kembali.min) kembali.value = kembali.min;
+        // Batas maksimal lama pinjam
+        const mulai = new Date((pinjam.value || hariIni) + 'T00:00:00');
+        mulai.setDate(mulai.getDate() + {{ \App\Models\Peminjaman::MAKS_HARI_PINJAM }});
+        kembali.max = mulai.getFullYear() + '-' + String(mulai.getMonth() + 1).padStart(2, '0') + '-' + String(mulai.getDate()).padStart(2, '0');
+        if (kembali.value && kembali.value > kembali.max) kembali.value = kembali.max;
     };
+    // Klik alat di daftar -> terpilih di formulir
+    document.querySelectorAll('[data-pilih]').forEach((tombol) => {
+        tombol.addEventListener('click', () => {
+            pilih.value = tombol.dataset.pilih;
+            pilih.dispatchEvent(new Event('change', { bubbles: true }));
+            pilih.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            pilih.focus({ preventScroll: true });
+        });
+    });
+
     pinjam.addEventListener('change', selaraskan);
     selaraskan();
 

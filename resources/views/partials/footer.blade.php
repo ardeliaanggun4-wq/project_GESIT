@@ -5,9 +5,9 @@
         <span><b>GESIT</b> · Gerakan Sarana Inventaris Terpadu</span>
     </div>
     <div class="foot-kat" aria-hidden="true">
-        <span data-kat="praktik_lab"><i class="dot"></i>Lab</span>
-        <span data-kat="olahraga"><i class="dot"></i>Olahraga</span>
-        <span data-kat="kesenian"><i class="dot"></i>Kesenian</span>
+        <span data-kat="komputer"><i class="dot"></i>Komputer</span>
+        <span data-kat="elektronika"><i class="dot"></i>Elektronika</span>
+        <span data-kat="perkakas"><i class="dot"></i>Perkakas</span>
         <span data-kat="multimedia"><i class="dot"></i>Multimedia</span>
     </div>
     <span>© {{ now()->year }} GESIT</span>

@@ -9,12 +9,12 @@ use App\Models\Peminjaman;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
 {
     private const STATUS = ['menunggu', 'disetujui', 'dipinjam', 'selesai', 'ditolak'];
-    private const KATEGORI = ['praktik_lab', 'olahraga', 'kesenian', 'multimedia'];
+    private const KATEGORI = ['komputer', 'elektronika', 'perkakas', 'multimedia'];
     // Status yang dihitung sebagai alat benar-benar keluar dari inventaris
     private const TERPAKAI = ['disetujui', 'dipinjam', 'selesai'];
 
@@ -22,6 +22,42 @@ class LaporanController extends Controller
     {
         $f = $this->saringan($request);
 
+        [$stats, $statusHitung, $populer, $maxPopuler] = $this->ringkasan($f);
+
+        $daftar = $this->dasar($f)->with(['user', 'alat'])
+            ->orderByDesc('peminjaman.tanggal_pinjam')->orderByDesc('peminjaman.id');
+
+        // Mode cetak: semua baris dalam satu halaman, lalu dialog cetak terbuka otomatis
+        $cetak = $request->boolean('cetak');
+        $data = $cetak ? $daftar->get() : $daftar->paginate(10)->withQueryString();
+
+        return view('admin.laporan', compact('f', 'stats', 'statusHitung', 'populer', 'maxPopuler', 'data', 'cetak'));
+    }
+
+    /** Unduh laporan ringkas dalam bentuk PDF (A4). */
+    public function unduh(Request $request)
+    {
+        $f = $this->saringan($request);
+        [$stats, $statusHitung, $populer] = $this->ringkasan($f);
+
+        $baris = $this->dasar($f)->with(['user', 'alat'])
+            ->orderByDesc('peminjaman.tanggal_pinjam')->orderByDesc('peminjaman.id')->get();
+
+        $nama = 'laporan-peminjaman-' . $f['dari']->format('Ymd') . '-' . $f['sampai']->format('Ymd') . '.pdf';
+
+        return Pdf::loadView('admin.laporan-pdf', [
+            'f' => $f,
+            'stats' => $stats,
+            'statusHitung' => $statusHitung,
+            'populer' => $populer,
+            'baris' => $baris,
+            'petugas' => $request->user()->name,
+        ])->setPaper('a4', 'portrait')->download($nama);
+    }
+
+    /** Angka ringkas, komposisi status, dan alat terpopuler (dipakai halaman dan PDF). */
+    private function ringkasan(array $f): array
+    {
         $statusHitung = $this->dasar($f)
             ->selectRaw('peminjaman.status as status, count(*) as total')
             ->groupBy('peminjaman.status')
@@ -45,52 +81,7 @@ class LaporanController extends Controller
             ->get();
         $maxPopuler = max(1, (int) ($populer->first()->unit ?? 1));
 
-        $daftar = $this->dasar($f)->with(['user', 'alat'])
-            ->orderByDesc('peminjaman.tanggal_pinjam')->orderByDesc('peminjaman.id');
-
-        // Mode cetak: semua baris dalam satu halaman, lalu dialog cetak terbuka otomatis
-        $cetak = $request->boolean('cetak');
-        $data = $cetak ? $daftar->get() : $daftar->paginate(10)->withQueryString();
-
-        return view('admin.laporan', compact('f', 'stats', 'statusHitung', 'populer', 'maxPopuler', 'data', 'cetak'));
-    }
-
-    public function unduh(Request $request): StreamedResponse
-    {
-        $f = $this->saringan($request);
-        $baris = $this->dasar($f)->with(['user', 'alat'])
-            ->orderByDesc('peminjaman.tanggal_pinjam')->orderByDesc('peminjaman.id')->get();
-
-        $nama = 'laporan-peminjaman-' . $f['dari']->format('Ymd') . '-' . $f['sampai']->format('Ymd') . '.csv';
-
-        return response()->streamDownload(function () use ($baris) {
-            $out = fopen('php://output', 'w');
-            fwrite($out, "\xEF\xBB\xBF"); // BOM agar Excel membaca UTF-8 dengan benar
-            fputcsv($out, [
-                'Kode pengajuan', 'Tanggal pinjam', 'Rencana kembali', 'Kembali aktual',
-                'Peminjam', 'NISN/NIP', 'Kelas/Jabatan', 'Kode alat', 'Nama alat',
-                'Kategori', 'Jumlah', 'Keperluan', 'Status', 'Catatan petugas',
-            ]);
-            foreach ($baris as $p) {
-                fputcsv($out, array_map([$this, 'aman'], [
-                    $p->kode_pengajuan,
-                    optional($p->tanggal_pinjam)->format('Y-m-d'),
-                    optional($p->tanggal_kembali_rencana)->format('Y-m-d'),
-                    optional($p->tanggal_kembali_aktual)->format('Y-m-d'),
-                    $p->user->name ?? '',
-                    $p->user->nisn_nip ?? '',
-                    $p->user->kelas_jabatan ?? '',
-                    $p->alat->kode ?? '',
-                    $p->alat->nama ?? '',
-                    $p->alat ? $p->alat->kategoriLabel() : '',
-                    $p->jumlah,
-                    $p->keperluan,
-                    $p->statusLabel(),
-                    $p->catatan_admin,
-                ]));
-            }
-            fclose($out);
-        }, $nama, ['Content-Type' => 'text/csv; charset=UTF-8']);
+        return [$stats, $statusHitung, $populer, $maxPopuler];
     }
 
     /** Baca dan validasi saringan dari query string. Bawaan: 30 hari terakhir. */
@@ -141,14 +132,5 @@ class LaporanController extends Controller
         }
 
         return $q;
-    }
-
-    /** Cegah "CSV injection": sel yang diawali = + - @ dibaca Excel sebagai rumus. */
-    private function aman($nilai)
-    {
-        if (is_string($nilai) && $nilai !== '' && in_array($nilai[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
-            return "'" . $nilai;
-        }
-        return $nilai;
     }
 }

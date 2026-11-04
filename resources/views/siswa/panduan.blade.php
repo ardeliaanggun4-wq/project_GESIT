@@ -16,7 +16,7 @@
         $formulir = [
             ['Nama alat / inventaris', 'Pilih dari daftar. Setiap pilihan menampilkan lokasi dan jumlah unit yang tersedia. Detail kode, kategori, dan stok muncul di panel samping.'],
             ['Tanggal pinjam', 'Hari kamu mulai memakai alat. Tidak bisa memilih tanggal yang sudah lewat.'],
-            ['Rencana kembali', 'Hari kamu akan mengembalikan alat. Tidak boleh lebih awal dari tanggal pinjam.'],
+            ['Rencana kembali', 'Hari kamu akan mengembalikan alat. Tidak boleh lebih awal dari tanggal pinjam, dan paling lama 4 hari setelah tanggal pinjam.'],
             ['Jumlah alat', 'Atur dengan tombol − dan +. Batas maksimalnya mengikuti stok alat yang kamu pilih.'],
             ['Keperluan penggunaan', 'Tuliskan untuk apa alat dipakai, misalnya mata pelajaran dan kelas (maksimal 500 karakter). Kolom ini boleh dikosongkan, tetapi pengajuan yang jelas lebih mudah diverifikasi.'],
         ];
@@ -48,7 +48,7 @@
             ['Pengajuanku ditolak. Apakah bisa mengajukan lagi?',
              'Bisa. Lihat alasan penolakannya di Riwayat, lalu kirim pengajuan baru dengan alat, jumlah, atau tanggal yang sesuai.'],
             ['Aku terlambat mengembalikan alat.',
-             'Segera temui petugas Sarpras dan serahkan alatnya. Semakin cepat dilaporkan, semakin mudah diselesaikan.'],
+             'Segera temui petugas Sarpras dan serahkan alatnya. Keterlambatan paling lama 2 hari dari tanggal rencana kembali. Lewat dari itu, kamu belum bisa mengajukan peminjaman baru sampai alatnya dikembalikan.'],
             ['Aku tidak bisa masuk ke akun.',
              'Pastikan kamu memilih tab “Siswa / Guru”, lalu periksa NISN atau NIP dan kata sandimu. Bila tetap gagal, minta bantuan petugas Sarpras.'],
         ];

@@ -17,6 +17,18 @@ class Alat extends Model
         'kode', 'nama', 'kategori', 'lokasi', 'stok', 'kondisi',
     ];
 
+    // Stok dan kondisi selalu sejalan, apa pun cara datanya disimpan:
+    // kondisi "stok_habis" -> stok 0, dan stok 0 -> kondisi "stok_habis"
+    protected static function booted(): void
+    {
+        static::saving(function (Alat $alat) {
+            if ($alat->kondisi === 'stok_habis' || (int) $alat->stok <= 0) {
+                $alat->stok = 0;
+                $alat->kondisi = 'stok_habis';
+            }
+        });
+    }
+
     public function peminjaman()
     {
         return $this->hasMany(Peminjaman::class);
@@ -25,9 +37,9 @@ class Alat extends Model
     public function kategoriLabel(): string
     {
         return match ($this->kategori) {
-            'praktik_lab' => 'Alat Praktik Lab',
-            'olahraga' => 'Alat Olahraga',
-            'kesenian' => 'Alat Kesenian',
+            'komputer' => 'Komputer',
+            'elektronika' => 'Elektronika',
+            'perkakas' => 'Perkakas',
             'multimedia' => 'Multimedia',
             default => ucfirst($this->kategori),
         };
@@ -37,8 +49,6 @@ class Alat extends Model
     {
         return match ($this->kondisi) {
             'baik' => 'Baik',
-            'perlu_cek' => 'Perlu Cek',
-            'rusak' => 'Rusak',
             'stok_habis' => 'Stok Habis',
             default => ucfirst($this->kondisi),
         };

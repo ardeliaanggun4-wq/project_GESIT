@@ -13,6 +13,10 @@ class Peminjaman extends Model
 
     protected $table = 'peminjaman';
 
+    // Aturan peminjaman
+    public const MAKS_HARI_PINJAM = 4;  // lama pinjam maksimal (selisih tanggal pinjam ke rencana kembali)
+    public const MAKS_HARI_TELAT = 2;   // toleransi terlambat maksimal dari tanggal rencana kembali
+
     protected $fillable = [
         'kode_pengajuan', 'user_id', 'alat_id', 'jumlah',
         'tanggal_pinjam', 'tanggal_kembali_rencana', 'tanggal_kembali_aktual',
@@ -36,6 +40,23 @@ class Peminjaman extends Model
     public function alat()
     {
         return $this->belongsTo(Alat::class);
+    }
+
+    // Jumlah hari terlambat (0 bila belum jatuh tempo atau alat sudah kembali)
+    public function hariTerlambat(): int
+    {
+        if (! in_array($this->status, ['dipinjam', 'disetujui'], true) || ! $this->tanggal_kembali_rencana) {
+            return 0;
+        }
+
+        return $this->tanggal_kembali_rencana->lt(today())
+            ? (int) abs($this->tanggal_kembali_rencana->diffInDays(today()))
+            : 0;
+    }
+
+    public function melewatiBatasTelat(): bool
+    {
+        return $this->hariTerlambat() > self::MAKS_HARI_TELAT;
     }
 
     public function statusLabel(): string

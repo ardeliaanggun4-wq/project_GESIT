@@ -4,8 +4,8 @@
 
 @section('content')
     @php
-        $kategoriOpsi = ['praktik_lab' => 'Alat Praktik Lab', 'olahraga' => 'Alat Olahraga', 'kesenian' => 'Alat Kesenian', 'multimedia' => 'Multimedia'];
-        $kondisiOpsi  = ['baik' => 'Baik', 'perlu_cek' => 'Perlu Cek', 'stok_habis' => 'Stok Habis', 'rusak' => 'Rusak'];
+        $kategoriOpsi = ['komputer' => 'Komputer', 'elektronika' => 'Elektronika', 'perkakas' => 'Perkakas', 'multimedia' => 'Multimedia'];
+        $kondisiOpsi  = ['baik' => 'Baik', 'stok_habis' => 'Stok Habis'];
         $adaFilter    = request()->filled('cari') || request()->filled('kategori') || request()->filled('kondisi');
         $urlKategori  = fn ($nilai) => route('admin.data-alat', array_filter(array_merge(request()->except(['page', 'kategori']), ['kategori' => $nilai])));
     @endphp
@@ -18,7 +18,7 @@
                 <span class="line"><span style="--i:0">Data <span class="hl">Alat</span></span></span>
             </h1>
             <p class="page-lead rise" style="--i:2">
-                <span class="typed" data-type='["Kelola inventaris alat praktik, olahraga, kesenian, dan multimedia.","Cari alat lewat nama atau kodenya.","Perbarui stok dan kondisi setelah alat dikembalikan."]'>Kelola inventaris alat praktik, olahraga, kesenian, dan multimedia.</span>
+                <span class="typed" data-type='["Kelola inventaris alat komputer, elektronika, perkakas, dan multimedia.","Cari alat lewat nama atau kodenya.","Perbarui stok dan kondisi setelah alat dikembalikan."]'>Kelola inventaris alat komputer, elektronika, perkakas, dan multimedia.</span>
             </p>
             <div class="hero-actions rise" style="--i:3">
                 <button type="button" data-open="dlg-tambah" data-reset class="btn btn-primary">
@@ -29,7 +29,7 @@
         <x-banner-art ikon="grid" :mini="['box', 'flask', 'ball']" />
     </section>
 
-    <div class="stats stats-4 mb-6">
+    <div class="stats stats-3 mb-6">
         <div class="stat tone-primary rise" style="--i:2">
             <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-box"/></svg></span>
             <div class="stat-label">Jenis alat</div>
@@ -40,17 +40,11 @@
             <div class="stat-label">Total unit tersedia</div>
             <div class="stat-num" data-count="{{ $totalStok }}">{{ $totalStok }}</div>
         </div>
-        <a href="{{ route('admin.data-alat', ['kondisi' => 'perlu_cek']) }}" class="stat tone-wait rise" style="--i:4">
+        <a href="{{ route('admin.data-alat', ['kondisi' => 'stok_habis']) }}" class="stat tone-no rise" style="--i:4">
             <svg class="ico stat-go" aria-hidden="true"><use href="#i-arrow"/></svg>
-            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg></span>
-            <div class="stat-label">Perlu dicek</div>
-            <div class="stat-num" data-count="{{ $kondisiHitung->get('perlu_cek', 0) }}">{{ $kondisiHitung->get('perlu_cek', 0) }}</div>
-        </a>
-        <a href="{{ route('admin.data-alat', ['kondisi' => 'rusak']) }}" class="stat tone-no rise" style="--i:5">
-            <svg class="ico stat-go" aria-hidden="true"><use href="#i-arrow"/></svg>
-            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-wrench"/></svg></span>
-            <div class="stat-label">Rusak</div>
-            <div class="stat-num" data-count="{{ $kondisiHitung->get('rusak', 0) }}">{{ $kondisiHitung->get('rusak', 0) }}</div>
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg></span>
+            <div class="stat-label">Stok habis</div>
+            <div class="stat-num" data-count="{{ $kondisiHitung->get('stok_habis', 0) }}">{{ $kondisiHitung->get('stok_habis', 0) }}</div>
         </a>
     </div>
 
@@ -97,15 +91,15 @@
     {{-- Tabel --}}
     <div class="table-wrap rise" style="--i:5">
         @if ($alat->count())
-            <table class="tbl">
+            <table class="tbl tbl-alat">
                 <thead>
                     <tr>
-                        <th>Kode</th>
+                        <th class="c-kode">Kode</th>
                         <th>Nama alat</th>
-                        <th>Kategori</th>
-                        <th>Stok</th>
-                        <th>Kondisi</th>
-                        <th class="r">Aksi</th>
+                        <th class="c-kat">Kategori</th>
+                        <th class="c-stok">Stok</th>
+                        <th class="c-kond">Kondisi</th>
+                        <th class="c-aksi r">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -279,4 +273,17 @@
             </div>
         </form>
     </dialog>
+
+    <script>
+        // Stok dan kondisi saling mengikuti: pilih "Stok Habis" -> stok jadi 0; stok diisi 0 -> kondisi jadi "Stok Habis"
+        document.querySelectorAll('select[name="kondisi"][id$="-kondisi"]').forEach(function (kond) {
+            var stok = document.getElementById(kond.id.replace('kondisi', 'stok'));
+            if (!stok) return;
+            kond.addEventListener('change', function () { if (kond.value === 'stok_habis') stok.value = 0; });
+            stok.addEventListener('input', function () {
+                if (stok.value !== '' && parseInt(stok.value, 10) === 0) kond.value = 'stok_habis';
+                else if (kond.value === 'stok_habis' && parseInt(stok.value, 10) > 0) kond.value = 'baik';
+            });
+        });
+    </script>
 @endsection

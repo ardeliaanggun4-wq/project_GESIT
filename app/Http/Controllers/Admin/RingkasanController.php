@@ -17,7 +17,7 @@ class RingkasanController extends Controller
             'total_alat' => Alat::count(),
             'menunggu' => Peminjaman::where('status', 'menunggu')->count(),
             'sedang_dipinjam' => Peminjaman::where('status', 'dipinjam')->count(),
-            'rusak_kosong' => Alat::whereIn('kondisi', ['rusak', 'stok_habis'])->count(),
+            'stok_habis' => Alat::where('kondisi', 'stok_habis')->count(),
         ];
 
         // Grafik peminjaman 7 hari terakhir
@@ -45,10 +45,9 @@ class RingkasanController extends Controller
         $kondisi = Alat::selectRaw('kondisi, count(*) as total')->groupBy('kondisi')->pluck('total', 'kondisi');
 
         // Alat yang perlu perhatian petugas
-        $butuhPerhatian = Alat::whereIn('kondisi', ['rusak', 'stok_habis', 'perlu_cek']);
+        $butuhPerhatian = Alat::where('kondisi', 'stok_habis');
         $totalPerhatian = (clone $butuhPerhatian)->count();
         $perhatian = $butuhPerhatian
-            ->orderByRaw("case kondisi when 'rusak' then 1 when 'stok_habis' then 2 else 3 end")
             ->orderBy('nama')
             ->take(5)
             ->get();

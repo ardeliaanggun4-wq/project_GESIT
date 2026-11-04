@@ -5,7 +5,7 @@
 @section('content')
     @php
         $statusOpsi   = ['menunggu' => 'Menunggu', 'disetujui' => 'Disetujui', 'dipinjam' => 'Dipinjam', 'selesai' => 'Selesai', 'ditolak' => 'Ditolak'];
-        $kategoriOpsi = ['praktik_lab' => 'Alat Praktik Lab', 'olahraga' => 'Alat Olahraga', 'kesenian' => 'Alat Kesenian', 'multimedia' => 'Multimedia'];
+        $kategoriOpsi = ['komputer' => 'Komputer', 'elektronika' => 'Elektronika', 'perkakas' => 'Perkakas', 'multimedia' => 'Multimedia'];
         $warnaStatus  = ['menunggu' => '#C8961E', 'disetujui' => '#34507A', 'dipinjam' => '#1E8A7A', 'selesai' => '#8A857B', 'ditolak' => '#C0392B'];
         $adaFilter    = $f['status'] || $f['kategori'] || $f['cari'];
         $hariIni      = \Illuminate\Support\Carbon::today();
@@ -43,14 +43,11 @@
                 <span class="line"><span style="--i:0">Laporan <span class="hl">peminjaman</span></span></span>
             </h1>
             <p class="page-lead rise" style="--i:2">
-                <span class="typed" data-type='["Rekap peminjaman alat per periode.","Saring menurut status, kategori, atau nama peminjam.","Unduh sebagai CSV untuk Excel, atau cetak langsung."]'>Rekap peminjaman alat per periode.</span>
+                <span class="typed" data-type='["Rekap peminjaman alat per periode.","Saring menurut status, kategori, atau nama peminjam.","Unduh laporan ringkas sebagai PDF."]'>Rekap peminjaman alat per periode.</span>
             </p>
             <div class="hero-actions rise" style="--i:3">
                 <a href="{{ route('admin.laporan.unduh', $saringanAktif) }}" class="btn btn-primary">
-                    <svg class="ico" aria-hidden="true"><use href="#i-book"/></svg>Unduh CSV
-                </a>
-                <a href="{{ route('admin.laporan', array_merge($saringanAktif, ['cetak' => 1])) }}" target="_blank" rel="noopener" class="btn btn-secondary">
-                    <svg class="ico" aria-hidden="true"><use href="#i-send"/></svg>Cetak
+                    <svg class="ico" aria-hidden="true"><use href="#i-book"/></svg>Unduh PDF
                 </a>
             </div>
         </div>

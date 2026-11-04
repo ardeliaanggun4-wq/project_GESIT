@@ -40,9 +40,9 @@
                     Ajukan pinjam mouse, keyboard, atau CPU dari HP, pantau statusnya, lalu ambil alat di ruang Sarpras begitu pengajuanmu disetujui.
                 </p>
                 <div class="lp-chips flex flex-wrap gap-2 rise" style="--i:9" aria-label="Alat lab">
-                    <x-kategori nilai="praktik_lab" label="Mouse" />
-                    <x-kategori nilai="praktik_lab" label="Keyboard" />
-                    <x-kategori nilai="praktik_lab" label="CPU" />
+                    <x-kategori nilai="komputer" label="Mouse" />
+                    <x-kategori nilai="komputer" label="Keyboard" />
+                    <x-kategori nilai="komputer" label="Laptop" />
                 </div>
                 <a href="#tentang" class="lp-more rise" style="--i:11">
                     Kenali GESIT

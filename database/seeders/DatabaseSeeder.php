@@ -23,13 +23,13 @@ class DatabaseSeeder extends Seeder
 
         $mouse = Alat::where('kode', 'ALT-MS')->first();
         $keyboard = Alat::where('kode', 'ALT-KY')->first();
-        $cpu = Alat::where('kode', 'ALT-CP')->first();
+        $laptop = Alat::where('kode', 'ALT-LP')->first();
 
         Peminjaman::create([
             'kode_pengajuan' => 'PJM-0227',
             'user_id' => $ardelia->id,
             'alat_id' => $mouse->id,
-            'jumlah' => 20,
+            'jumlah' => 25,
             'tanggal_pinjam' => now()->subDays(19),
             'tanggal_kembali_rencana' => now()->subDays(15),
             'keperluan' => 'Praktik kelas XII RPL',
@@ -40,13 +40,14 @@ class DatabaseSeeder extends Seeder
         Peminjaman::create([
             'kode_pengajuan' => 'PJM-0229',
             'user_id' => $ardelia->id,
-            'alat_id' => $cpu->id,
+            'alat_id' => $laptop->id,
             'jumlah' => 1,
             'tanggal_pinjam' => now()->subDays(14),
             'tanggal_kembali_rencana' => now()->subDays(10),
             'keperluan' => 'Praktik mata pelajaran Pemrograman Web',
             'status' => 'dipinjam',
         ]);
+        $laptop->decrement('stok', 1); // 1 laptop sedang dipinjam
 
         Peminjaman::create([
             'kode_pengajuan' => 'PJM-0230',

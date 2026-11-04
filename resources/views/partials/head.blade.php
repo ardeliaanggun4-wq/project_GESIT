@@ -57,10 +57,10 @@
     --tap:44px; --sidebar-w:248px;
 }
 
-/* Kategori: pasang data-kat="praktik_lab|olahraga|kesenian|multimedia" pada elemen apa pun */
-[data-kat="praktik_lab"]{--kat:var(--c-lab);--kat-tint:var(--c-lab-tint);--kat-ink:var(--c-lab-ink)}
-[data-kat="olahraga"]{--kat:var(--c-olah);--kat-tint:var(--c-olah-tint);--kat-ink:var(--c-olah-ink)}
-[data-kat="kesenian"]{--kat:var(--c-kes);--kat-tint:var(--c-kes-tint);--kat-ink:var(--c-kes-ink)}
+/* Kategori: pasang data-kat="komputer|elektronika|perkakas|multimedia" pada elemen apa pun */
+[data-kat="komputer"]{--kat:var(--c-lab);--kat-tint:var(--c-lab-tint);--kat-ink:var(--c-lab-ink)}
+[data-kat="elektronika"]{--kat:var(--c-olah);--kat-tint:var(--c-olah-tint);--kat-ink:var(--c-olah-ink)}
+[data-kat="perkakas"]{--kat:var(--c-kes);--kat-tint:var(--c-kes-tint);--kat-ink:var(--c-kes-ink)}
 [data-kat="multimedia"]{--kat:var(--c-mm);--kat-tint:var(--c-mm-tint);--kat-ink:var(--c-mm-ink)}
 
 /* Status & kondisi: pasang data-status="..." (lihat components/status.blade.php) */
@@ -169,7 +169,7 @@ select.field{appearance:none;padding-right:2.5rem;background-image:url("data:ima
 .dot{display:inline-block;width:.6rem;height:.6rem;flex:none;border-radius:50%;background:var(--kat,var(--muted))}
 /* Garis kategori di sisi kiri kartu/baris daftar */
 .has-kat{position:relative}
-.has-kat::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:var(--kat)}
+.has-kat:not(tr)::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:var(--kat)}
 /* Garis kategori di sisi kiri baris tabel */
 .tbl tr.has-kat>td:first-child{box-shadow:inset 4px 0 0 var(--kat);padding-left:1.25rem}
 
@@ -270,12 +270,13 @@ dialog.drawer[open]{animation:drawerIn .26s var(--ease)}
 .side-user .who-name{font-weight:600;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .side-user .who-role{font-size:.8125rem;color:var(--muted)}
 .side-user .btn{width:100%}
-.main{min-width:0;max-width:1240px;width:100%;padding:var(--s-6) var(--s-6) var(--s-7);animation:pageIn .32s var(--ease) both}
+.main{display:flex;flex-direction:column;min-height:100dvh;min-width:0;max-width:1240px;width:100%;padding:var(--s-6) var(--s-6) var(--s-7);animation:pageIn .32s var(--ease) both}
 .page-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s-3) var(--s-4);margin-bottom:var(--s-5)}
 .page-head p{margin-top:.25rem;color:var(--muted)}
 
 @media (max-width:1023px){
-    .shell{display:block}
+    .shell{display:flex;flex-direction:column}
+    .main{flex:1 0 auto;min-height:0}
     .sidebar{height:auto;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;gap:.25rem 1rem;padding:.5rem var(--s-4) 0;border-right:0;border-bottom:1px solid var(--line)}
     .side-brand{grid-column:1;grid-row:1;align-self:center}
     .side-user{grid-column:2;grid-row:1;flex-direction:row;align-items:center;padding:0;border-top:0}
@@ -442,12 +443,24 @@ a.stat:hover .stat-go{transform:translateX(3px);color:var(--t-fg)}
 .pj-act{display:flex;gap:.5rem;margin-top:var(--s-4)}
 .pj-act form{flex:1}
 .pj-act .btn{width:100%}
+.pj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,27rem),1fr));gap:var(--s-4);align-items:start}
+.pj-grid .empty{grid-column:1/-1}
 
 /* tabel data alat & tombol ikon */
 .tbl .alat-nama{font-weight:600}
 .tbl .alat-lok{display:flex;align-items:center;gap:.3rem;margin-top:2px;font-size:.8125rem;color:var(--muted)}
 .tbl .alat-lok .ico{width:.9rem;height:.9rem}
 .stok-cell{display:flex;align-items:center;gap:.7rem}
+/* Tabel data alat: lebar kolom tetap supaya header & isi sejajar */
+.tbl-alat{table-layout:fixed;min-width:56rem}
+.tbl-alat th:first-child{padding-left:1.25rem}
+.tbl-alat .c-kode{width:9rem}
+.tbl-alat .c-kat{width:13rem}
+.tbl-alat .c-stok{width:9rem}
+.tbl-alat .c-kond{width:9.5rem}
+.tbl-alat .c-aksi{width:6rem}
+.tbl-alat .alat-nama,.tbl-alat .alat-lok{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbl-alat td>.flex>div:last-child{min-width:0}
 .btn-ghost.is-danger:hover{background:var(--danger-tint);color:var(--danger)}
 .nav-badge{margin-left:auto;min-width:1.4rem;padding:0 7px;border-radius:99px;background:var(--danger);color:#fff;font-size:.75rem;font-weight:700;text-align:center;line-height:1.35rem}
 .table-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem;padding:.9rem 1rem;border-top:1px solid var(--line);font-size:.9375rem;color:var(--muted)}
@@ -554,7 +567,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 @media (max-width:1023px){.side-card{display:none}}
 
 /* footer */
-.site-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem 1.5rem;margin-top:var(--s-7);padding-top:var(--s-4);border-top:1px dashed var(--line-strong);font-size:.875rem;color:var(--muted)}
+.main>:has(+ .site-foot){margin-bottom:var(--s-7)}
+.site-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem 1.5rem;margin-top:auto;padding-top:var(--s-4);border-top:1px dashed var(--line-strong);font-size:.875rem;color:var(--muted)}
 .foot-brand{display:inline-flex;align-items:center;gap:.6rem}
 .foot-brand b{color:var(--ink);font-family:var(--font-head)}
 .foot-kat{display:flex;flex-wrap:wrap;gap:.35rem .9rem}

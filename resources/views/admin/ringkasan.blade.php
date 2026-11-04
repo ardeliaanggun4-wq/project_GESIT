@@ -11,9 +11,7 @@
         $totalKondisi = max(1, $kondisi->sum());
         $segmen = [
             ['baik', 'Baik', '#2F8A52'],
-            ['perlu_cek', 'Perlu cek', '#C8961E'],
             ['stok_habis', 'Stok habis', '#8A857B'],
-            ['rusak', 'Rusak', 'var(--danger)'],
         ];
     @endphp
 
@@ -28,7 +26,7 @@
                 <span class="line"><span style="--i:1" class="hl">Petugas Sarpras.</span></span>
             </h1>
             <p class="page-lead rise" style="--i:3">
-                <span class="typed" data-type='["Pantau kondisi dan aktivitas peminjaman alat hari ini.","Ada {{ $stats['menunggu'] }} pengajuan menunggu keputusanmu.","Alat rusak dan stok kosong tampil di panel perhatian."]'>Pantau kondisi dan aktivitas peminjaman alat hari ini.</span>
+                <span class="typed" data-type='["Pantau kondisi dan aktivitas peminjaman alat hari ini.","Ada {{ $stats['menunggu'] }} pengajuan menunggu keputusanmu.","Alat yang stoknya habis tampil di panel perhatian."]'>Pantau kondisi dan aktivitas peminjaman alat hari ini.</span>
             </p>
             <div class="hero-actions rise" style="--i:4">
                 <a href="{{ route('admin.verifikasi') }}" class="btn btn-primary">
@@ -62,11 +60,11 @@
             <div class="stat-num" data-count="{{ $stats['sedang_dipinjam'] }}">{{ $stats['sedang_dipinjam'] }}</div>
             <div class="stat-note">Belum dikembalikan</div>
         </div>
-        <a href="{{ route('admin.data-alat', ['kondisi' => 'rusak']) }}" class="stat tone-no {{ $stats['rusak_kosong'] > 0 ? 'is-alert' : '' }} rise" style="--i:5">
+        <a href="{{ route('admin.data-alat', ['kondisi' => 'stok_habis']) }}" class="stat tone-no {{ $stats['stok_habis'] > 0 ? 'is-alert' : '' }} rise" style="--i:5">
             <svg class="ico stat-go" aria-hidden="true"><use href="#i-arrow"/></svg>
             <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-wrench"/></svg></span>
-            <div class="stat-label">Rusak / stok kosong</div>
-            <div class="stat-num" data-count="{{ $stats['rusak_kosong'] }}">{{ $stats['rusak_kosong'] }}</div>
+            <div class="stat-label">Stok habis</div>
+            <div class="stat-num" data-count="{{ $stats['stok_habis'] }}">{{ $stats['stok_habis'] }}</div>
             <div class="stat-note">Perlu ditindaklanjuti</div>
         </a>
     </div>
@@ -84,9 +82,9 @@
             <div><b>Kelola data alat</b><small>{{ $stats['total_alat'] }} alat terdaftar</small></div>
             <svg class="ico arrow" aria-hidden="true"><use href="#i-chev-right"/></svg>
         </a>
-        <a href="{{ route('admin.data-alat', ['kondisi' => 'rusak']) }}" class="qa tone-no rise" style="--i:8">
+        <a href="{{ route('admin.data-alat', ['kondisi' => 'stok_habis']) }}" class="qa tone-no rise" style="--i:8">
             <span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-wrench"/></svg></span>
-            <div><b>Cek alat bermasalah</b><small>{{ $stats['rusak_kosong'] }} rusak atau stok kosong</small></div>
+            <div><b>Cek alat stok habis</b><small>{{ $stats['stok_habis'] }} alat stok habis</small></div>
             <svg class="ico arrow" aria-hidden="true"><use href="#i-chev-right"/></svg>
         </a>
     </div>
@@ -171,9 +169,9 @@
             </div>
             <div class="mt-3">
                 @forelse ($perhatian as $a)
-                    @php $nada = in_array($a->kondisi, ['rusak', 'stok_habis']) ? 'no' : 'wait'; @endphp
+                    @php $nada = 'no'; @endphp
                     <div class="list-row tone-{{ $nada }}" style="--i: {{ $loop->index }}">
-                        <span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-{{ $a->kondisi === 'rusak' ? 'wrench' : ($a->kondisi === 'stok_habis' ? 'minus' : 'alert') }}"/></svg></span>
+                        <span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg></span>
                         <div class="list-main">
                             <div class="list-title">{{ $a->nama }}</div>
                             <div class="list-sub"><span class="kode">{{ $a->kode }}</span> · sisa {{ $a->stok }} unit</div>
@@ -184,7 +182,7 @@
                     <div class="empty">
                         <span class="empty-ico tone-ok" style="background:var(--t-bg);color:var(--t-fg)"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></span>
                         <h3>Semua alat dalam kondisi baik</h3>
-                        <p>Tidak ada alat rusak, habis, atau perlu dicek.</p>
+                        <p>Tidak ada alat yang stoknya habis.</p>
                     </div>
                 @endforelse
             </div>

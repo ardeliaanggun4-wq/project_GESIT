@@ -47,7 +47,7 @@
         </div>
     </nav>
 
-    <div class="space-y-4" style="max-width:48rem">
+    <div class="pj-grid">
         @forelse ($daftar as $p)
             @php
                 $selesai = $p->status === 'selesai';
@@ -88,7 +88,12 @@
                 @elseif ($aktif)
                     <p class="pj-note">
                         @if ($terlambat)
-                            <b style="color:var(--danger)">Terlambat {{ (int) abs($p->tanggal_kembali_rencana->diffInDays(today())) }} hari.</b> Segera kembalikan ke ruang Sarpras.
+                            <b style="color:var(--danger)">Terlambat {{ $p->hariTerlambat() }} hari.</b>
+                            @if ($p->melewatiBatasTelat())
+                                Melewati batas toleransi {{ \App\Models\Peminjaman::MAKS_HARI_TELAT }} hari. Segera kembalikan ke ruang Sarpras, kamu belum bisa mengajukan peminjaman baru.
+                            @else
+                                Batas toleransi {{ \App\Models\Peminjaman::MAKS_HARI_TELAT }} hari. Segera kembalikan ke ruang Sarpras.
+                            @endif
                         @else
                             Ambil di ruang Sarpras, kembalikan sebelum <b>{{ $p->tanggal_kembali_rencana->translatedFormat('l, j F') }}</b>.
                         @endif
