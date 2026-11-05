@@ -86,7 +86,7 @@
                                     <span><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg>{{ $p->tanggal_pinjam->translatedFormat('j M') }}@if ($p->tanggal_kembali_rencana) – {{ $p->tanggal_kembali_rencana->translatedFormat('j M') }}@endif</span>
                                 @endif
                                 @if (in_array($p->status, ['dipinjam', 'disetujui'], true) && $p->tanggal_kembali_rencana->isBefore(today()))
-                                    <span style="color:var(--danger);font-weight:600"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg>Terlambat {{ $p->hariTerlambat() }} hari@if ($p->melewatiBatasTelat()) · melewati batas {{ \App\Models\Peminjaman::MAKS_HARI_TELAT }} hari @endif</span>
+                                    <span style="color:var(--danger);font-weight:600"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg>Terlambat {{ $p->hariTerlambat() }} hari @if ($p->melewatiBatasTelat()) · melewati batas {{ \App\Models\Peminjaman::MAKS_HARI_TELAT }} hari @endif</span>
                                 @endif
                             </div>
 
