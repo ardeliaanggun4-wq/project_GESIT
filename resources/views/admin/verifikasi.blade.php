@@ -49,6 +49,9 @@
                    class="filter-chip {{ $filter === $k['kunci'] ? 'is-on' : '' }}"
                    @if ($filter === $k['kunci']) aria-current="page" @endif>
                     {{ $k['judul'] }} <span class="n">{{ $jumlah[$k['kunci']] }}</span>
+                    @if ($k['kunci'] === 'disetujui' && $jumlah['minta_kembali'] > 0)
+                        <span class="n" title="Siswa mengajukan pengembalian">{{ $jumlah['minta_kembali'] }} minta kembali</span>
+                    @endif
                 </a>
             @endforeach
         </div>
@@ -115,6 +118,13 @@
                                 </div>
                             @elseif (in_array($p->status, ['dipinjam', 'disetujui'], true))
                                 <div class="mt-4"><x-status :nilai="$p->status" /></div>
+                                @if ($p->pengembalian_diajukan_at)
+                                    <p class="pj-note">
+                                        <b>Siswa mengajukan pengembalian</b> {{ $p->pengembalian_diajukan_at->translatedFormat('j M, H:i') }}.
+                                        Cek fisik alat sebelum menandai dikembalikan.
+                                        @if ($p->catatan_pengembalian)<br>Catatan siswa: {{ $p->catatan_pengembalian }}@endif
+                                    </p>
+                                @endif
                                 <form method="POST" action="{{ route('admin.verifikasi.kembali', $p) }}"
                                       class="pj-act"
                                       data-confirm data-confirm-tone="primary"
@@ -149,7 +159,7 @@
             <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Periksa stok alat. Stok berkurang otomatis saat pengajuan disetujui.</span></li>
             <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Baca keperluan dan rentang tanggal pinjam di setiap kartu.</span></li>
             <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Pengajuan yang ditolak tetap terlihat oleh peminjam di riwayatnya, lengkap dengan alasannya.</span></li>
-            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Setelah alat kembali, tandai lewat kartu di tab Disetujui agar stok bertambah lagi.</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Setelah alat kembali, tandai lewat kartu di tab Disetujui agar stok bertambah lagi. Kartu yang siswanya sudah mengajukan pengembalian tampil paling atas.</span></li>
         </ul>
     </section>
 @endsection

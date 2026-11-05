@@ -102,6 +102,29 @@
                     <p class="pj-note">{{ $p->catatan_admin }}</p>
                 @endif
 
+                @if ($aktif && $p->pengembalian_diajukan_at)
+                    <p class="pj-note">
+                        <b>Pengembalian diajukan</b> {{ $p->pengembalian_diajukan_at->translatedFormat('j M, H:i') }}.
+                        Serahkan alat ke ruang Sarpras, stok baru diperbarui setelah petugas mengecek.
+                        @if ($p->catatan_pengembalian)<br>Catatanmu: {{ $p->catatan_pengembalian }}@endif
+                    </p>
+                @elseif ($aktif)
+                    <form method="POST" action="{{ route('siswa.kembalikan', $p) }}" class="pj-act" style="flex-direction:column"
+                          data-confirm data-confirm-tone="primary"
+                          data-confirm-title="Ajukan pengembalian?"
+                          data-confirm-text="{{ $p->jumlah }} unit {{ $p->alat->nama }} akan ditandai siap dikembalikan. Kamu tetap perlu menyerahkannya ke ruang Sarpras."
+                          data-confirm-ok="Ya, ajukan">
+                        @csrf
+                        <input type="text" name="catatan_pengembalian" maxlength="255"
+                               class="field"
+                               placeholder="Catatan kondisi alat (opsional)"
+                               aria-label="Catatan kondisi alat saat dikembalikan">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <svg class="ico ico-sm" aria-hidden="true"><use href="#i-check"/></svg>Kembalikan
+                        </button>
+                    </form>
+                @endif
+
                 @if ($p->status === 'menunggu')
                     <div class="pj-act">
                         <form method="POST" action="{{ route('siswa.batal', $p) }}"

@@ -29,8 +29,14 @@ class VerifikasiController extends Controller
             $jumlah[$kunci] = Peminjaman::whereIn('status', $daftarStatus)->count();
         }
 
+        // Peminjaman aktif yang siswanya sudah mengajukan pengembalian
+        $jumlah['minta_kembali'] = Peminjaman::whereIn('status', ['dipinjam', 'disetujui'])
+            ->whereNotNull('pengembalian_diajukan_at')
+            ->count();
+
         $daftar = Peminjaman::with(['user', 'alat'])
             ->whereIn('status', $statusFilter[$filter])
+            ->orderByRaw('pengembalian_diajukan_at IS NULL')
             ->latest()
             ->take(50)
             ->get();

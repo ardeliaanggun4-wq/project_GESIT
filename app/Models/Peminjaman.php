@@ -21,6 +21,7 @@ class Peminjaman extends Model
         'kode_pengajuan', 'user_id', 'alat_id', 'jumlah',
         'tanggal_pinjam', 'tanggal_kembali_rencana', 'tanggal_kembali_aktual',
         'keperluan', 'status', 'catatan_admin',
+        'pengembalian_diajukan_at', 'catatan_pengembalian',
     ];
 
     protected function casts(): array
@@ -29,6 +30,7 @@ class Peminjaman extends Model
             'tanggal_pinjam' => 'date',
             'tanggal_kembali_rencana' => 'date',
             'tanggal_kembali_aktual' => 'date',
+            'pengembalian_diajukan_at' => 'datetime',
         ];
     }
 

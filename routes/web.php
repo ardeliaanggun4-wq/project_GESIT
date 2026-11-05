@@ -53,6 +53,7 @@ Route::middleware(['auth', 'role:siswa,guru'])->prefix('siswa')->name('siswa.')-
     Route::post('/ajukan', [PinjamController::class, 'store'])->name('ajukan.store');
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
     Route::delete('/riwayat/{peminjaman}', [RiwayatController::class, 'batal'])->name('batal');
+    Route::post('/riwayat/{peminjaman}/kembalikan', [RiwayatController::class, 'kembalikan'])->name('kembalikan');
     Route::get('/panduan', [PanduanController::class, 'index'])->name('panduan');
 });
 

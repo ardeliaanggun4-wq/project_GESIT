@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\Peminjaman;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RiwayatController extends Controller
@@ -64,5 +65,30 @@ class RiwayatController extends Controller
         $peminjaman->delete();
 
         return redirect()->route('siswa.riwayat')->with('status', "Pengajuan {$kode} dibatalkan.");
+    }
+
+    // Ajukan pengembalian alat yang sedang dipinjam. Stok baru bertambah setelah petugas Sarpras mengonfirmasi alat diterima.
+    public function kembalikan(Request $request, Peminjaman $peminjaman)
+    {
+        abort_unless($peminjaman->user_id === Auth::id(), 403);
+
+        if (! in_array($peminjaman->status, ['dipinjam', 'disetujui'], true)) {
+            return back()->withErrors(['kembali' => 'Hanya alat yang sedang dipinjam yang bisa diajukan pengembaliannya.']);
+        }
+
+        if ($peminjaman->pengembalian_diajukan_at) {
+            return back()->withErrors(['kembali' => 'Pengembalian untuk peminjaman ini sudah diajukan. Serahkan alat ke ruang Sarpras.']);
+        }
+
+        $validated = $request->validate([
+            'catatan_pengembalian' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $peminjaman->update([
+            'pengembalian_diajukan_at' => now(),
+            'catatan_pengembalian' => $validated['catatan_pengembalian'] ?? null,
+        ]);
+
+        return back()->with('status', "Pengembalian {$peminjaman->kode_pengajuan} diajukan. Serahkan alat ke ruang Sarpras untuk dicek petugas.");
     }
 }
