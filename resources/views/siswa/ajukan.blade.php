@@ -3,6 +3,7 @@
 @section('title', 'Ajukan Pinjam')
 
 @section('content')
+    @include('partials.foto-alat-style')
     @php
         $kategoriLabel = ['komputer' => 'Komputer', 'elektronika' => 'Elektronika', 'perkakas' => 'Perkakas', 'multimedia' => 'Multimedia'];
     @endphp
@@ -62,6 +63,7 @@
                             <option value="{{ $alat->id }}"
                                     data-nama="{{ $alat->nama }}" data-kode="{{ $alat->kode }}" data-lokasi="{{ $alat->lokasi }}"
                                     data-stok="{{ $alat->stok }}" data-kategori="{{ $alat->kategori }}"
+                                    data-foto="{{ $alat->fotoUrl() }}" data-deskripsi="{{ $alat->deskripsi }}"
                                     data-kategori-label="{{ $kategoriLabel[$alat->kategori] ?? $alat->kategori }}"
                                     {{ old('alat_id') == $alat->id ? 'selected' : '' }}>
                                 {{ $alat->nama }} — {{ $alat->lokasi }} ({{ $alat->stok }} unit tersedia)
@@ -116,6 +118,7 @@
                     <span class="t-small">Detail stok dan lokasi alat akan tampil di sini.</span>
                 </div>
                 <div class="pick" id="pick" hidden>
+                    <img id="pick-foto" class="pick-foto" alt="" hidden>
                     <div id="pick-kat" class="chip-kat"><i class="dot" aria-hidden="true"></i><span id="pick-kat-teks"></span></div>
                     <div class="pick-name" id="pick-nama" style="margin-top:.7rem"></div>
                     <dl>
@@ -123,6 +126,7 @@
                         <div><dt>Lokasi</dt><dd id="pick-lokasi"></dd></div>
                         <div><dt>Stok tersedia</dt><dd id="pick-stok"></dd></div>
                     </dl>
+                    <p class="pick-desk" id="pick-desk" hidden></p>
                 </div>
             </section>
 
@@ -170,14 +174,18 @@
     <section class="mt-8 rise" style="--i:5" aria-labelledby="daftar-alat-judul">
         <div class="sec-head">
             <h2 class="t-sec" id="daftar-alat-judul">Daftar alat</h2>
-            <span class="t-small t-muted">{{ $tersedia }} dari {{ $daftarAlat->count() }} jenis alat tersedia · tekan alat untuk memilihnya</span>
+            <span class="t-small t-muted">{{ $tersedia }} dari {{ $daftarAlat->count() }} jenis alat tersedia · tekan alat untuk melihat foto dan deskripsinya</span>
         </div>
         <div class="card" style="overflow:hidden">
             @forelse ($daftarAlat as $alat)
                 @php $habis = $alat->stok <= 0; @endphp
                 <button type="button" class="list-row alat-pilih {{ $habis ? 'is-habis' : '' }}" data-pilih="{{ $alat->id }}"
                         @disabled($habis) style="width:100%;text-align:left;background:transparent;border-left:0;border-right:0;border-top:0;{{ $habis ? 'opacity:.55;cursor:not-allowed' : 'cursor:pointer' }}">
-                    <x-kat-ico :nilai="$alat->kategori" />
+                    @if ($alat->fotoUrl())
+                        <img src="{{ $alat->fotoUrl() }}" alt="" class="alat-thumb" loading="lazy">
+                    @else
+                        <x-kat-ico :nilai="$alat->kategori" />
+                    @endif
                     <div class="list-main">
                         <div class="list-title">{{ $alat->nama }}</div>
                         <div class="list-sub"><span class="kode">{{ $alat->kode }}</span> · {{ $alat->lokasi ?: 'Lokasi belum diisi' }}</div>
@@ -198,6 +206,37 @@
             @endforelse
         </div>
     </section>
+
+    {{-- Detail alat: foto + deskripsi, muncul saat alat di daftar ditekan --}}
+    <dialog id="dlg-alat" class="dlg" aria-labelledby="alat-judul">
+        <div class="flex flex-col flex-1 min-h-0">
+            <div class="dlg-head">
+                <div>
+                    <p class="t-xs t-muted"><span class="kode" id="da-kode"></span></p>
+                    <h2 id="alat-judul" class="t-sec"><span id="da-nama"></span></h2>
+                </div>
+                <button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Tutup"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
+            </div>
+            <div class="dlg-body space-y-4">
+                <img id="da-foto" class="pick-foto" alt="" hidden>
+                <div id="da-kat" class="chip-kat"><i class="dot" aria-hidden="true"></i><span id="da-kat-teks"></span></div>
+                <div>
+                    <div class="t-xs t-muted" style="margin-bottom:.25rem">Deskripsi</div>
+                    <p class="pick-desk" id="da-desk" style="margin-top:0"></p>
+                </div>
+                <div class="t-small">
+                    <div><span class="t-muted">Lokasi:</span> <b id="da-lokasi"></b></div>
+                    <div style="margin-top:.2rem"><span class="t-muted">Stok tersedia:</span> <b id="da-stok"></b></div>
+                </div>
+            </div>
+            <div class="dlg-foot">
+                <button type="button" class="btn btn-secondary" data-close>Tutup</button>
+                <button type="button" class="btn btn-primary" id="da-pilih">
+                    <svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Pilih alat ini
+                </button>
+            </div>
+        </div>
+    </dialog>
 @endsection
 
 @push('scripts')
@@ -225,14 +264,38 @@
         kembali.max = mulai.getFullYear() + '-' + String(mulai.getMonth() + 1).padStart(2, '0') + '-' + String(mulai.getDate()).padStart(2, '0');
         if (kembali.value && kembali.value > kembali.max) kembali.value = kembali.max;
     };
-    // Klik alat di daftar -> terpilih di formulir
+    // Klik alat di daftar -> buka detail (foto + deskripsi); tombol "Pilih alat ini" memilihnya di formulir
+    const dlgAlat = $('dlg-alat');
+    let alatDilihat = null;
     document.querySelectorAll('[data-pilih]').forEach((tombol) => {
         tombol.addEventListener('click', () => {
-            pilih.value = tombol.dataset.pilih;
-            pilih.dispatchEvent(new Event('change', { bubbles: true }));
-            pilih.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            pilih.focus({ preventScroll: true });
+            const opt = pilih.querySelector('option[value="' + tombol.dataset.pilih + '"]');
+            if (!opt) return;
+            alatDilihat = opt.value;
+            const stok = parseInt(opt.dataset.stok, 10);
+            $('da-kode').textContent = opt.dataset.kode;
+            $('da-nama').textContent = opt.dataset.nama;
+            $('da-kat').dataset.kat = opt.dataset.kategori;
+            $('da-kat-teks').textContent = opt.dataset.kategoriLabel;
+            $('da-lokasi').textContent = opt.dataset.lokasi || '-';
+            $('da-stok').textContent = stok > 0 ? stok + ' unit' : 'Habis';
+            const desk = $('da-desk');
+            desk.textContent = opt.dataset.deskripsi || 'Belum ada deskripsi untuk alat ini.';
+            const foto = $('da-foto');
+            if (opt.dataset.foto) { foto.src = opt.dataset.foto; foto.alt = 'Foto ' + opt.dataset.nama; foto.hidden = false; }
+            else { foto.removeAttribute('src'); foto.hidden = true; }
+            $('da-pilih').disabled = stok <= 0;
+            dlgAlat.showModal();
+            document.body.classList.add('dialog-open');
         });
+    });
+    $('da-pilih').addEventListener('click', () => {
+        if (!alatDilihat) return;
+        dlgAlat.close();
+        pilih.value = alatDilihat;
+        pilih.dispatchEvent(new Event('change', { bubbles: true }));
+        pilih.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        pilih.focus({ preventScroll: true });
     });
 
     pinjam.addEventListener('change', selaraskan);
@@ -254,6 +317,12 @@
         $('pick-nama').textContent = opt.dataset.nama;
         $('pick-kode').textContent = opt.dataset.kode;
         $('pick-lokasi').textContent = opt.dataset.lokasi || '-';
+        // Foto dan deskripsi alat (bila sudah diisi admin)
+        const foto = $('pick-foto'), desk = $('pick-desk');
+        if (opt.dataset.foto) { foto.src = opt.dataset.foto; foto.alt = 'Foto ' + opt.dataset.nama; foto.hidden = false; }
+        else { foto.removeAttribute('src'); foto.hidden = true; }
+        desk.textContent = opt.dataset.deskripsi || '';
+        desk.hidden = !opt.dataset.deskripsi;
         $('pick-stok').textContent = stok > 0 ? stok + ' unit' : 'Habis';
         $('pick-stok').style.color = stok > 0 ? '' : 'var(--danger)';
         jumlah.max = Math.max(stok, 1);

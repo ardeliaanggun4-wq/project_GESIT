@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Alat;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DataAlatController extends Controller
 {
@@ -49,9 +50,16 @@ class DataAlatController extends Controller
             'nama' => ['required', 'string', 'max:255'],
             'kategori' => ['required', 'in:komputer,elektronika,perkakas,multimedia'],
             'lokasi' => ['nullable', 'string', 'max:255'],
+            'deskripsi' => ['nullable', 'string', 'max:1000'],
+            'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'], // maks 2 MB
             'stok' => ['required', 'integer', 'min:0'],
             'kondisi' => ['required', 'in:baik,stok_habis'],
-        ]);
+        ], $this->pesanValidasi());
+
+        unset($validated['foto']);
+        if ($request->hasFile('foto')) {
+            $validated['foto'] = $request->file('foto')->store('foto-alat', 'public');
+        }
 
         Alat::create($this->samakanStokKondisi($validated));
 
@@ -64,9 +72,22 @@ class DataAlatController extends Controller
             'nama' => ['required', 'string', 'max:255'],
             'kategori' => ['required', 'in:komputer,elektronika,perkakas,multimedia'],
             'lokasi' => ['nullable', 'string', 'max:255'],
+            'deskripsi' => ['nullable', 'string', 'max:1000'],
+            'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'], // maks 2 MB
             'stok' => ['required', 'integer', 'min:0'],
             'kondisi' => ['required', 'in:baik,stok_habis'],
-        ]);
+        ], $this->pesanValidasi());
+
+        unset($validated['foto']);
+
+        // Foto baru menggantikan yang lama; centang "hapus foto" menghapusnya tanpa pengganti
+        if ($request->hasFile('foto')) {
+            $this->hapusFoto($alat);
+            $validated['foto'] = $request->file('foto')->store('foto-alat', 'public');
+        } elseif ($request->boolean('hapus_foto')) {
+            $this->hapusFoto($alat);
+            $validated['foto'] = null;
+        }
 
         $alat->update($this->samakanStokKondisi($validated));
 
@@ -75,9 +96,28 @@ class DataAlatController extends Controller
 
     public function destroy(Alat $alat)
     {
+        $this->hapusFoto($alat);
         $alat->delete();
 
         return back()->with('status', 'Alat berhasil dihapus.');
+    }
+
+    // Hapus file foto lama dari penyimpanan agar tidak menumpuk
+    private function hapusFoto(Alat $alat): void
+    {
+        if ($alat->foto) {
+            Storage::disk('public')->delete($alat->foto);
+        }
+    }
+
+    private function pesanValidasi(): array
+    {
+        return [
+            'foto.image' => 'File harus berupa gambar.',
+            'foto.mimes' => 'Format foto harus JPG, PNG, atau WEBP.',
+            'foto.max' => 'Ukuran foto maksimal 2 MB.',
+            'deskripsi.max' => 'Deskripsi maksimal 1000 karakter.',
+        ];
     }
 
     // Stok dan kondisi harus selalu sejalan:

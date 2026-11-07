@@ -3,6 +3,7 @@
 @section('title', 'Data Alat')
 
 @section('content')
+    @include('partials.foto-alat-style')
     @php
         $kategoriOpsi = ['komputer' => 'Komputer', 'elektronika' => 'Elektronika', 'perkakas' => 'Perkakas', 'multimedia' => 'Multimedia'];
         $kondisiOpsi  = ['baik' => 'Baik', 'stok_habis' => 'Stok Habis'];
@@ -108,11 +109,18 @@
                             <td><span class="kode">{{ $a->kode }}</span></td>
                             <td>
                                 <div class="flex items-center gap-3">
-                                    <x-kat-ico :nilai="$a->kategori" />
+                                    @if ($a->fotoUrl())
+                                        <img src="{{ $a->fotoUrl() }}" alt="Foto {{ $a->nama }}" class="alat-thumb" loading="lazy">
+                                    @else
+                                        <x-kat-ico :nilai="$a->kategori" />
+                                    @endif
                                     <div>
                                         <div class="alat-nama">{{ $a->nama }}</div>
                                         @if ($a->lokasi)
                                             <div class="alat-lok"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>{{ $a->lokasi }}</div>
+                                        @endif
+                                        @if ($a->deskripsi)
+                                            <div class="alat-lok" style="max-width:22rem">{{ \Illuminate\Support\Str::limit($a->deskripsi, 70) }}</div>
                                         @endif
                                     </div>
                                 </div>
@@ -129,12 +137,14 @@
                                 <div class="flex items-center justify-end gap-1">
                                     <button type="button" class="btn btn-ghost btn-sm btn-icon" aria-label="Ubah {{ $a->nama }}" title="Ubah"
                                             data-open="dlg-ubah"
+                                            data-foto-url="{{ $a->fotoUrl() }}"
                                             data-form-action="{{ route('admin.data-alat.update', $a) }}"
                                             data-fill="{{ json_encode([
                                                 '#u-kode' => $a->kode,
                                                 '#u-nama' => $a->nama,
                                                 '#u-kategori' => $a->kategori,
                                                 '#u-lokasi' => $a->lokasi ?? '',
+                                                '#u-deskripsi' => $a->deskripsi ?? '',
                                                 '#u-stok' => $a->stok,
                                                 '#u-kondisi' => $a->kondisi,
                                             ]) }}">
@@ -172,7 +182,7 @@
 
     {{-- Dialog tambah alat --}}
     <dialog id="dlg-tambah" class="dlg" aria-labelledby="tambah-judul">
-        <form method="POST" action="{{ route('admin.data-alat.store') }}" class="flex flex-col flex-1 min-h-0">
+        <form method="POST" action="{{ route('admin.data-alat.store') }}" enctype="multipart/form-data" class="flex flex-col flex-1 min-h-0">
             @csrf
             <div class="dlg-head">
                 <div>
@@ -202,6 +212,16 @@
                     <label class="label" for="t-lokasi">Lokasi</label>
                     <input id="t-lokasi" name="lokasi" placeholder="Contoh: Lab RPL" class="field">
                 </div>
+                <div>
+                    <label class="label" for="t-deskripsi">Deskripsi alat</label>
+                    <textarea id="t-deskripsi" name="deskripsi" rows="3" maxlength="1000" class="field" placeholder="Contoh: Mouse optik USB, dipakai untuk praktik di Lab RPL."></textarea>
+                </div>
+                <div>
+                    <label class="label" for="t-foto">Foto alat</label>
+                    <input id="t-foto" type="file" name="foto" accept="image/jpeg,image/png,image/webp" class="field" data-prev="t-prev">
+                    <p class="hint">JPG, PNG, atau WEBP. Maksimal 2 MB.</p>
+                    <img id="t-prev" class="foto-prev" alt="Pratinjau foto alat" hidden>
+                </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="label" for="t-stok">Stok</label>
@@ -226,7 +246,7 @@
 
     {{-- Dialog ubah alat (satu dialog dipakai semua baris; isinya diisi lewat data-fill) --}}
     <dialog id="dlg-ubah" class="dlg" aria-labelledby="ubah-judul">
-        <form method="POST" action="#" class="flex flex-col flex-1 min-h-0">
+        <form method="POST" action="#" enctype="multipart/form-data" class="flex flex-col flex-1 min-h-0">
             @csrf @method('PUT')
             <div class="dlg-head">
                 <div>
@@ -252,6 +272,17 @@
                     <label class="label" for="u-lokasi">Lokasi</label>
                     <input id="u-lokasi" name="lokasi" class="field" placeholder="Lokasi">
                 </div>
+                <div>
+                    <label class="label" for="u-deskripsi">Deskripsi alat</label>
+                    <textarea id="u-deskripsi" name="deskripsi" rows="3" maxlength="1000" class="field" placeholder="Deskripsi alat"></textarea>
+                </div>
+                <div>
+                    <label class="label" for="u-foto">Foto alat</label>
+                    <input id="u-foto" type="file" name="foto" accept="image/jpeg,image/png,image/webp" class="field" data-prev="u-prev">
+                    <p class="hint">Pilih file baru untuk mengganti foto. JPG, PNG, atau WEBP, maksimal 2 MB.</p>
+                    <img id="u-prev" class="foto-prev" alt="Foto alat saat ini" hidden>
+                    <label class="cek-hapus" id="u-hapus-wrap" hidden><input type="checkbox" name="hapus_foto" value="1" id="u-hapus"> Hapus foto ini</label>
+                </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="label" for="u-stok">Stok</label>
@@ -273,6 +304,37 @@
             </div>
         </form>
     </dialog>
+
+    <script>
+        // Pratinjau foto: saat file dipilih, dan saat dialog Ubah dibuka (menampilkan foto yang sudah ada)
+        (function () {
+            function tampil(img, src) {
+                if (!img) return;
+                if (src) { img.src = src; img.hidden = false; } else { img.removeAttribute('src'); img.hidden = true; }
+            }
+            document.querySelectorAll('input[type="file"][data-prev]').forEach(function (input) {
+                input.addEventListener('change', function () {
+                    var img = document.getElementById(input.dataset.prev);
+                    var f = input.files && input.files[0];
+                    if (f) tampil(img, URL.createObjectURL(f));
+                });
+            });
+            // Dialog Tambah: bersihkan pratinjau setiap dibuka (tombol memakai data-reset)
+            document.querySelectorAll('[data-open="dlg-tambah"]').forEach(function (b) {
+                b.addEventListener('click', function () { tampil(document.getElementById('t-prev'), null); });
+            });
+            // Dialog Ubah: tampilkan foto saat ini, kosongkan pilihan file dan centang hapus
+            document.querySelectorAll('[data-open="dlg-ubah"]').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    var url = b.dataset.fotoUrl || '';
+                    tampil(document.getElementById('u-prev'), url);
+                    document.getElementById('u-foto').value = '';
+                    document.getElementById('u-hapus').checked = false;
+                    document.getElementById('u-hapus-wrap').hidden = !url;
+                });
+            });
+        })();
+    </script>
 
     <script>
         // Stok dan kondisi saling mengikuti: pilih "Stok Habis" -> stok jadi 0; stok diisi 0 -> kondisi jadi "Stok Habis"

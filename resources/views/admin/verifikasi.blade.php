@@ -137,6 +137,13 @@
                             @else
                                 <div class="mt-4"><x-status :nilai="$p->status" /></div>
                             @endif
+                            @if (in_array($p->status, ['disetujui', 'dipinjam'], true))
+                                <div class="pj-act">
+                                    <a href="{{ route('bukti-pinjam', $p) }}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
+                                        <svg class="ico ico-sm" aria-hidden="true"><use href="#i-book"/></svg>Bukti pinjam (PDF)
+                                    </a>
+                                </div>
+                            @endif
                         </article>
                     @empty
                         <div class="empty card">

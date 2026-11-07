@@ -125,6 +125,14 @@
                     </form>
                 @endif
 
+                @if (in_array($p->status, ['disetujui', 'dipinjam', 'selesai'], true))
+                    <div class="pj-act">
+                        <a href="{{ route('bukti-pinjam', $p) }}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
+                            <svg class="ico ico-sm" aria-hidden="true"><use href="#i-book"/></svg>Bukti pinjam (PDF)
+                        </a>
+                    </div>
+                @endif
+
                 @if ($p->status === 'menunggu')
                     <div class="pj-act">
                         <form method="POST" action="{{ route('siswa.batal', $p) }}"

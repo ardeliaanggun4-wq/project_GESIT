@@ -14,7 +14,7 @@ class Alat extends Model
     protected $table = 'alat';
 
     protected $fillable = [
-        'kode', 'nama', 'kategori', 'lokasi', 'stok', 'kondisi',
+        'kode', 'nama', 'kategori', 'lokasi', 'foto', 'deskripsi', 'stok', 'kondisi',
     ];
 
     // Stok dan kondisi selalu sejalan, apa pun cara datanya disimpan:
@@ -27,6 +27,12 @@ class Alat extends Model
                 $alat->kondisi = 'stok_habis';
             }
         });
+    }
+
+    // URL foto alat untuk <img>; null bila belum ada foto
+    public function fotoUrl(): ?string
+    {
+        return $this->foto ? asset('storage/' . $this->foto) : null;
     }
 
     public function peminjaman()

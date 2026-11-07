@@ -15,11 +15,15 @@ use App\Http\Controllers\Siswa\RiwayatController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Siswa\PanduanController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\BuktiPinjamController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/profil', [ProfilController::class, 'show'])->name('profil');
     Route::post('/profil/foto', [ProfilController::class, 'updateFoto'])->name('profil.foto');
     Route::delete('/profil/foto', [ProfilController::class, 'hapusFoto'])->name('profil.foto.hapus');
+
+    // Bukti pinjam (PDF): dipakai siswa/guru pemilik peminjaman dan admin
+    Route::get('/bukti-pinjam/{peminjaman}', [BuktiPinjamController::class, 'tampil'])->name('bukti-pinjam');
 });
 
 Route::get('/', function () {
