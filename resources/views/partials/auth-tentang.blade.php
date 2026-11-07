@@ -17,7 +17,7 @@
                     praktik tidak lagi lewat catatan kertas atau tanya satu per satu ke petugas.
                 </p>
                 <p class="tt-isi rv" style="--d:3">
-                    Siswa dan guru mengajukan dari HP, petugas Sarpras memeriksa dan menyetujui, dan semua pihak
+                    Siswa dan guru mengajukan dari HP, petugas GESIT memeriksa dan menyetujui, dan semua pihak
                     bisa melihat alat mana yang sedang dipinjam dan mana yang tersedia.
                 </p>
             </div>
@@ -56,7 +56,7 @@
                 <li class="rv" style="--d:2">
                     <span class="tt-no" aria-hidden="true">2</span>
                     <b>Tunggu persetujuan</b>
-                    <small>Petugas Sarpras memeriksa, statusnya bisa kamu pantau.</small>
+                    <small>Petugas GESIT memeriksa, statusnya bisa kamu pantau.</small>
                 </li>
                 <li class="rv" style="--d:3">
                     <span class="tt-no" aria-hidden="true">3</span>
@@ -88,7 +88,7 @@
         {{-- 5. Ajakan: dua tombol jelas, Masuk (utama) dan Daftar akun (pendamping) --}}
         <div class="tt-cta rv">
             <h2>Siap meminjam alat?</h2>
-            <p>Sudah punya akun? Masuk dengan NISN atau NIP. Belum punya? Daftar dulu, hanya semenit.</p>
+            <p>Sudah punya akun? Masuk dengan NIPD atau NIP. Belum punya? Daftar dulu, hanya semenit.</p>
             <div class="tt-cta-aksi">
                 <a href="{{ route('login') }}" class="tt-btn tt-btn-masuk">
                     <svg class="ico" aria-hidden="true"><use href="#i-user"/></svg>Masuk

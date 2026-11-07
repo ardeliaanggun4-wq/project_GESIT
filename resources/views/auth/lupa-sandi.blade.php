@@ -25,7 +25,7 @@
             <div>
                 <p class="auth-headline" data-split>Lupa kata sandi? Buat yang <span class="hl">baru</span> dalam semenit.</p>
                 <p class="t-muted rise" style="--i:6;margin-top:1rem;max-width:30rem;font-size:1.0625rem">
-                    Cukup isi NISN atau NIP dan email akunmu, lalu pilih kata sandi baru. Setelah itu kamu bisa langsung masuk dan meminjam alat lab.
+                    Cukup isi NIPD atau NIP dan email akunmu, lalu pilih kata sandi baru. Setelah itu kamu bisa langsung masuk dan meminjam alat lab.
                 </p>
             </div>
 
@@ -60,10 +60,10 @@
                     @csrf
 
                     <div>
-                        <label class="label" for="input-nisn">NISN / NIP</label>
+                        <label class="label" for="input-nisn">NIPD / NIP</label>
                         <input type="text" name="nisn_nip" id="input-nisn" class="field"
                                inputmode="numeric" autocomplete="username"
-                               placeholder="Contoh: 0091234567"
+                               placeholder="Contoh: 23409"
                                value="{{ old('nisn_nip') }}" required autofocus>
                     </div>
 

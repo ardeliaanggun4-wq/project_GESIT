@@ -84,7 +84,7 @@
                 @endif
 
                 @if ($p->status === 'ditolak')
-                    <p class="pj-note"><b>Alasan:</b> {{ $p->catatan_admin ?: 'Ditolak oleh petugas Sarpras.' }}</p>
+                    <p class="pj-note"><b>Alasan:</b> {{ $p->catatan_admin ?: 'Ditolak oleh petugas GESIT.' }}</p>
                 @elseif ($aktif)
                     <p class="pj-note">
                         @if ($terlambat)

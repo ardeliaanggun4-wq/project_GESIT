@@ -31,13 +31,15 @@ class PinjamController extends Controller
             'keperluan' => ['nullable', 'string', 'max:500'],
         ]);
 
-        // Maksimal lama peminjaman
+        // Maksimal lama peminjaman mengikuti batas tiap alat
+        $alat = Alat::findOrFail($validated['alat_id']);
+        $batas = $alat->batasHariPinjam();
         $lama = Carbon::parse($validated['tanggal_pinjam'])->startOfDay()
             ->diffInDays(Carbon::parse($validated['tanggal_kembali_rencana'])->startOfDay());
-        if ($lama > Peminjaman::MAKS_HARI_PINJAM) {
+        if ($lama > $batas) {
             throw ValidationException::withMessages([
-                'tanggal_kembali_rencana' => 'Maksimal peminjaman ' . Peminjaman::MAKS_HARI_PINJAM . ' hari. Pilih tanggal kembali paling lambat ' .
-                    Carbon::parse($validated['tanggal_pinjam'])->addDays(Peminjaman::MAKS_HARI_PINJAM)->translatedFormat('j F Y') . '.',
+                'tanggal_kembali_rencana' => 'Maksimal peminjaman ' . $alat->nama . ' adalah ' . $batas . ' hari. Pilih tanggal kembali paling lambat ' .
+                    Carbon::parse($validated['tanggal_pinjam'])->addDays($batas)->translatedFormat('j F Y') . '.',
             ]);
         }
 
@@ -64,6 +66,6 @@ class PinjamController extends Controller
             'status' => 'menunggu',
         ]);
 
-        return redirect()->route('siswa.beranda')->with('status', 'Pengajuan peminjaman berhasil dikirim, menunggu verifikasi petugas Sarpras.');
+        return redirect()->route('siswa.beranda')->with('status', 'Pengajuan peminjaman berhasil dikirim, menunggu verifikasi petugas GESIT.');
     }
 }

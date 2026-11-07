@@ -23,7 +23,7 @@
             <p class="eyebrow">{{ now()->translatedFormat('l, j F Y') }}</p>
             <h1 class="display mt-3">
                 <span class="line"><span style="--i:0"><span data-greet>Selamat datang</span>,</span></span>
-                <span class="line"><span style="--i:1" class="hl">Petugas Sarpras.</span></span>
+                <span class="line"><span style="--i:1" class="hl">Petugas GESIT.</span></span>
             </h1>
             <p class="page-lead rise" style="--i:3">
                 <span class="typed" data-type='["Pantau kondisi dan aktivitas peminjaman alat hari ini.","Ada {{ $stats['menunggu'] }} pengajuan menunggu keputusanmu.","Alat yang stoknya habis tampil di panel perhatian."]'>Pantau kondisi dan aktivitas peminjaman alat hari ini.</span>
@@ -201,7 +201,7 @@
                     <div class="list-sub">
                         @if($a->status === 'menunggu') Mengajukan peminjaman {{ $a->alat->nama }}
                         @elseif($a->status === 'ditolak') Pengajuan {{ $a->alat->nama }} ditolak @if($a->catatan_admin) — {{ $a->catatan_admin }} @endif
-                        @else Pengajuan {{ $a->alat->nama }} disetujui oleh Petugas Sarpras @endif
+                        @else Pengajuan {{ $a->alat->nama }} disetujui oleh Petugas GESIT @endif
                         · {{ $a->updated_at->diffForHumans() }}
                     </div>
                 </div>

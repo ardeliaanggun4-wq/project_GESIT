@@ -58,7 +58,7 @@ class RiwayatController extends Controller
         abort_unless($peminjaman->user_id === Auth::id(), 403);
 
         if ($peminjaman->status !== 'menunggu') {
-            return back()->withErrors(['batal' => 'Pengajuan yang sudah diproses tidak bisa dibatalkan. Hubungi petugas Sarpras.']);
+            return back()->withErrors(['batal' => 'Pengajuan yang sudah diproses tidak bisa dibatalkan. Hubungi petugas GESIT.']);
         }
 
         $kode = $peminjaman->kode_pengajuan;
@@ -67,7 +67,7 @@ class RiwayatController extends Controller
         return redirect()->route('siswa.riwayat')->with('status', "Pengajuan {$kode} dibatalkan.");
     }
 
-    // Ajukan pengembalian alat yang sedang dipinjam. Stok baru bertambah setelah petugas Sarpras mengonfirmasi alat diterima.
+    // Ajukan pengembalian alat yang sedang dipinjam. Stok baru bertambah setelah petugas GESIT mengonfirmasi alat diterima.
     public function kembalikan(Request $request, Peminjaman $peminjaman)
     {
         abort_unless($peminjaman->user_id === Auth::id(), 403);

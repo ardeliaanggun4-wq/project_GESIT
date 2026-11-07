@@ -13,7 +13,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name' => 'Petugas Sarpras',
+            'name' => 'Petugas GESIT',
             'email' => 'admin@gesit.sch.id',
             'nisn_nip' => '0011234567',
             'password' => Hash::make('password'),

@@ -112,7 +112,7 @@
                                           data-confirm-text="Pengajuan {{ $p->kode_pengajuan }} dari {{ $p->user->name }} akan ditolak."
                                           data-confirm-ok="Ya, tolak">
                                         @csrf
-                                        <input type="hidden" name="catatan_admin" value="Ditolak oleh petugas Sarpras">
+                                        <input type="hidden" name="catatan_admin" value="Ditolak oleh petugas GESIT">
                                         <button type="submit" class="btn btn-secondary btn-sm"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-x"/></svg>Tolak</button>
                                     </form>
                                 </div>

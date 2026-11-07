@@ -118,7 +118,7 @@
             <div class="sec-head"><h2 class="t-sec">Alur peminjaman</h2></div>
             <ol class="steps mt-4">
                 <li><div><b>Ajukan</b><span>Pilih alat, tanggal, dan isi keperluan.</span></div></li>
-                <li><div><b>Tunggu verifikasi</b><span>Petugas Sarpras memeriksa stok dan pengajuanmu.</span></div></li>
+                <li><div><b>Tunggu verifikasi</b><span>Petugas GESIT memeriksa stok dan pengajuanmu.</span></div></li>
                 <li><div><b>Ambil alat</b><span>Datang ke ruang Sarpras setelah disetujui.</span></div></li>
                 <li><div><b>Kembalikan tepat waktu</b><span>Pastikan alat utuh sebelum tanggal rencana kembali.</span></div></li>
             </ol>

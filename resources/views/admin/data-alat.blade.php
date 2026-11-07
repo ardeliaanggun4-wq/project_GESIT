@@ -119,6 +119,7 @@
                                         @if ($a->lokasi)
                                             <div class="alat-lok"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>{{ $a->lokasi }}</div>
                                         @endif
+                                        <div class="alat-lok">Maks. pinjam {{ $a->batasHariPinjam() }} hari</div>
                                         @if ($a->deskripsi)
                                             <div class="alat-lok" style="max-width:22rem">{{ \Illuminate\Support\Str::limit($a->deskripsi, 70) }}</div>
                                         @endif
@@ -146,6 +147,7 @@
                                                 '#u-lokasi' => $a->lokasi ?? '',
                                                 '#u-deskripsi' => $a->deskripsi ?? '',
                                                 '#u-stok' => $a->stok,
+                                                '#u-maks' => $a->batasHariPinjam(),
                                                 '#u-kondisi' => $a->kondisi,
                                             ]) }}">
                                         <svg class="ico" aria-hidden="true"><use href="#i-edit"/></svg>
@@ -236,6 +238,11 @@
                         </select>
                     </div>
                 </div>
+                <div>
+                    <label class="label" for="t-maks">Batas lama pinjam (hari)</label>
+                    <input id="t-maks" type="number" name="maks_hari_pinjam" min="1" max="30" value="4" class="field" required>
+                    <p class="hint">Alat yang rawan rusak bila lama dipinjam diberi batas pendek, misalnya proyektor 1 hari.</p>
+                </div>
             </div>
             <div class="dlg-foot">
                 <button type="button" class="btn btn-secondary" data-close>Batal</button>
@@ -296,6 +303,11 @@
                             @endforeach
                         </select>
                     </div>
+                </div>
+                <div>
+                    <label class="label" for="u-maks">Batas lama pinjam (hari)</label>
+                    <input id="u-maks" type="number" name="maks_hari_pinjam" min="1" max="30" value="" class="field" required>
+                    <p class="hint">Alat yang rawan rusak bila lama dipinjam diberi batas pendek, misalnya proyektor 1 hari.</p>
                 </div>
             </div>
             <div class="dlg-foot">

@@ -57,7 +57,7 @@
                     <x-avatar :user="auth()->user()" />
                     <div class="min-w-0">
                         <div class="who-name">{{ auth()->user()->name }}</div>
-                        <div class="who-role">Petugas Sarpras</div>
+                        <div class="who-role">Petugas GESIT</div>
                     </div>
                 </a>
                 <form method="POST" action="{{ route('logout') }}">

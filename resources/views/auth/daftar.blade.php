@@ -25,7 +25,7 @@
             <div>
                 <p class="auth-headline" data-split>Buat akun, lalu <span class="hl">pinjam alat</span> tanpa antre.</p>
                 <p class="t-muted rise" style="--i:6;margin-top:1rem;max-width:30rem;font-size:1.0625rem">
-                    Daftar sekali dengan NISN atau NIP. Setelah itu kamu bisa mengajukan pinjam dari HP dan memantau statusnya kapan saja.
+                    Daftar sekali dengan NIPD (siswa) atau NIP (guru). Setelah itu kamu bisa mengajukan pinjam dari HP dan memantau statusnya kapan saja.
                 </p>
             </div>
 
@@ -83,22 +83,10 @@
                     </div>
 
                     <div style="margin-top:1.25rem">
-                        <label class="label" for="input-nama">Nama lengkap</label>
-                        <input type="text" name="name" id="input-nama" class="field" autocomplete="name"
-                               placeholder="Contoh: Aulia Rahma" value="{{ old('name') }}" maxlength="100" required autofocus>
-                    </div>
-
-                    <div class="f-row">
-                        <div>
-                            <label class="label" for="input-nisn" id="label-nisn">NISN</label>
-                            <input type="text" name="nisn_nip" id="input-nisn" class="field" inputmode="numeric"
-                                   autocomplete="username" placeholder="Contoh: 0091234567" value="{{ old('nisn_nip') }}" required>
-                        </div>
-                        <div>
-                            <label class="label" for="input-kelas" id="label-kelas">Kelas</label>
-                            <input type="text" name="kelas_jabatan" id="input-kelas" class="field"
-                                   placeholder="Contoh: XII RPL B" value="{{ old('kelas_jabatan') }}" maxlength="60" required>
-                        </div>
+                        <label class="label" for="input-nisn" id="label-nisn">NIPD</label>
+                        <input type="text" name="nisn_nip" id="input-nisn" class="field" inputmode="numeric"
+                               autocomplete="username" placeholder="Contoh: 23409" value="{{ old('nisn_nip') }}" required autofocus>
+                        <p class="hint" id="hint-nisn">Nama dan kelas diisi otomatis dari data sekolah.</p>
                     </div>
 
                     <div style="margin-top:1.25rem">
@@ -141,8 +129,8 @@
 
     <script>
         const peran = {
-            siswa: { id: 'NISN', kelas: 'Kelas', idContoh: 'Contoh: 0091234567', kelasContoh: 'Contoh: XII RPL B' },
-            guru:  { id: 'NIP', kelas: 'Jabatan / mata pelajaran', idContoh: 'Contoh: 198501012010011001', kelasContoh: 'Contoh: Guru Olahraga' }
+            siswa: { id: 'NIPD', idContoh: 'Contoh: 23409' },
+            guru:  { id: 'NIP', idContoh: 'Contoh: 197512112005011005' }
         };
 
         function pilihPeran(nama) {
@@ -152,8 +140,6 @@
             document.getElementById('role').value = nama;
             document.getElementById('label-nisn').textContent = p.id;
             document.getElementById('input-nisn').placeholder = p.idContoh;
-            document.getElementById('label-kelas').textContent = p.kelas;
-            document.getElementById('input-kelas').placeholder = p.kelasContoh;
         }
         document.getElementById('peran-siswa').addEventListener('click', () => pilihPeran('siswa'));
         document.getElementById('peran-guru').addEventListener('click', () => pilihPeran('guru'));

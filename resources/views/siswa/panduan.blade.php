@@ -6,9 +6,9 @@
     @php
         // Isi halaman dipisah dari markup agar mudah diubah tanpa menyentuh tampilan.
         $alur = [
-            ['Masuk ke akun', 'Gunakan NISN (siswa) atau NIP (guru) dan kata sandimu.'],
+            ['Masuk ke akun', 'Gunakan NIPD (siswa) atau NIP (guru) dan kata sandimu.'],
             ['Ajukan peminjaman', 'Pilih alat, tentukan tanggal, jumlah, dan isi keperluan.'],
-            ['Tunggu verifikasi', 'Petugas Sarpras memeriksa stok dan pengajuanmu. Pantau statusnya di Beranda.'],
+            ['Tunggu verifikasi', 'Petugas GESIT memeriksa stok dan pengajuanmu. Pantau statusnya di Beranda.'],
             ['Ambil alat', 'Setelah disetujui, datang ke ruang Sarpras untuk mengambil alat.'],
             ['Kembalikan tepat waktu', 'Serahkan alat dalam keadaan utuh sebelum tanggal rencana kembali.'],
         ];
@@ -16,13 +16,13 @@
         $formulir = [
             ['Nama alat / inventaris', 'Pilih dari daftar. Setiap pilihan menampilkan lokasi dan jumlah unit yang tersedia. Detail kode, kategori, dan stok muncul di panel samping.'],
             ['Tanggal pinjam', 'Hari kamu mulai memakai alat. Tidak bisa memilih tanggal yang sudah lewat.'],
-            ['Rencana kembali', 'Hari kamu akan mengembalikan alat. Tidak boleh lebih awal dari tanggal pinjam, dan paling lama 4 hari setelah tanggal pinjam.'],
+            ['Rencana kembali', 'Hari kamu akan mengembalikan alat. Tidak boleh lebih awal dari tanggal pinjam, dan paling lama sesuai batas alat yang dipilih (misalnya proyektor hanya 1 hari). Batasnya tertulis di samping nama alat.'],
             ['Jumlah alat', 'Atur dengan tombol − dan +. Batas maksimalnya mengikuti stok alat yang kamu pilih.'],
             ['Keperluan penggunaan', 'Tuliskan untuk apa alat dipakai, misalnya mata pelajaran dan kelas (maksimal 500 karakter). Kolom ini boleh dikosongkan, tetapi pengajuan yang jelas lebih mudah diverifikasi.'],
         ];
 
         $status = [
-            ['menunggu', 'Pengajuanmu sudah terkirim dan sedang diperiksa petugas Sarpras. Alat belum bisa diambil.'],
+            ['menunggu', 'Pengajuanmu sudah terkirim dan sedang diperiksa petugas GESIT. Alat belum bisa diambil.'],
             ['disetujui', 'Pengajuanmu diterima. Ambil alat di ruang Sarpras.'],
             ['dipinjam', 'Alat sudah menjadi tanggung jawabmu. Kembalikan sebelum tanggal rencana kembali.'],
             ['ditolak', 'Pengajuan tidak disetujui, misalnya karena stok tidak mencukupi. Alasannya tampil di Riwayat. Kamu bisa mengajukan ulang bila perlu.'],
@@ -33,24 +33,24 @@
             ['check', 'Satu pengajuan untuk satu jenis alat. Butuh beberapa jenis alat? Kirim pengajuan terpisah.'],
             ['calendar', 'Cek tanggal sebelum mengirim. Pengajuan tidak bisa diubah, tetapi bisa dibatalkan di Riwayat selama masih Menunggu.'],
             ['bell', 'Beranda memberi pengingat saat ada alat yang jatuh tempo hari ini. Kembalikan sebelum jam pulang sekolah.'],
-            ['wrench', 'Jaga alat tetap utuh. Bila ada kerusakan atau kehilangan, segera lapor ke petugas Sarpras.'],
+            ['wrench', 'Jaga alat tetap utuh. Bila ada kerusakan atau kehilangan, segera lapor ke petugas GESIT.'],
         ];
 
         $tanya = [
             ['Stok alat yang kubutuhkan habis. Apa yang bisa dilakukan?',
-             'Pengajuan untuk alat dengan stok habis bisa ditolak petugas. Pilih alat serupa yang masih tersedia, atau tanyakan ke petugas Sarpras kapan alat itu kembali ada.'],
+             'Pengajuan untuk alat dengan stok habis bisa ditolak petugas. Pilih alat serupa yang masih tersedia, atau tanyakan ke petugas GESIT kapan alat itu kembali ada.'],
             ['Bagaimana aku tahu pengajuanku sudah diproses?',
              'Menu Riwayat menampilkan angka merah bila ada perubahan status baru. Pengajuan yang baru berubah juga ditandai “Baru” di dalamnya.'],
             ['Berapa lama pengajuanku diverifikasi?',
-             'Waktunya tergantung petugas Sarpras. Selama belum diproses, statusmu tetap Menunggu. Cek Beranda secara berkala.'],
+             'Waktunya tergantung petugas GESIT. Selama belum diproses, statusmu tetap Menunggu. Cek Beranda secara berkala.'],
             ['Aku salah mengisi pengajuan atau ingin membatalkannya.',
-             'Buka menu Riwayat, lalu tekan Batalkan pada pengajuan yang masih berstatus Menunggu. Setelah itu ajukan ulang dengan data yang benar. Kalau sudah disetujui, hubungi petugas Sarpras.'],
+             'Buka menu Riwayat, lalu tekan Batalkan pada pengajuan yang masih berstatus Menunggu. Setelah itu ajukan ulang dengan data yang benar. Kalau sudah disetujui, hubungi petugas GESIT.'],
             ['Pengajuanku ditolak. Apakah bisa mengajukan lagi?',
              'Bisa. Lihat alasan penolakannya di Riwayat, lalu kirim pengajuan baru dengan alat, jumlah, atau tanggal yang sesuai.'],
             ['Aku terlambat mengembalikan alat.',
-             'Segera temui petugas Sarpras dan serahkan alatnya. Keterlambatan paling lama 2 hari dari tanggal rencana kembali. Lewat dari itu, kamu belum bisa mengajukan peminjaman baru sampai alatnya dikembalikan.'],
+             'Segera temui petugas GESIT dan serahkan alatnya. Keterlambatan paling lama 2 hari dari tanggal rencana kembali. Lewat dari itu, kamu belum bisa mengajukan peminjaman baru sampai alatnya dikembalikan.'],
             ['Aku tidak bisa masuk ke akun.',
-             'Pastikan kamu memilih tab “Siswa / Guru”, lalu periksa NISN atau NIP dan kata sandimu. Bila tetap gagal, minta bantuan petugas Sarpras.'],
+             'Pastikan kamu memilih tab “Siswa / Guru”, lalu periksa NIPD atau NIP dan kata sandimu. Bila tetap gagal, minta bantuan petugas GESIT.'],
         ];
     @endphp
 

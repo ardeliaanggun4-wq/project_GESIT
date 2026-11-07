@@ -17,7 +17,7 @@
                 <span class="line"><span style="--i:1" class="hl">peminjaman</span></span>
             </h1>
             <p class="page-lead rise" style="--i:3">
-                <span class="typed" data-type='["Isi selengkap mungkin agar petugas Sarpras bisa memverifikasi lebih cepat.","Pilih alat dulu, lalu cek stok yang tersedia.","Sebutkan keperluan agar pengajuanmu cepat disetujui."]'>Isi selengkap mungkin agar petugas Sarpras bisa memverifikasi lebih cepat.</span>
+                <span class="typed" data-type='["Isi selengkap mungkin agar petugas GESIT bisa memverifikasi lebih cepat.","Pilih alat dulu, lalu cek stok yang tersedia.","Sebutkan keperluan agar pengajuanmu cepat disetujui."]'>Isi selengkap mungkin agar petugas GESIT bisa memverifikasi lebih cepat.</span>
             </p>
         </div>
         <x-banner-art ikon="send" :mini="['calendar', 'box', 'check']" />
@@ -62,11 +62,11 @@
                         @foreach ($daftarAlat as $alat)
                             <option value="{{ $alat->id }}"
                                     data-nama="{{ $alat->nama }}" data-kode="{{ $alat->kode }}" data-lokasi="{{ $alat->lokasi }}"
-                                    data-stok="{{ $alat->stok }}" data-kategori="{{ $alat->kategori }}"
+                                    data-stok="{{ $alat->stok }}" data-maks="{{ $alat->batasHariPinjam() }}" data-kategori="{{ $alat->kategori }}"
                                     data-foto="{{ $alat->fotoUrl() }}" data-deskripsi="{{ $alat->deskripsi }}"
                                     data-kategori-label="{{ $kategoriLabel[$alat->kategori] ?? $alat->kategori }}"
                                     {{ old('alat_id') == $alat->id ? 'selected' : '' }}>
-                                {{ $alat->nama }} — {{ $alat->lokasi }} ({{ $alat->stok }} unit tersedia)
+                                {{ $alat->nama }} — {{ $alat->lokasi }} ({{ $alat->stok }} unit tersedia · maks {{ $alat->batasHariPinjam() }} hari)
                             </option>
                         @endforeach
                     </select>
@@ -80,7 +80,7 @@
                     <div>
                         <label class="label" for="tgl_kembali"><span class="label-no">3</span>Rencana kembali</label>
                         <input id="tgl_kembali" type="date" name="tanggal_kembali_rencana" value="{{ old('tanggal_kembali_rencana') }}" class="field" required>
-                        <p class="hint">Maksimal {{ \App\Models\Peminjaman::MAKS_HARI_PINJAM }} hari dari tanggal pinjam.</p>
+                        <p class="hint" id="hint-kembali">Batas lama pinjam mengikuti alat yang dipilih.</p>
                     </div>
                 </div>
 
@@ -201,7 +201,7 @@
                 <div class="empty">
                     <span class="empty-ico"><svg class="ico" aria-hidden="true"><use href="#i-box"/></svg></span>
                     <h3>Belum ada alat terdaftar</h3>
-                    <p class="t-small">Hubungi petugas Sarpras.</p>
+                    <p class="t-small">Hubungi petugas GESIT.</p>
                 </div>
             @endforelse
         </div>
@@ -260,7 +260,12 @@
         if (kembali.value && kembali.value < kembali.min) kembali.value = kembali.min;
         // Batas maksimal lama pinjam
         const mulai = new Date((pinjam.value || hariIni) + 'T00:00:00');
-        mulai.setDate(mulai.getDate() + {{ \App\Models\Peminjaman::MAKS_HARI_PINJAM }});
+        const optAlat = pilih.selectedOptions[0];
+        const maksHari = (optAlat && optAlat.dataset.maks) ? parseInt(optAlat.dataset.maks, 10) : {{ \App\Models\Peminjaman::MAKS_HARI_PINJAM }};
+        $('hint-kembali').textContent = (optAlat && optAlat.value)
+            ? 'Maksimal ' + maksHari + ' hari dari tanggal pinjam untuk ' + optAlat.dataset.nama + '.'
+            : 'Batas lama pinjam mengikuti alat yang dipilih.';
+        mulai.setDate(mulai.getDate() + maksHari);
         kembali.max = mulai.getFullYear() + '-' + String(mulai.getMonth() + 1).padStart(2, '0') + '-' + String(mulai.getDate()).padStart(2, '0');
         if (kembali.value && kembali.value > kembali.max) kembali.value = kembali.max;
     };
@@ -299,6 +304,7 @@
     });
 
     pinjam.addEventListener('change', selaraskan);
+    pilih.addEventListener('change', selaraskan);
     selaraskan();
 
     // Info alat terpilih + batas jumlah mengikuti stok

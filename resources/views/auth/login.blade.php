@@ -73,7 +73,7 @@
                 <hr class="frame-sep">
 
                 <h1 class="t-page" style="margin-top:1.1rem" data-split>Masuk ke GESIT</h1>
-                <p id="catatan-peran" class="t-muted" style="margin-top:.35rem" aria-live="polite">Siswa masuk dengan NISN, guru dengan NIP.</p>
+                <p id="catatan-peran" class="t-muted" style="margin-top:.35rem" aria-live="polite">Siswa masuk dengan NIPD, guru dengan NIP.</p>
 
                 @if ($errors->any())
                     <div class="alert" role="alert" id="galat" style="margin-top:1.25rem">
@@ -88,7 +88,7 @@
                     <input type="hidden" name="role_hint" id="role_hint" value="siswa">
 
                     <div>
-                        <label class="label" for="input-nisn" id="label-nisn">NISN / NIP</label>
+                        <label class="label" for="input-nisn" id="label-nisn">NIPD / NIP</label>
                         <input type="text" name="nisn_nip" id="input-nisn" class="field"
                                inputmode="numeric" autocomplete="username"
                                placeholder="Contoh: 0091234567"
@@ -130,8 +130,8 @@
 
     <script>
         const peran = {
-            siswa: { catatan: 'Siswa masuk dengan NISN, guru dengan NIP.', label: 'NISN / NIP', contoh: 'Contoh: 0091234567' },
-            admin: { catatan: 'Petugas Sarpras masuk dengan NIP.', label: 'NIP petugas', contoh: 'Contoh: 0011234567' }
+            siswa: { catatan: 'Siswa masuk dengan NIPD, guru dengan NIP.', label: 'NIPD / NIP', contoh: 'Contoh: 0091234567' },
+            admin: { catatan: 'Petugas GESIT masuk dengan NIP.', label: 'NIP petugas', contoh: 'Contoh: 0011234567' }
         };
 
         function pilihPeran(nama) {

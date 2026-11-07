@@ -20,7 +20,7 @@ class BuktiPinjamController extends Controller
 
         // Bukti baru ada setelah pengajuan disetujui petugas
         if (! in_array($peminjaman->status, ['disetujui', 'dipinjam', 'selesai'], true)) {
-            return back()->withErrors(['bukti' => 'Bukti pinjam baru tersedia setelah pengajuan disetujui petugas Sarpras.']);
+            return back()->withErrors(['bukti' => 'Bukti pinjam baru tersedia setelah pengajuan disetujui petugas GESIT.']);
         }
 
         $peminjaman->load(['user', 'alat']);

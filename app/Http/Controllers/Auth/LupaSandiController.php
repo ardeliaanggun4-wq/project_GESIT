@@ -18,12 +18,14 @@ class LupaSandiController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge(['nisn_nip' => preg_replace('/\D+/', '', (string) $request->input('nisn_nip'))]);
+
         $data = $request->validate([
             'nisn_nip' => ['required', 'string'],
             'email' => ['required', 'email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ], [
-            'nisn_nip.required' => 'NISN / NIP wajib diisi.',
+            'nisn_nip.required' => 'NIPD / NIP wajib diisi.',
             'email.required' => 'Email akun wajib diisi.',
             'email.email' => 'Format email belum benar.',
             'password.required' => 'Kata sandi baru wajib diisi.',
@@ -39,7 +41,7 @@ class LupaSandiController extends Controller
 
         if (! $user) {
             return back()->withErrors([
-                'nisn_nip' => 'NISN / NIP dan email tidak cocok dengan akun siswa atau guru.',
+                'nisn_nip' => 'NIPD / NIP dan email tidak cocok dengan akun siswa atau guru.',
             ])->onlyInput('nisn_nip', 'email');
         }
 

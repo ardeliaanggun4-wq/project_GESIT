@@ -53,6 +53,7 @@ class DataAlatController extends Controller
             'deskripsi' => ['nullable', 'string', 'max:1000'],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'], // maks 2 MB
             'stok' => ['required', 'integer', 'min:0'],
+            'maks_hari_pinjam' => ['required', 'integer', 'min:1', 'max:30'],
             'kondisi' => ['required', 'in:baik,stok_habis'],
         ], $this->pesanValidasi());
 
@@ -75,6 +76,7 @@ class DataAlatController extends Controller
             'deskripsi' => ['nullable', 'string', 'max:1000'],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'], // maks 2 MB
             'stok' => ['required', 'integer', 'min:0'],
+            'maks_hari_pinjam' => ['required', 'integer', 'min:1', 'max:30'],
             'kondisi' => ['required', 'in:baik,stok_habis'],
         ], $this->pesanValidasi());
 
@@ -117,6 +119,9 @@ class DataAlatController extends Controller
             'foto.mimes' => 'Format foto harus JPG, PNG, atau WEBP.',
             'foto.max' => 'Ukuran foto maksimal 2 MB.',
             'deskripsi.max' => 'Deskripsi maksimal 1000 karakter.',
+            'maks_hari_pinjam.required' => 'Batas lama pinjam wajib diisi.',
+            'maks_hari_pinjam.min' => 'Batas lama pinjam minimal 1 hari.',
+            'maks_hari_pinjam.max' => 'Batas lama pinjam maksimal 30 hari.',
         ];
     }
 

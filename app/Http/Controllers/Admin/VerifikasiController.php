@@ -70,7 +70,7 @@ class VerifikasiController extends Controller
 
         $peminjaman->update([
             'status' => 'ditolak',
-            'catatan_admin' => $validated['catatan_admin'] ?? 'Ditolak oleh petugas Sarpras',
+            'catatan_admin' => $validated['catatan_admin'] ?? 'Ditolak oleh petugas GESIT',
         ]);
 
         return back()->with('status', "Pengajuan {$peminjaman->kode_pengajuan} ditolak.");

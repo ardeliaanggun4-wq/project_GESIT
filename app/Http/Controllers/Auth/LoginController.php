@@ -17,6 +17,9 @@ class LoginController extends Controller
 
     public function store(Request $request)
     {
+        // Spasi/titik pada NIP (mis. "19751211 200501 1 005") diabaikan
+        $request->merge(['nisn_nip' => preg_replace('/\D+/', '', (string) $request->input('nisn_nip'))]);
+
         $credentials = $request->validate([
             'nisn_nip' => ['required', 'string'],
             'password' => ['required', 'string'],
@@ -26,7 +29,7 @@ class LoginController extends Controller
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()->withErrors([
-                'nisn_nip' => 'NISN / NIP atau kata sandi salah.',
+                'nisn_nip' => 'NIPD / NIP atau kata sandi salah.',
             ])->onlyInput('nisn_nip');
         }
 

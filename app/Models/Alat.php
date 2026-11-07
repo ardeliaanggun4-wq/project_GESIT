@@ -14,7 +14,7 @@ class Alat extends Model
     protected $table = 'alat';
 
     protected $fillable = [
-        'kode', 'nama', 'kategori', 'lokasi', 'foto', 'deskripsi', 'stok', 'kondisi',
+        'kode', 'nama', 'kategori', 'lokasi', 'foto', 'deskripsi', 'stok', 'maks_hari_pinjam', 'kondisi',
     ];
 
     // Stok dan kondisi selalu sejalan, apa pun cara datanya disimpan:
@@ -33,6 +33,12 @@ class Alat extends Model
     public function fotoUrl(): ?string
     {
         return $this->foto ? asset('storage/' . $this->foto) : null;
+    }
+
+    // Lama pinjam maksimal alat ini (hari). Alat yang rawan rusak bila lama dipinjam diberi batas lebih pendek.
+    public function batasHariPinjam(): int
+    {
+        return max(1, (int) ($this->maks_hari_pinjam ?: Peminjaman::MAKS_HARI_PINJAM));
     }
 
     public function peminjaman()
