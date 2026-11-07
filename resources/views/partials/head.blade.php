@@ -267,7 +267,8 @@ dialog.drawer[open]{animation:drawerIn .26s var(--ease)}
 .side-link .soon-tag{margin-left:auto}
 .side-user{display:flex;flex-direction:column;gap:.75rem;padding-top:var(--s-4);border-top:1px solid var(--line)}
 .side-user .who{display:flex;align-items:center;gap:.65rem;min-width:0}
-.side-user .who-name{font-weight:600;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side-user .who > div:not(.avatar){flex:1 1 0;min-width:0}
+.side-user .who-name{font-weight:600;line-height:1.25;white-space:normal;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .side-user .who-role{font-size:.8125rem;color:var(--muted)}
 .side-user .btn{width:100%}
 .main{display:flex;flex-direction:column;min-height:100dvh;min-width:0;max-width:1240px;width:100%;padding:var(--s-6) var(--s-6) var(--s-7);animation:pageIn .32s var(--ease) both}
