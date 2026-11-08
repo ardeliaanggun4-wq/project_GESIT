@@ -52,8 +52,16 @@ class RingkasanController extends Controller
             ->take(5)
             ->get();
 
+        // Peminjaman yang melewati tanggal rencana kembali dan belum dikembalikan (terlama di atas)
+        $terlambatQuery = Peminjaman::with(['user', 'alat'])
+            ->whereIn('status', ['dipinjam', 'disetujui'])
+            ->whereDate('tanggal_kembali_rencana', '<', Carbon::today());
+        $totalTerlambat = (clone $terlambatQuery)->count();
+        $terlambat = $terlambatQuery->orderBy('tanggal_kembali_rencana')->take(5)->get();
+
         return view('admin.ringkasan', compact(
-            'stats', 'grafik', 'kategori', 'maxKategori', 'aktivitas', 'kondisi', 'perhatian', 'totalPerhatian'
+            'stats', 'grafik', 'kategori', 'maxKategori', 'aktivitas', 'kondisi', 'perhatian', 'totalPerhatian',
+            'terlambat', 'totalTerlambat'
         ));
     }
 }

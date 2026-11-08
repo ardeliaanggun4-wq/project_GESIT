@@ -42,6 +42,14 @@
         </div>
     @endif
 
+    @if ($fokus)
+        <div class="alert alert-info mb-6 rise" role="status">
+            <svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>
+            <span>Menampilkan satu pengajuan: <b>{{ $fokus->kode_pengajuan }}</b>.
+                <a href="{{ route('admin.verifikasi') }}" class="link">Tampilkan semua pengajuan</a></span>
+        </div>
+    @endif
+
     <nav class="mb-6 rise" style="--i:2" aria-label="Saring berdasarkan status">
         <div class="filters">
             @foreach ($kolom as $k)
@@ -126,16 +134,32 @@
                                     </p>
                                 @endif
                                 <form method="POST" action="{{ route('admin.verifikasi.kembali', $p) }}"
-                                      class="pj-act"
+                                      class="pj-act form-kembali"
+                                      style="flex-direction:column"
                                       data-confirm data-confirm-tone="primary"
                                       data-confirm-title="Tandai sudah dikembalikan?"
-                                      data-confirm-text="{{ $p->user->name }} mengembalikan {{ $p->jumlah }} unit {{ $p->alat->nama }}. Stok alat akan bertambah lagi."
+                                      data-confirm-text="{{ $p->user->name }} mengembalikan {{ $p->jumlah }} unit {{ $p->alat->nama }}. Stok bertambah sesuai unit yang kembali dalam kondisi baik."
                                       data-confirm-ok="Ya, sudah kembali">
                                     @csrf
+                                    <select name="kondisi_kembali" class="field" aria-label="Kondisi alat saat dikembalikan" data-kondisi>
+                                        <option value="baik">Kembali dalam kondisi baik</option>
+                                        <option value="rusak">Ada unit yang rusak</option>
+                                        <option value="hilang">Ada unit yang hilang</option>
+                                    </select>
+                                    <input type="number" name="unit_bermasalah" class="field" min="1" max="{{ $p->jumlah }}"
+                                           inputmode="numeric" placeholder="Berapa unit yang rusak / hilang? (maks {{ $p->jumlah }})"
+                                           aria-label="Jumlah unit rusak atau hilang" data-unit style="display:none">
+                                    <input type="text" name="catatan_kembali" class="field" maxlength="255"
+                                           placeholder="Catatan petugas (opsional)" aria-label="Catatan petugas saat alat dikembalikan">
                                     <button type="submit" class="btn btn-primary btn-sm"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-check"/></svg>Dikembalikan</button>
                                 </form>
                             @else
                                 <div class="mt-4"><x-status :nilai="$p->status" /></div>
+                                @if ($p->kondisi_kembali)
+                                    <p class="pj-note">
+                                        <b>{{ $p->kondisiKembaliLabel() }}</b>@if ($p->catatan_kembali) · {{ $p->catatan_kembali }}@endif
+                                    </p>
+                                @endif
                             @endif
                             @if (in_array($p->status, ['disetujui', 'dipinjam'], true))
                                 <div class="pj-act">
@@ -170,3 +194,23 @@
         </ul>
     </section>
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+    // Kolom "jumlah unit" hanya muncul bila ada yang rusak atau hilang
+    document.querySelectorAll('.form-kembali').forEach(function (form) {
+        var pilih = form.querySelector('[data-kondisi]');
+        var unit = form.querySelector('[data-unit]');
+        if (!pilih || !unit) return;
+        pilih.addEventListener('change', function () {
+            var bermasalah = pilih.value !== 'baik';
+            unit.style.display = bermasalah ? '' : 'none';
+            unit.required = bermasalah;
+            if (!bermasalah) unit.value = '';
+            else unit.focus();
+        });
+    });
+})();
+</script>
+@endpush

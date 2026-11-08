@@ -52,11 +52,28 @@ class BuktiPinjamController extends Controller
             }
         }
 
+        // QR menuju kartu pengajuan ini di sisi admin. Hanya dibuat bila paket bacon/qr-code sudah terpasang,
+        // jadi PDF tetap jalan tanpa QR kalau paketnya belum ada.
+        $qr = null;
+        if (class_exists(\BaconQrCode\Writer::class)) {
+            try {
+                $penulis = new \BaconQrCode\Writer(new \BaconQrCode\Renderer\ImageRenderer(
+                    new \BaconQrCode\Renderer\RendererStyle\RendererStyle(160, 0),
+                    new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+                ));
+                $qr = 'data:image/svg+xml;base64,' . base64_encode($penulis->writeString(route('admin.scan', $peminjaman)));
+            } catch (\Throwable $e) {
+                report($e);
+                $qr = null;
+            }
+        }
+
         $nama = 'bukti-pinjam-' . $peminjaman->kode_pengajuan . '.pdf';
 
         return Pdf::loadView('bukti-pinjam', [
             'p' => $peminjaman,
             'foto' => $foto,
+            'qr' => $qr,
             'dicetak' => now(),
         ])->setPaper('a4')->stream($nama);
     }

@@ -189,6 +189,35 @@
         </section>
     </div>
 
+    {{-- Terlambat dikembalikan --}}
+    <div class="sec-head">
+        <h2 class="t-sec">Terlambat dikembalikan</h2>
+        @if ($totalTerlambat > 5)
+            <a href="{{ route('admin.verifikasi', ['status' => 'disetujui']) }}" class="link t-small">Lihat semua ({{ $totalTerlambat }})</a>
+        @endif
+    </div>
+    <div class="card overflow-hidden rise mb-8" style="--i:7">
+        @forelse ($terlambat as $t)
+            <div class="list-row tone-no" style="--i: {{ $loop->index }}">
+                <x-avatar :user="$t->user" />
+                <div class="list-main">
+                    <div class="list-title">{{ $t->user->name }}@if($t->user->kelas_jabatan) <span class="t-muted" style="font-weight:400">· {{ $t->user->kelas_jabatan }}</span>@endif</div>
+                    <div class="list-sub">
+                        {{ $t->alat->nama }} · {{ $t->jumlah }} unit · terlambat <b>{{ $t->hariTerlambat() }} hari</b>
+                        @if ($t->melewatiBatasTelat()) · melewati batas {{ \App\Models\Peminjaman::MAKS_HARI_TELAT }} hari @endif
+                    </div>
+                </div>
+                <a href="{{ route('admin.scan', $t) }}" class="btn btn-secondary btn-sm">Proses</a>
+            </div>
+        @empty
+            <div class="empty">
+                <span class="empty-ico tone-ok" style="background:var(--t-bg);color:var(--t-fg)"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></span>
+                <h3>Tidak ada yang terlambat</h3>
+                <p>Semua alat yang dipinjam masih dalam batas waktu.</p>
+            </div>
+        @endforelse
+    </div>
+
     {{-- Aktivitas --}}
     <div class="sec-head"><h2 class="t-sec">Aktivitas terbaru</h2></div>
     <div class="card overflow-hidden rise" style="--i:7">

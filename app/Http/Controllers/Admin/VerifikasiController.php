@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 // Letak file: app/Http/Controllers/Admin/VerifikasiController.php
 
 use App\Http\Controllers\Controller;
+use App\Models\Alat;
 use App\Models\Peminjaman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,17 @@ class VerifikasiController extends Controller
             'ditolak' => ['ditolak'],
         ];
 
+        // Mode fokus: dibuka dari QR bukti pinjam atau dari daftar terlambat, hanya menampilkan satu pengajuan
+        $kode = trim((string) $request->query('kode', ''));
+        $fokus = $kode !== '' ? Peminjaman::where('kode_pengajuan', $kode)->first() : null;
+        if ($fokus) {
+            $filter = match ($fokus->status) {
+                'menunggu' => 'menunggu',
+                'ditolak' => 'ditolak',
+                default => 'disetujui',
+            };
+        }
+
         $jumlah = [];
         foreach ($statusFilter as $kunci => $daftarStatus) {
             $jumlah[$kunci] = Peminjaman::whereIn('status', $daftarStatus)->count();
@@ -35,29 +47,59 @@ class VerifikasiController extends Controller
             ->count();
 
         $daftar = Peminjaman::with(['user', 'alat'])
-            ->whereIn('status', $statusFilter[$filter])
+            ->when(
+                $fokus,
+                fn ($q) => $q->whereKey($fokus->id),
+                fn ($q) => $q->whereIn('status', $statusFilter[$filter])
+            )
             ->orderByRaw('pengembalian_diajukan_at IS NULL')
             ->latest()
             ->take(50)
             ->get();
 
-        return view('admin.verifikasi', compact('filter', 'jumlah', 'daftar'));
+        return view('admin.verifikasi', compact('filter', 'jumlah', 'daftar', 'fokus'));
+    }
+
+    // Tujuan QR bukti pinjam dan tautan di daftar terlambat: langsung membuka kartu satu pengajuan
+    public function scan(Peminjaman $peminjaman)
+    {
+        return redirect()->route('admin.verifikasi', ['kode' => $peminjaman->kode_pengajuan]);
     }
 
     public function approve(Peminjaman $peminjaman)
     {
-        $alat = $peminjaman->alat;
+        // Transaksi + kunci baris: dua petugas yang menyetujui bersamaan (atau klik ganda)
+        // tidak bisa mengurangi stok dua kali atau membuat stok minus.
+        $hasil = DB::transaction(function () use ($peminjaman) {
+            $p = Peminjaman::lockForUpdate()->findOrFail($peminjaman->id);
 
-        if ($alat->stok < $peminjaman->jumlah) {
+            if ($p->status !== 'menunggu') {
+                return 'sudah';
+            }
+
+            $alat = Alat::lockForUpdate()->findOrFail($p->alat_id);
+
+            if ($alat->stok < $p->jumlah) {
+                return 'stok';
+            }
+
+            $alat->decrement('stok', $p->jumlah);
+            $alat->refresh();
+            if ($alat->stok === 0) {
+                $alat->update(['kondisi' => 'stok_habis']);
+            }
+
+            $p->update(['status' => 'dipinjam']);
+
+            return 'ok';
+        });
+
+        if ($hasil === 'sudah') {
+            return back()->withErrors(['proses' => 'Pengajuan ini sudah diproses sebelumnya.']);
+        }
+        if ($hasil === 'stok') {
             return back()->withErrors(['stok' => 'Stok alat tidak mencukupi.']);
         }
-
-        $alat->decrement('stok', $peminjaman->jumlah);
-        if ($alat->fresh()->stok === 0) {
-            $alat->update(['kondisi' => 'stok_habis']);
-        }
-
-        $peminjaman->update(['status' => 'dipinjam']);
 
         return back()->with('status', "Pengajuan {$peminjaman->kode_pengajuan} disetujui.");
     }
@@ -76,27 +118,63 @@ class VerifikasiController extends Controller
         return back()->with('status', "Pengajuan {$peminjaman->kode_pengajuan} ditolak.");
     }
 
-    // Tandai alat sudah dikembalikan: stok bertambah lagi dan kondisi alat kembali "baik" bila sebelumnya habis
+    // Tandai alat sudah dikembalikan. Petugas mencatat kondisinya: unit yang baik kembali ke stok,
+    // unit yang rusak atau hilang dicatat di peminjaman dan tidak menambah stok.
     public function kembali(Request $request, Peminjaman $peminjaman)
     {
-        if (! in_array($peminjaman->status, ['dipinjam', 'disetujui'], true)) {
-            return back()->withErrors(['kembali' => 'Hanya peminjaman yang sedang berjalan yang bisa ditandai dikembalikan.']);
+        $validated = $request->validate([
+            'kondisi_kembali' => ['required', 'in:baik,rusak,hilang'],
+            'unit_bermasalah' => ['nullable', 'integer', 'min:1', 'max:' . $peminjaman->jumlah],
+            'catatan_kembali' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $kondisi = $validated['kondisi_kembali'];
+        $bermasalah = $kondisi === 'baik' ? 0 : (int) ($validated['unit_bermasalah'] ?? 0);
+
+        if ($kondisi !== 'baik' && $bermasalah < 1) {
+            return back()->withErrors(['kembali' => 'Isi jumlah unit yang rusak atau hilang (minimal 1).']);
         }
 
-        DB::transaction(function () use ($peminjaman) {
-            $alat = $peminjaman->alat;
+        $berhasil = DB::transaction(function () use ($peminjaman, $kondisi, $bermasalah, $validated) {
+            $p = Peminjaman::lockForUpdate()->findOrFail($peminjaman->id);
 
-            $alat->increment('stok', $peminjaman->jumlah);
-            if ($alat->kondisi === 'stok_habis') {
+            if (! in_array($p->status, ['dipinjam', 'disetujui'], true)) {
+                return false;
+            }
+
+            $alat = Alat::lockForUpdate()->findOrFail($p->alat_id);
+
+            $kembaliKeStok = $p->jumlah - $bermasalah;
+            if ($kembaliKeStok > 0) {
+                $alat->increment('stok', $kembaliKeStok);
+                $alat->refresh();
+            }
+
+            // Kondisi alat kembali "baik" bila stok sudah ada lagi
+            if ($alat->kondisi === 'stok_habis' && $alat->stok > 0) {
                 $alat->update(['kondisi' => 'baik']);
             }
 
-            $peminjaman->update([
+            $p->update([
                 'status' => 'selesai',
                 'tanggal_kembali_aktual' => now()->toDateString(),
+                'kondisi_kembali' => $kondisi,
+                'unit_bermasalah' => $bermasalah,
+                'catatan_kembali' => $validated['catatan_kembali'] ?? null,
             ]);
+
+            return true;
         });
 
-        return back()->with('status', "Pengajuan {$peminjaman->kode_pengajuan} ditandai sudah dikembalikan.");
+        if (! $berhasil) {
+            return back()->withErrors(['kembali' => 'Hanya peminjaman yang sedang berjalan yang bisa ditandai dikembalikan.']);
+        }
+
+        $pesan = "Pengajuan {$peminjaman->kode_pengajuan} ditandai sudah dikembalikan.";
+        if ($bermasalah > 0) {
+            $pesan .= " {$bermasalah} unit tercatat {$kondisi} dan tidak masuk stok.";
+        }
+
+        return back()->with('status', $pesan);
     }
 }

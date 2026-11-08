@@ -22,6 +22,7 @@ class Peminjaman extends Model
         'tanggal_pinjam', 'tanggal_kembali_rencana', 'tanggal_kembali_aktual',
         'keperluan', 'status', 'catatan_admin',
         'pengembalian_diajukan_at', 'catatan_pengembalian',
+        'kondisi_kembali', 'unit_bermasalah', 'catatan_kembali',
     ];
 
     protected function casts(): array
@@ -42,6 +43,17 @@ class Peminjaman extends Model
     public function alat()
     {
         return $this->belongsTo(Alat::class);
+    }
+
+    // Teks kondisi alat saat dikembalikan (null bila belum dikembalikan)
+    public function kondisiKembaliLabel(): ?string
+    {
+        return match ($this->kondisi_kembali) {
+            'baik' => 'Kembali dalam kondisi baik',
+            'rusak' => $this->unit_bermasalah . ' unit rusak',
+            'hilang' => $this->unit_bermasalah . ' unit hilang',
+            default => null,
+        };
     }
 
     // Jumlah hari terlambat (0 bila belum jatuh tempo atau alat sudah kembali)

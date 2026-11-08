@@ -43,6 +43,14 @@ class PinjamController extends Controller
             ]);
         }
 
+        // Jumlah tidak boleh melebihi stok (alat yang stoknya habis tetap bisa diajukan 1 unit, sesuai tampilan form)
+        $maksJumlah = max((int) $alat->stok, 1);
+        if ((int) $validated['jumlah'] > $maksJumlah) {
+            throw ValidationException::withMessages([
+                'jumlah' => 'Jumlah melebihi stok. Maksimal ' . $maksJumlah . ' unit untuk ' . $alat->nama . '.',
+            ]);
+        }
+
         // Belum boleh meminjam lagi bila ada alat yang terlambat melewati batas toleransi
         $tertahan = Auth::user()->peminjaman()
             ->whereIn('status', ['dipinjam', 'disetujui'])

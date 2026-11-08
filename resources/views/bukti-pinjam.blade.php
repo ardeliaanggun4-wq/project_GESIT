@@ -36,7 +36,12 @@
                     <h1>Bukti Peminjaman Alat</h1>
                     <div class="muted">GESIT · Inventaris Sarpras Sekolah</div>
                 </td>
-                <td class="kode">{{ $p->kode_pengajuan }}<br><span class="muted" style="font-size:10px;font-weight:normal">Status: {{ $p->statusLabel() }}</span></td>
+                <td class="kode">{{ $p->kode_pengajuan }}<br><span class="muted" style="font-size:10px;font-weight:normal">Status: {{ $p->statusLabel() }}</span>
+                    @if (!empty($qr))
+                        <br><img src="{{ $qr }}" style="width:76px;height:76px;margin-top:6px" alt="">
+                        <br><span class="muted" style="font-size:8px;font-weight:normal">Scan oleh petugas GESIT</span>
+                    @endif
+                </td>
             </tr>
         </table>
     </div>
@@ -84,6 +89,9 @@
         <tr><td class="k">Rencana kembali</td><td>{{ $p->tanggal_kembali_rencana->translatedFormat('l, j F Y') }}</td></tr>
         @if ($p->tanggal_kembali_aktual)
             <tr><td class="k">Dikembalikan</td><td>{{ $p->tanggal_kembali_aktual->translatedFormat('l, j F Y') }}</td></tr>
+        @endif
+        @if ($p->kondisi_kembali)
+            <tr><td class="k">Kondisi saat kembali</td><td>{{ $p->kondisiKembaliLabel() }}@if ($p->catatan_kembali) · {{ $p->catatan_kembali }}@endif</td></tr>
         @endif
         <tr><td class="k">Keperluan</td><td>{{ $p->keperluan ?: '-' }}</td></tr>
     </table>
