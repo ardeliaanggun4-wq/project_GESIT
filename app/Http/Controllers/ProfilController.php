@@ -8,6 +8,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProfilController extends Controller
 {
@@ -50,5 +51,30 @@ class ProfilController extends Controller
         }
 
         return back()->with('status', 'Foto profil dihapus.');
+    }
+
+    // Ganti kata sandi saat sudah login. Berlaku untuk admin, guru, dan siswa.
+    // Admin tidak bisa memakai "Lupa sandi" publik, jadi di sinilah admin mengganti
+    // kata sandi awal yang ditentukan pihak sekolah/pengembang.
+    public function updateSandi(Request $request)
+    {
+        $request->validateWithBag('sandi', [
+            'password_lama' => ['required', 'current_password'],
+            'password'      => ['required', 'string', 'min:8', 'confirmed', 'different:password_lama'],
+        ], [
+            'password_lama.required'         => 'Kata sandi saat ini wajib diisi.',
+            'password_lama.current_password' => 'Kata sandi saat ini salah.',
+            'password.required'              => 'Kata sandi baru wajib diisi.',
+            'password.min'                   => 'Kata sandi baru minimal 8 karakter.',
+            'password.confirmed'             => 'Konfirmasi kata sandi baru tidak sama.',
+            'password.different'             => 'Kata sandi baru harus berbeda dari yang lama.',
+        ]);
+
+        $request->user()->forceFill([
+            'password' => $request->input('password'), // di-hash otomatis oleh cast "hashed" pada model User
+            'remember_token' => Str::random(60),
+        ])->save();
+
+        return back()->with('status', 'Kata sandi berhasil diganti.');
     }
 }

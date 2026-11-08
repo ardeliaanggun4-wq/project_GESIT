@@ -6,9 +6,9 @@
     <div class="mb-8">
         <p class="eyebrow rise">Profil</p>
         <h1 class="display mt-3">
-            <span class="line"><span style="--i:0">Foto <span class="hl">profil</span></span></span>
+            <span class="line"><span style="--i:0"><span class="hl">Profil</span> akun</span></span>
         </h1>
-        <p class="page-lead rise" style="--i:2">Foto tampil di samping namamu. Format JPG, PNG, atau WEBP, maksimal 2 MB.</p>
+        <p class="page-lead rise" style="--i:2">Atur foto dan kata sandi akunmu. Foto: JPG, PNG, atau WEBP, maksimal 2 MB.</p>
     </div>
 
     @if ($errors->any())
@@ -56,6 +56,46 @@
                 </button>
             </form>
         @endif
+    </div>
+    <div class="card card-pad rise" style="--i:3; max-width:36rem; margin-top:1.5rem">
+        <div class="t-card">Ganti kata sandi</div>
+        <p class="t-small t-muted" style="margin-top:.25rem">
+            @if ($user->isAdmin())
+                Kata sandi awal akun admin ditentukan oleh sekolah. Ganti dengan kata sandi milikmu sendiri.
+            @else
+                Gunakan kata sandi yang sulit ditebak, minimal 8 karakter.
+            @endif
+        </p>
+
+        @if ($errors->sandi->any())
+            <div class="alert mt-4" role="alert">
+                <svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg>
+                <span>{{ $errors->sandi->first() }}</span>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('profil.sandi') }}" class="mt-6 space-y-4">
+            @csrf
+            @method('PUT')
+            <div>
+                <label class="label" for="password_lama">Kata sandi saat ini</label>
+                <input id="password_lama" type="password" name="password_lama" class="field" autocomplete="current-password" required>
+            </div>
+            <div>
+                <label class="label" for="password_baru">Kata sandi baru</label>
+                <input id="password_baru" type="password" name="password" class="field" autocomplete="new-password" minlength="8" required>
+                <p class="hint">Minimal 8 karakter.</p>
+            </div>
+            <div>
+                <label class="label" for="password_konfirmasi">Ulangi kata sandi baru</label>
+                <input id="password_konfirmasi" type="password" name="password_confirmation" class="field" autocomplete="new-password" minlength="8" required>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Simpan kata sandi
+                </button>
+            </div>
+        </form>
     </div>
 @endsection
 

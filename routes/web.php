@@ -21,6 +21,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profil', [ProfilController::class, 'show'])->name('profil');
     Route::post('/profil/foto', [ProfilController::class, 'updateFoto'])->name('profil.foto');
     Route::delete('/profil/foto', [ProfilController::class, 'hapusFoto'])->name('profil.foto.hapus');
+    Route::put('/profil/sandi', [ProfilController::class, 'updateSandi'])->middleware('throttle:5,1')->name('profil.sandi');
 
     // Bukti pinjam (PDF): dipakai siswa/guru pemilik peminjaman dan admin
     Route::get('/bukti-pinjam/{peminjaman}', [BuktiPinjamController::class, 'tampil'])->name('bukti-pinjam');
