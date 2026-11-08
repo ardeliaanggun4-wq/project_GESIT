@@ -36,12 +36,7 @@
                     <h1>Bukti Peminjaman Alat</h1>
                     <div class="muted">GESIT · Inventaris Sarpras Sekolah</div>
                 </td>
-                <td class="kode">{{ $p->kode_pengajuan }}<br><span class="muted" style="font-size:10px;font-weight:normal">Status: {{ $p->statusLabel() }}</span>
-                    @if (!empty($qr))
-                        <br><img src="{{ $qr }}" style="width:76px;height:76px;margin-top:6px" alt="">
-                        <br><span class="muted" style="font-size:8px;font-weight:normal">Scan oleh petugas GESIT</span>
-                    @endif
-                </td>
+                <td class="kode">{{ $p->kode_pengajuan }}<br><span class="muted" style="font-size:10px;font-weight:normal">Status: {{ $p->statusLabel() }}</span></td>
             </tr>
         </table>
     </div>
