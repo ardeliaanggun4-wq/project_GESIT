@@ -33,7 +33,7 @@
             ['check', 'Satu pengajuan untuk satu jenis alat. Butuh beberapa jenis alat? Kirim pengajuan terpisah.'],
             ['calendar', 'Cek tanggal sebelum mengirim. Pengajuan tidak bisa diubah, tetapi bisa dibatalkan di Riwayat selama masih Menunggu.'],
             ['bell', 'Beranda memberi pengingat saat ada alat yang jatuh tempo hari ini. Kembalikan sebelum jam pulang sekolah.'],
-            ['wrench', 'Jaga alat tetap utuh. Bila ada kerusakan atau kehilangan, segera lapor ke petugas GESIT.'],
+            ['wrench', 'Jaga alat tetap utuh. Bila ada kerusakan atau kehilangan, segera lapor ke petugas GESIT. Ada ketentuan untuk alat yang rusak, hilang, atau terlambat dikembalikan, lihat bagian Ketentuan.'],
         ];
 
         $tanya = [
@@ -48,7 +48,9 @@
             ['Pengajuanku ditolak. Apakah bisa mengajukan lagi?',
              'Bisa. Lihat alasan penolakannya di Riwayat, lalu kirim pengajuan baru dengan alat, jumlah, atau tanggal yang sesuai.'],
             ['Aku terlambat mengembalikan alat.',
-             'Segera temui petugas GESIT dan serahkan alatnya. Keterlambatan paling lama 2 hari dari tanggal rencana kembali. Lewat dari itu, kamu belum bisa mengajukan peminjaman baru sampai alatnya dikembalikan.'],
+             'Segera temui petugas GESIT dan serahkan alatnya. Terlambat 1 sampai 2 hari dicatat dan kamu diberi peringatan. Lewat dari 2 hari, kamu belum bisa mengajukan peminjaman baru sampai alatnya dikembalikan, dan tercatat sebagai pelanggaran.'],
+            ['Alat yang kupinjam rusak atau hilang. Bagaimana?',
+             'Segera lapor ke petugas GESIT. Kamu wajib memperbaiki alat yang rusak, atau mengganti alat yang hilang dengan yang sama atau setara. Selama kewajiban itu belum ditandai selesai oleh petugas, kamu belum bisa mengajukan peminjaman baru.'],
             ['Aku tidak bisa masuk ke akun.',
              'Pastikan kamu memilih tab “Siswa / Guru”, lalu periksa NIPD atau NIP dan kata sandimu. Bila tetap gagal, minta bantuan petugas GESIT.'],
         ];
@@ -96,6 +98,7 @@
             <a href="#formulir" class="filter-chip">Mengisi formulir</a>
             <a href="#status" class="filter-chip">Arti status</a>
             <a href="#aturan" class="filter-chip">Hal penting</a>
+            <a href="#ketentuan" class="filter-chip">Ketentuan</a>
             <a href="#tanya" class="filter-chip">Pertanyaan umum</a>
         </div>
     </nav>
@@ -156,6 +159,19 @@
                 <div class="rule tone-wait">
                     <span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-{{ $ikon }}"/></svg></span>
                     <p>{{ $isi }}</p>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
+    {{-- 4b. Ketentuan pengembalian (isinya diatur di App\Models\Peminjaman::ketentuan()) --}}
+    <section id="ketentuan" class="guide-sec">
+        <div class="sec-head"><h2 class="t-sec">Ketentuan pengembalian</h2></div>
+        <div class="card overflow-hidden rise" style="--i:2">
+            @foreach (\App\Models\Peminjaman::ketentuan() as [$ikon, $judul, $isi])
+                <div class="rule tone-wait">
+                    <span class="row-ico"><svg class="ico" aria-hidden="true"><use href="#i-{{ $ikon }}"/></svg></span>
+                    <p><b>{{ $judul }}.</b> {{ $isi }}</p>
                 </div>
             @endforeach
         </div>

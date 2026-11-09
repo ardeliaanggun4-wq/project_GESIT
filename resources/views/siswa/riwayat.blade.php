@@ -102,6 +102,22 @@
                     <p class="pj-note">{{ $p->catatan_admin }}</p>
                 @endif
 
+                @if ($selesai)
+                    @if ($p->hari_terlambat > 0)
+                        <p class="pj-note"><b>Terlambat {{ $p->hari_terlambat }} hari</b> saat dikembalikan.@if ($p->hari_terlambat > \App\Models\Peminjaman::MAKS_HARI_TELAT) Melewati batas toleransi, tercatat sebagai pelanggaran.@else Kamu diberi peringatan.@endif</p>
+                    @endif
+                    @if ($p->kondisi_kembali && $p->kondisi_kembali !== 'baik')
+                        <p class="pj-note">
+                            <b>{{ $p->kondisiKembaliLabel() }}.</b>
+                            @if ($p->punyaKewajiban())
+                                Kamu wajib memperbaiki atau mengganti alat ini. Temui petugas GESIT di ruang Sarpras. Selama belum selesai, kamu belum bisa mengajukan peminjaman baru.
+                            @else
+                                Kewajiban sudah diselesaikan.
+                            @endif
+                        </p>
+                    @endif
+                @endif
+
                 @if ($aktif && $p->pengembalian_diajukan_at)
                     <p class="pj-note">
                         <b>Pengembalian diajukan</b> {{ $p->pengembalian_diajukan_at->translatedFormat('j M, H:i') }}.

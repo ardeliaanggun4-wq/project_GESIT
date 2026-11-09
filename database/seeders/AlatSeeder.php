@@ -37,7 +37,7 @@ class AlatSeeder extends Seeder
             );
         }
 
-        // Alat yang tidak ada di daftar ini dihapus (peminjaman terkaitnya ikut terhapus)
-        Alat::whereNotIn('kode', array_column($daftar, 'kode'))->delete();
+        // Catatan: seeder ini tidak menghapus alat lain. Alat yang ditambah admin lewat aplikasi
+        // (dan riwayat peminjamannya) aman bila seeder dijalankan lagi.
     }
 }

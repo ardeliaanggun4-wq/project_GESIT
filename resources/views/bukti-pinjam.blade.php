@@ -88,14 +88,18 @@
         @if ($p->kondisi_kembali)
             <tr><td class="k">Kondisi saat kembali</td><td>{{ $p->kondisiKembaliLabel() }}@if ($p->catatan_kembali) · {{ $p->catatan_kembali }}@endif</td></tr>
         @endif
+        @if ($p->sanksi)
+            <tr><td class="k">Ketentuan dikenakan</td><td>{{ $p->sanksi }}</td></tr>
+        @endif
         <tr><td class="k">Keperluan</td><td>{{ $p->keperluan ?: '-' }}</td></tr>
     </table>
 
     <h2>Ketentuan</h2>
     <div class="box">
-        Alat dikembalikan ke ruang Sarpras paling lambat pada tanggal rencana kembali. Toleransi keterlambatan maksimal
-        {{ \App\Models\Peminjaman::MAKS_HARI_TELAT }} hari; setelah itu peminjam belum bisa mengajukan peminjaman baru.
-        Alat yang rusak atau hilang menjadi tanggung jawab peminjam.
+        Alat dikembalikan ke ruang Sarpras paling lambat pada tanggal rencana kembali.
+        @foreach (\App\Models\Peminjaman::ketentuan() as [$ikon, $judul, $isi])
+            <br>&bull; <b>{{ $judul }}:</b> {{ $isi }}
+        @endforeach
     </div>
 
     <table class="ttd" style="margin-top:22px">

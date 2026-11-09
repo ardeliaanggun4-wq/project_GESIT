@@ -126,6 +126,30 @@
         </div>
     </div>
 
+    {{-- Ketentuan pengembalian: terlambat, rusak, hilang --}}
+    <div class="stats stats-4 mb-6">
+        <div class="stat tone-wait rise" style="--i:6">
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg></span>
+            <div class="stat-label">Dikembalikan terlambat</div>
+            <div class="stat-num" data-count="{{ $stats['telat_kembali'] }}">{{ $stats['telat_kembali'] }}</div>
+        </div>
+        <div class="stat tone-no rise" style="--i:7">
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-wrench"/></svg></span>
+            <div class="stat-label">Unit rusak</div>
+            <div class="stat-num" data-count="{{ $stats['unit_rusak'] }}">{{ $stats['unit_rusak'] }}</div>
+        </div>
+        <div class="stat tone-no rise" style="--i:8">
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg></span>
+            <div class="stat-label">Unit hilang</div>
+            <div class="stat-num" data-count="{{ $stats['unit_hilang'] }}">{{ $stats['unit_hilang'] }}</div>
+        </div>
+        <div class="stat tone-wait rise" style="--i:9">
+            <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></span>
+            <div class="stat-label">Kewajiban tertunda</div>
+            <div class="stat-num" data-count="{{ $stats['kewajiban'] }}">{{ $stats['kewajiban'] }}</div>
+        </div>
+    </div>
+
     {{-- Komposisi status & alat terpopuler --}}
     <div class="grid lg:grid-cols-2 gap-6 mb-8 no-break">
         <section class="card card-pad card-accent rise" style="--i:5">
@@ -227,6 +251,18 @@
                                     <div class="alat-lok" style="color:var(--danger);font-weight:600">Terlambat {{ $hariTelat }} hari</div>
                                 @elseif ($p->status === 'ditolak' && $p->catatan_admin)
                                     <div class="alat-lok">{{ $p->catatan_admin }}</div>
+                                @endif
+                                @if ($p->status === 'selesai' && $p->hari_terlambat > 0)
+                                    <div class="alat-lok" style="color:var(--danger);font-weight:600">Dikembalikan terlambat {{ $p->hari_terlambat }} hari</div>
+                                @endif
+                                @if ($p->kondisi_kembali && $p->kondisi_kembali !== 'baik')
+                                    <div class="alat-lok" style="color:var(--danger);font-weight:600">{{ $p->kondisiKembaliLabel() }}@if ($p->punyaKewajiban()) · kewajiban belum selesai @endif</div>
+                                @endif
+                                @if ($p->petugas)
+                                    <div class="alat-lok">Diproses {{ $p->petugas->name }}</div>
+                                @endif
+                                @if ($p->penerima)
+                                    <div class="alat-lok">Diterima {{ $p->penerima->name }}</div>
                                 @endif
                             </td>
                         </tr>

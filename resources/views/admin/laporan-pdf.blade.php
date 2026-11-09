@@ -50,6 +50,14 @@
             <td>Ditolak<b>{{ $stats['ditolak'] }}</b></td>
         </tr>
     </table>
+    <table class="ringkas" style="margin-top:6px">
+        <tr>
+            <td>Dikembalikan terlambat<b>{{ $stats['telat_kembali'] }}</b></td>
+            <td>Unit rusak<b>{{ $stats['unit_rusak'] }}</b></td>
+            <td>Unit hilang<b>{{ $stats['unit_hilang'] }}</b></td>
+            <td>Kewajiban tertunda<b>{{ $stats['kewajiban'] }}</b></td>
+        </tr>
+    </table>
 
     <p style="margin:8px 0 0">
         <b>Menurut status:</b>
@@ -75,11 +83,11 @@
                 <tr>
                     <th style="width:4%">No</th>
                     <th style="width:11%">Kode</th>
-                    <th style="width:24%">Peminjam</th>
-                    <th style="width:21%">Alat</th>
+                    <th style="width:20%">Peminjam</th>
+                    <th style="width:19%">Alat</th>
                     <th class="tengah" style="width:6%">Jml</th>
-                    <th style="width:20%">Tanggal</th>
-                    <th style="width:14%">Status</th>
+                    <th style="width:18%">Tanggal</th>
+                    <th style="width:22%">Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -107,6 +115,10 @@
                         <td>
                             {{ $p->statusLabel() }}
                             @if ($telat)<br><span class="telat">Telat {{ $hariTelat }} hari</span>@endif
+                            @if ($p->status === 'selesai' && $p->hari_terlambat > 0)<br><span class="telat">Kembali telat {{ $p->hari_terlambat }} hari</span>@endif
+                            @if ($p->kondisi_kembali && $p->kondisi_kembali !== 'baik')<br><span class="telat">{{ $p->kondisiKembaliLabel() }}</span>@if ($p->punyaKewajiban()) <span class="kecil">(kewajiban belum selesai)</span>@endif @endif
+                            @if ($p->petugas)<br><span class="kecil">Diproses {{ $p->petugas->name }}</span>@endif
+                            @if ($p->penerima)<br><span class="kecil">Diterima {{ $p->penerima->name }}</span>@endif
                         </td>
                     </tr>
                 @endforeach

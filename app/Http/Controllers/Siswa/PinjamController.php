@@ -63,6 +63,13 @@ class PinjamController extends Controller
             ]);
         }
 
+        // Belum boleh meminjam lagi bila masih punya kewajiban memperbaiki/mengganti alat rusak atau hilang
+        if (Auth::user()->peminjaman()->kewajibanBelumSelesai()->exists()) {
+            throw ValidationException::withMessages([
+                'alat_id' => 'Kamu belum bisa mengajukan peminjaman baru karena masih ada kewajiban memperbaiki atau mengganti alat yang rusak atau hilang. Temui petugas GESIT di ruang Sarpras.',
+            ]);
+        }
+
         Peminjaman::create([
             'kode_pengajuan' => Peminjaman::generateKode(),
             'user_id' => Auth::id(),

@@ -70,6 +70,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/verifikasi/{peminjaman}/setujui', [VerifikasiController::class, 'approve'])->name('verifikasi.approve');
     Route::post('/verifikasi/{peminjaman}/tolak', [VerifikasiController::class, 'reject'])->name('verifikasi.reject');
     Route::post('/verifikasi/{peminjaman}/kembali', [VerifikasiController::class, 'kembali'])->name('verifikasi.kembali');
+    Route::post('/verifikasi/{peminjaman}/kewajiban-selesai', [VerifikasiController::class, 'selesaikanKewajiban'])->name('verifikasi.kewajiban');
     Route::get('/scan/{peminjaman}', [VerifikasiController::class, 'scan'])->name('scan');
 
     Route::get('/data-alat', [DataAlatController::class, 'index'])->name('data-alat');

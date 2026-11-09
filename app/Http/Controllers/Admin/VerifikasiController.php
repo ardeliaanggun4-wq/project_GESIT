@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Alat;
 use App\Models\Peminjaman;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class VerifikasiController extends Controller
@@ -15,7 +16,7 @@ class VerifikasiController extends Controller
     public function index(Request $request)
     {
         // Filter status: default "menunggu" supaya pengajuan yang perlu diproses selalu tampil paling atas
-        $filter = in_array($request->query('status'), ['menunggu', 'disetujui', 'ditolak'], true)
+        $filter = in_array($request->query('status'), ['menunggu', 'disetujui', 'ditolak', 'kewajiban'], true)
             ? $request->query('status')
             : 'menunggu';
 
@@ -32,6 +33,7 @@ class VerifikasiController extends Controller
             $filter = match ($fokus->status) {
                 'menunggu' => 'menunggu',
                 'ditolak' => 'ditolak',
+                'selesai' => $fokus->punyaKewajiban() ? 'kewajiban' : 'disetujui',
                 default => 'disetujui',
             };
         }
@@ -41,16 +43,21 @@ class VerifikasiController extends Controller
             $jumlah[$kunci] = Peminjaman::whereIn('status', $daftarStatus)->count();
         }
 
+        // Alat rusak/hilang yang kewajiban gantinya belum diselesaikan
+        $jumlah['kewajiban'] = Peminjaman::kewajibanBelumSelesai()->count();
+
         // Peminjaman aktif yang siswanya sudah mengajukan pengembalian
         $jumlah['minta_kembali'] = Peminjaman::whereIn('status', ['dipinjam', 'disetujui'])
             ->whereNotNull('pengembalian_diajukan_at')
             ->count();
 
-        $daftar = Peminjaman::with(['user', 'alat'])
+        $daftar = Peminjaman::with(['user', 'alat', 'petugas', 'penerima'])
             ->when(
                 $fokus,
                 fn ($q) => $q->whereKey($fokus->id),
-                fn ($q) => $q->whereIn('status', $statusFilter[$filter])
+                fn ($q) => $filter === 'kewajiban'
+                    ? $q->kewajibanBelumSelesai()
+                    : $q->whereIn('status', $statusFilter[$filter])
             )
             ->orderByRaw('pengembalian_diajukan_at IS NULL')
             ->latest()
@@ -89,7 +96,7 @@ class VerifikasiController extends Controller
                 $alat->update(['kondisi' => 'stok_habis']);
             }
 
-            $p->update(['status' => 'dipinjam']);
+            $p->update(['status' => 'dipinjam', 'diproses_oleh' => Auth::id(), 'diproses_at' => now()]);
 
             return 'ok';
         });
@@ -113,6 +120,8 @@ class VerifikasiController extends Controller
         $peminjaman->update([
             'status' => 'ditolak',
             'catatan_admin' => $validated['catatan_admin'] ?? 'Ditolak oleh petugas GESIT',
+            'diproses_oleh' => Auth::id(),
+            'diproses_at' => now(),
         ]);
 
         return back()->with('status', "Pengajuan {$peminjaman->kode_pengajuan} ditolak.");
@@ -135,7 +144,13 @@ class VerifikasiController extends Controller
             return back()->withErrors(['kembali' => 'Isi jumlah unit yang rusak atau hilang (minimal 1).']);
         }
 
-        $berhasil = DB::transaction(function () use ($peminjaman, $kondisi, $bermasalah, $validated) {
+        // Ketentuan: hitung keterlambatan dan susun ringkasan sanksi sesuai Peminjaman::ketentuan()
+        $hariTelat = $peminjaman->tanggal_kembali_rencana && $peminjaman->tanggal_kembali_rencana->lt(today())
+            ? (int) abs($peminjaman->tanggal_kembali_rencana->diffInDays(today()))
+            : 0;
+        $sanksi = Peminjaman::susunSanksi($kondisi, $bermasalah, $hariTelat);
+
+        $berhasil = DB::transaction(function () use ($peminjaman, $kondisi, $bermasalah, $validated, $hariTelat, $sanksi) {
             $p = Peminjaman::lockForUpdate()->findOrFail($peminjaman->id);
 
             if (! in_array($p->status, ['dipinjam', 'disetujui'], true)) {
@@ -161,6 +176,10 @@ class VerifikasiController extends Controller
                 'kondisi_kembali' => $kondisi,
                 'unit_bermasalah' => $bermasalah,
                 'catatan_kembali' => $validated['catatan_kembali'] ?? null,
+                'hari_terlambat' => $hariTelat,
+                'sanksi' => $sanksi,
+                'diterima_oleh' => Auth::id(),
+                'diterima_at' => now(),
             ]);
 
             return true;
@@ -174,7 +193,23 @@ class VerifikasiController extends Controller
         if ($bermasalah > 0) {
             $pesan .= " {$bermasalah} unit tercatat {$kondisi} dan tidak masuk stok.";
         }
+        if ($sanksi) {
+            $pesan .= ' Ketentuan: ' . $sanksi;
+        }
 
         return back()->with('status', $pesan);
+    }
+
+    // Tandai kewajiban memperbaiki/mengganti alat (rusak atau hilang) sudah diselesaikan peminjam.
+    // Setelah itu peminjam bisa mengajukan peminjaman baru lagi.
+    public function selesaikanKewajiban(Peminjaman $peminjaman)
+    {
+        if (! $peminjaman->punyaKewajiban()) {
+            return back()->withErrors(['proses' => 'Peminjaman ini tidak punya kewajiban yang perlu diselesaikan.']);
+        }
+
+        $peminjaman->update(['kewajiban_selesai_at' => now()]);
+
+        return back()->with('status', "Kewajiban peminjaman {$peminjaman->kode_pengajuan} ditandai selesai. {$peminjaman->user->name} bisa meminjam lagi.");
     }
 }

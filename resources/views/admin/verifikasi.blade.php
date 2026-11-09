@@ -8,6 +8,7 @@
             ['kunci' => 'menunggu',  'judul' => 'Menunggu',  'nada' => 'wait', 'ikon' => 'clock', 'kosong' => 'Tidak ada pengajuan yang menunggu.', 'sub' => 'Semua pengajuan sudah diproses.'],
             ['kunci' => 'disetujui', 'judul' => 'Disetujui', 'nada' => 'ok',   'ikon' => 'check', 'kosong' => 'Belum ada yang disetujui.',           'sub' => 'Pengajuan yang kamu setujui tampil di sini.'],
             ['kunci' => 'ditolak',   'judul' => 'Ditolak',   'nada' => 'no',   'ikon' => 'x',     'kosong' => 'Belum ada yang ditolak.',             'sub' => 'Pengajuan yang ditolak tampil di sini.'],
+            ['kunci' => 'kewajiban', 'judul' => 'Kewajiban', 'nada' => 'no',   'ikon' => 'alert', 'kosong' => 'Tidak ada kewajiban yang tertunda.',  'sub' => 'Alat rusak atau hilang yang belum diganti tampil di sini.'],
         ];
     @endphp
 
@@ -25,7 +26,7 @@
         <x-banner-art ikon="verif" :mini="['clock', 'check', 'x']" />
     </section>
 
-    <div class="stats stats-3 mb-8">
+    <div class="stats stats-4 mb-8">
         @foreach ($kolom as $k)
             <div class="stat tone-{{ $k['nada'] }} {{ $k['nada'] === 'wait' && $jumlah['menunggu'] > 0 ? 'is-alert' : '' }} rise" style="--i: {{ $loop->index + 2 }}">
                 <span class="stat-ico"><svg class="ico" aria-hidden="true"><use href="#i-{{ $k['ikon'] }}"/></svg></span>
@@ -129,7 +130,7 @@
                                 @if ($p->pengembalian_diajukan_at)
                                     <p class="pj-note">
                                         <b>Siswa mengajukan pengembalian</b> {{ $p->pengembalian_diajukan_at->translatedFormat('j M, H:i') }}.
-                                        Cek fisik alat sebelum menandai dikembalikan.
+                                        Cek fisik alat sebelum menandai dikembalikan. Unit rusak atau hilang wajib diganti peminjam, keterlambatan dicatat otomatis.
                                         @if ($p->catatan_pengembalian)<br>Catatan siswa: {{ $p->catatan_pengembalian }}@endif
                                     </p>
                                 @endif
@@ -160,6 +161,21 @@
                                         <b>{{ $p->kondisiKembaliLabel() }}</b>@if ($p->catatan_kembali) · {{ $p->catatan_kembali }}@endif
                                     </p>
                                 @endif
+                                @if ($p->sanksi)
+                                    <p class="pj-note"><b>Ketentuan:</b> {{ $p->sanksi }}</p>
+                                @endif
+                                @if ($p->punyaKewajiban())
+                                    <form method="POST" action="{{ route('admin.verifikasi.kewajiban', $p) }}" class="pj-act"
+                                          data-confirm data-confirm-tone="primary"
+                                          data-confirm-title="Kewajiban sudah diselesaikan?"
+                                          data-confirm-text="{{ $p->user->name }} sudah memperbaiki atau mengganti alat. Setelah ini ia bisa mengajukan peminjaman baru."
+                                          data-confirm-ok="Ya, sudah selesai">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary btn-sm"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-check"/></svg>Kewajiban selesai</button>
+                                    </form>
+                                @elseif ($p->kewajiban_selesai_at)
+                                    <p class="pj-note">Kewajiban diselesaikan {{ $p->kewajiban_selesai_at->translatedFormat('j M Y') }}.</p>
+                                @endif
                             @endif
                             @if (in_array($p->status, ['disetujui', 'dipinjam'], true))
                                 <div class="pj-act">
@@ -167,6 +183,12 @@
                                         <svg class="ico ico-sm" aria-hidden="true"><use href="#i-book"/></svg>Bukti pinjam (PDF)
                                     </a>
                                 </div>
+                            @endif
+                            @if ($p->petugas || $p->penerima)
+                                <p class="pj-note">
+                                    @if ($p->petugas)Diproses oleh <b>{{ $p->petugas->name }}</b>@if ($p->diproses_at), {{ $p->diproses_at->translatedFormat('j M H:i') }}@endif.@endif
+                                    @if ($p->penerima) Alat diterima oleh <b>{{ $p->penerima->name }}</b>@if ($p->diterima_at), {{ $p->diterima_at->translatedFormat('j M H:i') }}@endif.@endif
+                                </p>
                             @endif
                         </article>
                     @empty
@@ -213,4 +235,4 @@
     });
 })();
 </script>
-@endpush
+@endpushphp artisan migrate

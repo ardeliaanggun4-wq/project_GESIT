@@ -108,7 +108,23 @@
                         <tr class="has-kat" data-kat="{{ $a->kategori }}">
                             <td><span class="kode">{{ $a->kode }}</span></td>
                             <td>
-                                <div class="flex items-center gap-3">
+                                {{-- Klik gambar atau nama/deskripsi untuk membuka detail alat --}}
+                                <div class="flex items-center gap-3 alat-klik" role="button" tabindex="0"
+                                     title="Klik untuk melihat detail" aria-label="Lihat detail {{ $a->nama }}"
+                                     data-open="dlg-detail"
+                                     data-foto-url="{{ $a->fotoUrl() }}"
+                                     data-hapus-action="{{ route('admin.data-alat.destroy', $a) }}"
+                                     data-nama="{{ $a->nama }}" data-kode="{{ $a->kode }}"
+                                     data-fill="{{ json_encode([
+                                         '#d-kode' => $a->kode,
+                                         '#d-nama' => $a->nama,
+                                         '#d-kategori' => $a->kategoriLabel(),
+                                         '#d-kondisi' => $a->kondisiLabel(),
+                                         '#d-lokasi' => $a->lokasi ?: '-',
+                                         '#d-stok' => $a->stok . ' unit',
+                                         '#d-maks' => $a->batasHariPinjam() . ' hari',
+                                         '#d-deskripsi' => $a->deskripsi ?: 'Belum ada deskripsi.',
+                                     ]) }}">
                                     @if ($a->fotoUrl())
                                         <img src="{{ $a->fotoUrl() }}" alt="Foto {{ $a->nama }}" class="alat-thumb" loading="lazy">
                                     @else
@@ -250,6 +266,85 @@
             </div>
         </form>
     </dialog>
+
+    {{-- Dialog detail alat: terbuka saat gambar atau deskripsi alat di tabel diklik --}}
+    <style>
+        .alat-klik{cursor:pointer;border-radius:10px}
+        .alat-klik:hover .alat-nama{color:var(--primary);text-decoration:underline}
+        .alat-klik:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+        .detail-foto{display:block;width:100%;max-height:16rem;object-fit:contain;border-radius:12px;border:1px solid var(--line);background:var(--surface-2)}
+        .detail-foto-kosong{display:grid;place-items:center;height:9rem;border-radius:12px;border:1px dashed var(--line-strong);background:var(--surface-2);color:var(--muted);font-size:.875rem}
+        .detail-grid{display:grid;grid-template-columns:8.5rem minmax(0,1fr);gap:.6rem 1rem;margin:1.1rem 0 0}
+        .detail-grid dt{color:var(--muted);font-size:.875rem}
+        .detail-grid dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+        .detail-grid dd.desk{font-weight:400;white-space:pre-line}
+        .dlg-foot .btn-hapus-detail{margin-right:auto}
+    </style>
+    <dialog id="dlg-detail" class="dlg" aria-labelledby="d-nama">
+        <div class="dlg-head">
+            <div>
+                <p class="t-xs t-muted">Detail alat · <span id="d-kode"></span></p>
+                <h2 id="d-nama" class="t-sec"></h2>
+            </div>
+            <button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Tutup"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
+        </div>
+        <div class="dlg-body">
+            <img id="d-foto" class="detail-foto" alt="Foto alat" hidden>
+            <div id="d-foto-kosong" class="detail-foto-kosong">Belum ada foto</div>
+            <dl class="detail-grid">
+                <dt>Kategori</dt><dd id="d-kategori"></dd>
+                <dt>Kondisi</dt><dd id="d-kondisi"></dd>
+                <dt>Stok</dt><dd id="d-stok"></dd>
+                <dt>Lokasi</dt><dd id="d-lokasi"></dd>
+                <dt>Batas lama pinjam</dt><dd id="d-maks"></dd>
+                <dt>Deskripsi</dt><dd id="d-deskripsi" class="desk"></dd>
+            </dl>
+        </div>
+        <div class="dlg-foot">
+            <form id="d-hapus-form" method="POST" action="#" class="btn-hapus-detail"
+                  data-confirm data-confirm-title="Hapus alat ini?" data-confirm-text="" data-confirm-ok="Ya, hapus">
+                @csrf @method('DELETE')
+                <button type="submit" class="btn btn-ghost is-danger"><svg class="ico" aria-hidden="true"><use href="#i-trash"/></svg>Hapus</button>
+            </form>
+            <button type="button" class="btn btn-secondary" data-close>Tutup</button>
+            <button type="button" class="btn btn-primary" id="d-ubah"><svg class="ico" aria-hidden="true"><use href="#i-edit"/></svg>Ubah</button>
+        </div>
+    </dialog>
+
+    <script>
+        (function () {
+            var detail = document.getElementById('dlg-detail');
+            var foto = document.getElementById('d-foto');
+            var fotoKosong = document.getElementById('d-foto-kosong');
+            var formHapus = document.getElementById('d-hapus-form');
+            var baris = null; // baris alat yang sedang dilihat
+
+            document.querySelectorAll('.alat-klik').forEach(function (el) {
+                // Isi teks detail ditangani handler dialog umum (data-fill); di sini foto dan form hapus
+                el.addEventListener('click', function () {
+                    baris = el.closest('tr');
+                    var url = el.dataset.fotoUrl || '';
+                    if (url) { foto.src = url; foto.alt = 'Foto ' + el.dataset.nama; foto.hidden = false; fotoKosong.hidden = true; }
+                    else { foto.removeAttribute('src'); foto.hidden = true; fotoKosong.hidden = false; }
+                    formHapus.action = el.dataset.hapusAction;
+                    formHapus.dataset.confirmText = el.dataset.nama + ' (' + el.dataset.kode + ') akan dihapus dari inventaris.';
+                    delete formHapus.dataset.dikonfirmasi;
+                    delete formHapus.dataset.busy;
+                });
+                // Bisa dibuka dengan keyboard (Enter atau Spasi)
+                el.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+                });
+            });
+
+            // Tombol Ubah: tutup detail, lalu buka dialog Ubah milik baris yang sama
+            document.getElementById('d-ubah').addEventListener('click', function () {
+                var tombol = baris ? baris.querySelector('[data-open="dlg-ubah"]') : null;
+                detail.close();
+                if (tombol) tombol.click();
+            });
+        })();
+    </script>
 
     {{-- Dialog ubah alat (satu dialog dipakai semua baris; isinya diisi lewat data-fill) --}}
     <dialog id="dlg-ubah" class="dlg" aria-labelledby="ubah-judul">

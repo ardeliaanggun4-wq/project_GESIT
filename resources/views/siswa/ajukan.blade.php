@@ -161,7 +161,7 @@
                 <ol class="steps">
                     <li><div><b>Menunggu verifikasi</b><span>Status bisa kamu pantau di Beranda.</span></div></li>
                     <li><div><b>Disetujui</b><span>Ambil alat di ruang Sarpras.</span></div></li>
-                    <li><div><b>Kembalikan</b><span>Sesuai tanggal rencana kembali. Terlambat maksimal {{ \App\Models\Peminjaman::MAKS_HARI_TELAT }} hari.</span></div></li>
+                    <li><div><b>Kembalikan</b><span>Sesuai tanggal rencana kembali. Terlambat, rusak, atau hilang ada ketentuannya. <a href="{{ route('siswa.panduan') }}#ketentuan" class="link">Lihat ketentuan</a></span></div></li>
                 </ol>
             </section>
         </aside>

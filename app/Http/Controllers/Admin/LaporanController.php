@@ -24,7 +24,7 @@ class LaporanController extends Controller
 
         [$stats, $statusHitung, $populer, $maxPopuler] = $this->ringkasan($f);
 
-        $daftar = $this->dasar($f)->with(['user', 'alat'])
+        $daftar = $this->dasar($f)->with(['user', 'alat', 'petugas', 'penerima'])
             ->orderByDesc('peminjaman.tanggal_pinjam')->orderByDesc('peminjaman.id');
 
         // Mode cetak: semua baris dalam satu halaman, lalu dialog cetak terbuka otomatis
@@ -40,7 +40,7 @@ class LaporanController extends Controller
         $f = $this->saringan($request);
         [$stats, $statusHitung, $populer] = $this->ringkasan($f);
 
-        $baris = $this->dasar($f)->with(['user', 'alat'])
+        $baris = $this->dasar($f)->with(['user', 'alat', 'petugas', 'penerima'])
             ->orderByDesc('peminjaman.tanggal_pinjam')->orderByDesc('peminjaman.id')->get();
 
         $nama = 'laporan-peminjaman-' . $f['dari']->format('Ymd') . '-' . $f['sampai']->format('Ymd') . '.pdf';
@@ -69,6 +69,11 @@ class LaporanController extends Controller
             'terlambat' => $this->dasar($f)->where('peminjaman.status', 'dipinjam')
                 ->whereDate('peminjaman.tanggal_kembali_rencana', '<', Carbon::today())->count(),
             'ditolak' => (int) $statusHitung->get('ditolak', 0),
+            // Ketentuan pengembalian
+            'telat_kembali' => $this->dasar($f)->where('peminjaman.status', 'selesai')->where('peminjaman.hari_terlambat', '>', 0)->count(),
+            'unit_rusak' => (int) $this->dasar($f)->where('peminjaman.kondisi_kembali', 'rusak')->sum('peminjaman.unit_bermasalah'),
+            'unit_hilang' => (int) $this->dasar($f)->where('peminjaman.kondisi_kembali', 'hilang')->sum('peminjaman.unit_bermasalah'),
+            'kewajiban' => $this->dasar($f)->kewajibanBelumSelesai()->count(),
         ];
 
         $populer = $this->dasar($f)
