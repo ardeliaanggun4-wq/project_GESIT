@@ -1,6 +1,7 @@
 {{-- Letak file: resources/views/partials/head.blade.php (timpa file lama) --}}
 {{-- Font, konfigurasi Tailwind, design token, dan semua komponen GESIT. Dipakai oleh semua layout. --}}
 <meta name="theme-color" content="#34507A">
+<link rel="icon" type="image/png" href="{{ asset('images/logo-gesit.png') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -610,5 +611,12 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
     html{scroll-behavior:auto}
     *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
+
 </style>
 @endverbatim
+
+{{-- Logo GESIT menggantikan ikon kotak pada semua penanda merek. Diletakkan di luar @verbatim agar asset() terbaca. --}}
+<style>
+.brand-mark{background:#fff url("{{ asset('images/logo-gesit.png') }}") center/88% no-repeat;box-shadow:0 0 0 1px rgba(52,80,122,.14),0 6px 14px -8px rgba(52,80,122,.5)}
+.brand-mark>svg{display:none}
+</style>
