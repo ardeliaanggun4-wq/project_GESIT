@@ -30,6 +30,7 @@ class RegisterController extends Controller
         $data = $request->validate([
             'role'     => ['required', Rule::in(['siswa', 'guru'])],
             'nisn_nip' => ['required', 'regex:/^[0-9]{5,20}$/', 'unique:users,nisn_nip'],
+            'tanggal_lahir' => ['nullable', 'date_format:Y-m-d'],
             'email'    => ['required', 'email:rfc', 'max:150', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ], [
@@ -37,6 +38,7 @@ class RegisterController extends Controller
             'nisn_nip.required'   => 'NIPD / NIP wajib diisi.',
             'nisn_nip.regex'      => 'NIPD / NIP hanya boleh berisi angka.',
             'nisn_nip.unique'     => 'NIPD / NIP ini sudah terdaftar. Silakan masuk.',
+            'tanggal_lahir.date_format' => 'Format tanggal lahir belum benar.',
             'email.required'      => 'Email wajib diisi.',
             'email.email'         => 'Format email belum benar.',
             'email.unique'        => 'Email ini sudah dipakai akun lain.',
@@ -60,6 +62,20 @@ class RegisterController extends Controller
             throw ValidationException::withMessages(['nisn_nip' => $pesan]);
         }
 
+        // Pastikan pendaftar benar-benar orang yang punya nomor ini: bila data sekolah sudah punya
+        // tanggal lahirnya, tanggal lahir yang diisi harus sama. Bila belum punya, akun dibuat
+        // dengan status "menunggu" dan baru aktif setelah petugas GESIT menyetujuinya.
+        $lahirInduk = $induk->tanggal_lahir ? substr((string) $induk->tanggal_lahir, 0, 10) : null;
+        if ($lahirInduk) {
+            if (empty($data['tanggal_lahir'])) {
+                throw ValidationException::withMessages(['tanggal_lahir' => 'Tanggal lahir wajib diisi.']);
+            }
+            if ($data['tanggal_lahir'] !== $lahirInduk) {
+                throw ValidationException::withMessages(['tanggal_lahir' => 'Tanggal lahir tidak cocok dengan data sekolah.']);
+            }
+        }
+        $aktif = (bool) $lahirInduk;
+
         $user = User::create([
             'name'          => trim($induk->nama),
             'role'          => $data['role'],
@@ -67,7 +83,13 @@ class RegisterController extends Controller
             'kelas_jabatan' => $kelasJabatan,
             'email'         => mb_strtolower($data['email']),
             'password'      => $data['password'], // di-hash otomatis oleh cast "hashed" pada model User
+            'status_akun'   => $aktif ? 'aktif' : 'menunggu',
         ]);
+
+        if (! $aktif) {
+            return redirect()->route('login')
+                ->with('status', 'Pendaftaran terkirim. Akunmu bisa dipakai setelah disetujui petugas GESIT.');
+        }
 
         Auth::login($user);
         $request->session()->regenerate();

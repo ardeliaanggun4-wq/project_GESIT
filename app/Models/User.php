@@ -20,6 +20,7 @@ class User extends Authenticatable
         'nisn_nip',
         'role',
         'kelas_jabatan',
+        'status_akun',
     ];
 
     protected $hidden = [
@@ -38,6 +39,12 @@ class User extends Authenticatable
     public function peminjaman()
     {
         return $this->hasMany(Peminjaman::class);
+    }
+
+    // Akun baru yang datanya belum bisa dipastikan menunggu persetujuan petugas
+    public function menunggu(): bool
+    {
+        return $this->status_akun === 'menunggu';
     }
 
     public function isAdmin(): bool

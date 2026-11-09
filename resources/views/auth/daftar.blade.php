@@ -90,6 +90,13 @@
                     </div>
 
                     <div style="margin-top:1.25rem">
+                        <label class="label" for="input-lahir">Tanggal lahir</label>
+                        <input type="date" name="tanggal_lahir" id="input-lahir" class="field"
+                               value="{{ old('tanggal_lahir') }}" max="{{ now()->toDateString() }}" required>
+                        <p class="hint">Dipakai untuk memastikan akun ini milikmu. Bila datamu di sekolah belum lengkap, akun perlu disetujui petugas dulu.</p>
+                    </div>
+
+                    <div style="margin-top:1.25rem">
                         <label class="label" for="input-email">Email</label>
                         <input type="email" name="email" id="input-email" class="field" autocomplete="email"
                                placeholder="nama@gesit.sch.id" value="{{ old('email') }}" required>

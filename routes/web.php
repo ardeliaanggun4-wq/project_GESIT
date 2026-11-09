@@ -4,6 +4,7 @@
 
 use App\Http\Controllers\Admin\DataAlatController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\PenggunaController;
 use App\Http\Controllers\Admin\RingkasanController;
 use App\Http\Controllers\Admin\VerifikasiController;
 use App\Http\Controllers\Auth\LoginController;
@@ -77,6 +78,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/data-alat', [DataAlatController::class, 'store'])->name('data-alat.store');
     Route::put('/data-alat/{alat}', [DataAlatController::class, 'update'])->name('data-alat.update');
     Route::delete('/data-alat/{alat}', [DataAlatController::class, 'destroy'])->name('data-alat.destroy');
+
+    // Data induk siswa/guru (siapa yang boleh mendaftar), persetujuan akun baru, atur ulang kata sandi
+    Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna');
+    Route::post('/pengguna/impor/{jenis}', [PenggunaController::class, 'impor'])->whereIn('jenis', ['siswa', 'guru'])->name('pengguna.impor');
+    Route::post('/pengguna/{jenis}', [PenggunaController::class, 'store'])->whereIn('jenis', ['siswa', 'guru'])->name('pengguna.store');
+    Route::put('/pengguna/{jenis}/{id}', [PenggunaController::class, 'update'])->whereIn('jenis', ['siswa', 'guru'])->whereNumber('id')->name('pengguna.update');
+    Route::delete('/pengguna/{jenis}/{id}', [PenggunaController::class, 'destroy'])->whereIn('jenis', ['siswa', 'guru'])->whereNumber('id')->name('pengguna.destroy');
+    Route::post('/akun/{user}/setujui', [PenggunaController::class, 'setujui'])->name('akun.setujui');
+    Route::post('/akun/{user}/tolak', [PenggunaController::class, 'tolak'])->name('akun.tolak');
+    Route::post('/akun/{user}/reset-sandi', [PenggunaController::class, 'resetSandi'])->middleware('throttle:20,1')->name('akun.reset');
 
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
     Route::get('/laporan/unduh', [LaporanController::class, 'unduh'])->name('laporan.unduh');

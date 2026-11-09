@@ -35,7 +35,17 @@ class LoginController extends Controller
 
         $user = Auth::user();
 
-        
+        // Akun baru yang belum disetujui petugas belum boleh masuk
+        if ($user->menunggu()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors([
+                'nisn_nip' => 'Akunmu masih menunggu persetujuan petugas GESIT. Coba masuk lagi setelah disetujui.',
+            ])->onlyInput('nisn_nip');
+        }
+
         $cocok = $roleHint === 'admin' ? $user->role === 'admin' : in_array($user->role, ['siswa', 'guru']);
 
         if (! $cocok) {

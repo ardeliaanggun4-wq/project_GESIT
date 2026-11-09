@@ -75,6 +75,13 @@
                     </div>
 
                     <div style="margin-top:1.25rem">
+                        <label class="label" for="input-lahir">Tanggal lahir</label>
+                        <input type="date" name="tanggal_lahir" id="input-lahir" class="field"
+                               value="{{ old('tanggal_lahir') }}" max="{{ now()->toDateString() }}" required>
+                        <p class="hint">Harus sama dengan data di sekolah. Bila tidak berhasil, hubungi petugas GESIT.</p>
+                    </div>
+
+                    <div style="margin-top:1.25rem">
                         <label class="label" for="input-sandi">Kata sandi baru</label>
                         <div class="field-wrap">
                             <input type="password" name="password" id="input-sandi" class="field"

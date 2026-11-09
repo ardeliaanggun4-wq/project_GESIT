@@ -30,16 +30,23 @@
                         ['admin.ringkasan', 'Ringkasan', 'chart'],
                         ['admin.verifikasi', 'Verifikasi', 'verif'],
                         ['admin.data-alat', 'Data Alat', 'grid'],
+                        ['admin.pengguna', 'Pengguna', 'user'],
                         ['admin.laporan', 'Laporan', 'book'],
                     ];
                 @endphp
-                @php $antrean = \App\Models\Peminjaman::where('status', 'menunggu')->count(); @endphp
+                @php
+                    $antrean = \App\Models\Peminjaman::where('status', 'menunggu')->count();
+                    $akunMenunggu = \App\Models\User::where('status_akun', 'menunggu')->count();
+                @endphp
                 @foreach ($menu as [$rute, $label, $ikon])
                     @php $aktif = request()->routeIs($rute); @endphp
                     <a href="{{ route($rute) }}" class="side-link {{ $aktif ? 'is-active' : '' }}" @if ($aktif) aria-current="page" @endif>
                         <svg class="ico" aria-hidden="true"><use href="#i-{{ $ikon }}"/></svg>{{ $label }}
                         @if ($rute === 'admin.verifikasi' && $antrean > 0)
                             <span class="nav-badge" aria-label="{{ $antrean }} menunggu">{{ $antrean }}</span>
+                        @endif
+                        @if ($rute === 'admin.pengguna' && $akunMenunggu > 0)
+                            <span class="nav-badge" aria-label="{{ $akunMenunggu }} akun menunggu">{{ $akunMenunggu }}</span>
                         @endif
                     </a>
                 @endforeach
