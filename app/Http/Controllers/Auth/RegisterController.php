@@ -22,7 +22,7 @@ class RegisterController extends Controller
     public function store(Request $request)
     {
         // Pendaftaran publik hanya untuk siswa dan guru. Akun admin dibuat oleh sekolah (seeder).
-        // Siswa mendaftar dengan NIPD, guru dengan NIP. Nomor harus ada di data induk sekolah.
+        // Siswa mendaftar dengan NIS, guru dengan NIP. Nomor harus ada di data induk sekolah.
         $request->merge([
             'nisn_nip' => preg_replace('/\D+/', '', (string) $request->input('nisn_nip')),
         ]);
@@ -35,9 +35,9 @@ class RegisterController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ], [
             'role.in'             => 'Pilih daftar sebagai Siswa atau Guru.',
-            'nisn_nip.required'   => 'NIPD / NIP wajib diisi.',
-            'nisn_nip.regex'      => 'NIPD / NIP hanya boleh berisi angka.',
-            'nisn_nip.unique'     => 'NIPD / NIP ini sudah terdaftar. Silakan masuk.',
+            'nisn_nip.required'   => 'NIS / NIP wajib diisi.',
+            'nisn_nip.regex'      => 'NIS / NIP hanya boleh berisi angka.',
+            'nisn_nip.unique'     => 'NIS / NIP ini sudah terdaftar. Silakan masuk.',
             'tanggal_lahir.date_format' => 'Format tanggal lahir belum benar.',
             'email.required'      => 'Email wajib diisi.',
             'email.email'         => 'Format email belum benar.',
@@ -51,7 +51,7 @@ class RegisterController extends Controller
         if ($data['role'] === 'siswa') {
             $induk = DB::table('data_siswa')->where('nipd', $data['nisn_nip'])->first();
             $kelasJabatan = $induk->kelas ?? null;
-            $pesan = 'NIPD tidak ditemukan di data siswa. Periksa kembali, atau hubungi petugas GESIT.';
+            $pesan = 'NIS tidak ditemukan di data siswa. Periksa kembali, atau hubungi petugas GESIT.';
         } else {
             $induk = DB::table('data_guru')->where('nip', $data['nisn_nip'])->first();
             $kelasJabatan = $induk ? ($induk->mata_pelajaran ? 'Guru ' . $induk->mata_pelajaran : 'Guru') : null;

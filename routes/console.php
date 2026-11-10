@@ -14,7 +14,7 @@ Artisan::command('inspire', function () {
 // Ganti kata sandi akun lewat terminal, termasuk akun admin dan akun demo.
 // Contoh: php artisan gesit:atur-sandi 0011234567        (dibuatkan kata sandi acak)
 //         php artisan gesit:atur-sandi 0011234567 SandiBaru2026
-Artisan::command('gesit:atur-sandi {nomor : NIPD/NIP/nomor akun} {sandi? : Kata sandi baru, kosongkan agar dibuatkan acak}', function (string $nomor, ?string $sandi = null) {
+Artisan::command('gesit:atur-sandi {nomor : NIS/NIP/nomor akun} {sandi? : Kata sandi baru, kosongkan agar dibuatkan acak}', function (string $nomor, ?string $sandi = null) {
     $user = User::where('nisn_nip', preg_replace('/\D+/', '', $nomor))->first();
     if (! $user) {
         $this->error('Akun dengan nomor itu tidak ditemukan.');

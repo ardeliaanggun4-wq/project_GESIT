@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 // Letak file: database/migrations/
-// Data induk sekolah: daftar NIPD siswa dan NIP guru yang boleh mendaftar akun GESIT.
+// Data induk sekolah: daftar NIS siswa dan NIP guru yang boleh mendaftar akun GESIT.
 // Sumber: database/data/data_siswa.csv dan database/data/data_guru.csv
 return new class extends Migration
 {

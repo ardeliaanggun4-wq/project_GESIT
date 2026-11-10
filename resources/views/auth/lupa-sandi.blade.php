@@ -25,7 +25,7 @@
             <div>
                 <p class="auth-headline" data-split>Lupa kata sandi? Buat yang <span class="hl">baru</span> dalam semenit.</p>
                 <p class="t-muted rise" style="--i:6;margin-top:1rem;max-width:30rem;font-size:1.0625rem">
-                    Cukup isi NIPD atau NIP dan email akunmu, lalu pilih kata sandi baru. Setelah itu kamu bisa langsung masuk dan meminjam alat lab.
+                    Cukup isi NIS atau NIP dan email akunmu, lalu pilih kata sandi baru. Setelah itu kamu bisa langsung masuk dan meminjam alat lab.
                 </p>
             </div>
 
@@ -37,7 +37,6 @@
         {{-- Formulir --}}
         <main id="konten" class="auth-form">
             <div class="auth-card">
-                @include('partials.auth-hiasan')
                 <div class="brand auth-brand-m">
                     <span class="brand-mark"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span>
                     <span>
@@ -45,6 +44,7 @@
                         <span class="brand-sub">Gerakan Sarana Inventaris Terpadu</span>
                     </span>
                 </div>
+                @include('partials.auth-hiasan')
 
                 <h1 class="t-page" data-split>Ganti kata sandi</h1>
                 <p class="t-muted" style="margin-top:.35rem">Isi data akunmu untuk membuat kata sandi baru.</p>
@@ -60,7 +60,7 @@
                     @csrf
 
                     <div>
-                        <label class="label" for="input-nisn">NIPD / NIP</label>
+                        <label class="label" for="input-nisn">NIS / NIP</label>
                         <input type="text" name="nisn_nip" id="input-nisn" class="field"
                                inputmode="numeric" autocomplete="username"
                                placeholder="Contoh: 23409"

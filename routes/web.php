@@ -45,7 +45,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/daftar', [RegisterController::class, 'create'])->name('daftar');
     Route::post('/daftar', [RegisterController::class, 'store'])->middleware('throttle:5,1')->name('daftar.simpan');
 
-    // Lupa kata sandi: ganti kata sandi dengan NIPD/NIP + email akun
+    // Lupa kata sandi: ganti kata sandi dengan NIS/NIP + email akun
     Route::get('/lupa-sandi', [LupaSandiController::class, 'create'])->name('sandi.lupa');
     Route::post('/lupa-sandi', [LupaSandiController::class, 'store'])->middleware('throttle:5,1')->name('sandi.simpan');
 });

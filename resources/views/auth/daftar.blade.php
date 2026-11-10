@@ -25,7 +25,7 @@
             <div>
                 <p class="auth-headline" data-split>Buat akun, lalu <span class="hl">pinjam alat</span> tanpa antre.</p>
                 <p class="t-muted rise" style="--i:6;margin-top:1rem;max-width:30rem;font-size:1.0625rem">
-                    Daftar sekali dengan NIPD (siswa) atau NIP (guru). Setelah itu kamu bisa mengajukan pinjam dari HP dan memantau statusnya kapan saja.
+                    Daftar sekali dengan NIS (siswa) atau NIP (guru). Setelah itu kamu bisa mengajukan pinjam dari HP dan memantau statusnya kapan saja.
                 </p>
             </div>
 
@@ -43,7 +43,6 @@
         {{-- Formulir --}}
         <main id="konten" class="auth-form">
             <div class="auth-card is-wide">
-                @include('partials.auth-hiasan')
                 <div class="brand auth-brand-m">
                     <span class="brand-mark"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span>
                     <span>
@@ -51,6 +50,7 @@
                         <span class="brand-sub">Gerakan Sarana Inventaris Terpadu</span>
                     </span>
                 </div>
+                @include('partials.auth-hiasan')
 
                 <div class="auth-frame auth-panel">
                     <nav class="auth-tabs" aria-label="Masuk atau daftar">
@@ -83,7 +83,7 @@
                     </div>
 
                     <div style="margin-top:1.25rem">
-                        <label class="label" for="input-nisn" id="label-nisn">NIPD</label>
+                        <label class="label" for="input-nisn" id="label-nisn">NIS</label>
                         <input type="text" name="nisn_nip" id="input-nisn" class="field" inputmode="numeric"
                                autocomplete="username" placeholder="Contoh: 23409" value="{{ old('nisn_nip') }}" required autofocus>
                         <p class="hint" id="hint-nisn">Nama dan kelas diisi otomatis dari data sekolah.</p>
@@ -136,7 +136,7 @@
 
     <script>
         const peran = {
-            siswa: { id: 'NIPD', idContoh: 'Contoh: 23409' },
+            siswa: { id: 'NIS', idContoh: 'Contoh: 23409' },
             guru:  { id: 'NIP', idContoh: 'Contoh: 197512112005011005' }
         };
 

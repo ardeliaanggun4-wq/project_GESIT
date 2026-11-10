@@ -235,4 +235,4 @@
     });
 })();
 </script>
-@endpushphp artisan migrate
+@endpush

@@ -88,7 +88,7 @@
         {{-- 5. Ajakan: dua tombol jelas, Masuk (utama) dan Daftar akun (pendamping) --}}
         <div class="tt-cta rv">
             <h2>Siap meminjam alat?</h2>
-            <p>Sudah punya akun? Masuk dengan NIPD atau NIP. Belum punya? Daftar dulu, hanya semenit.</p>
+            <p>Sudah punya akun? Masuk dengan NIS atau NIP. Belum punya? Daftar dulu, hanya semenit.</p>
             <div class="tt-cta-aksi">
                 <a href="{{ route('login') }}" class="tt-btn tt-btn-masuk">
                     <svg class="ico" aria-hidden="true"><use href="#i-user"/></svg>Masuk

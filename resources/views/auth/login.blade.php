@@ -49,7 +49,6 @@
                 <svg class="ico ico-sm"><use href="#i-clock"/></svg><span data-clock>{{ now()->format('H:i') }}</span>
             </div>
             <div class="auth-card">
-                @include('partials.auth-hiasan')
                 <div class="brand auth-brand-m">
                     <span class="brand-mark"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg></span>
                     <span>
@@ -57,6 +56,7 @@
                         <span class="brand-sub">Gerakan Sarana Inventaris Terpadu</span>
                     </span>
                 </div>
+                @include('partials.auth-hiasan')
 
                 <div class="auth-frame auth-panel">
                     <nav class="auth-tabs" aria-label="Masuk atau daftar">
@@ -73,7 +73,7 @@
                 <hr class="frame-sep">
 
                 <h1 class="t-page" style="margin-top:1.1rem" data-split>Masuk ke GESIT</h1>
-                <p id="catatan-peran" class="t-muted" style="margin-top:.35rem" aria-live="polite">Siswa masuk dengan NIPD, guru dengan NIP.</p>
+                <p id="catatan-peran" class="t-muted" style="margin-top:.35rem" aria-live="polite">Siswa masuk dengan NIS, guru dengan NIP.</p>
 
                 @if ($errors->any())
                     <div class="alert" role="alert" id="galat" style="margin-top:1.25rem">
@@ -88,7 +88,7 @@
                     <input type="hidden" name="role_hint" id="role_hint" value="siswa">
 
                     <div>
-                        <label class="label" for="input-nisn" id="label-nisn">NIPD / NIP</label>
+                        <label class="label" for="input-nisn" id="label-nisn">NIS / NIP</label>
                         <input type="text" name="nisn_nip" id="input-nisn" class="field"
                                inputmode="numeric" autocomplete="username"
                                placeholder="Contoh: 23409 (siswa) atau 197512112005011005 (guru)"
@@ -130,7 +130,7 @@
 
     <script>
         const peran = {
-            siswa: { catatan: 'Siswa masuk dengan NIPD, guru dengan NIP.', label: 'NIPD / NIP', contoh: 'Contoh: 23409 (siswa) atau 197512112005011005 (guru)' },
+            siswa: { catatan: 'Siswa masuk dengan NIS, guru dengan NIP.', label: 'NIS / NIP', contoh: 'Contoh: 23409 (siswa) atau 197512112005011005 (guru)' },
             admin: { catatan: 'Petugas GESIT masuk dengan NIP.', label: 'NIP petugas', contoh: 'Contoh: 0011234567' }
         };
 

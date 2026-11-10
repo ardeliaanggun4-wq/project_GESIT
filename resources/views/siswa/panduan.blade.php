@@ -6,7 +6,7 @@
     @php
         // Isi halaman dipisah dari markup agar mudah diubah tanpa menyentuh tampilan.
         $alur = [
-            ['Masuk ke akun', 'Gunakan NIPD (siswa) atau NIP (guru) dan kata sandimu.'],
+            ['Masuk ke akun', 'Gunakan NIS (siswa) atau NIP (guru) dan kata sandimu.'],
             ['Ajukan peminjaman', 'Pilih alat, tentukan tanggal, jumlah, dan isi keperluan.'],
             ['Tunggu verifikasi', 'Petugas GESIT memeriksa stok dan pengajuanmu. Pantau statusnya di Beranda.'],
             ['Ambil alat', 'Setelah disetujui, datang ke ruang Sarpras untuk mengambil alat.'],
@@ -52,7 +52,7 @@
             ['Alat yang kupinjam rusak atau hilang. Bagaimana?',
              'Segera lapor ke petugas GESIT. Kamu wajib memperbaiki alat yang rusak, atau mengganti alat yang hilang dengan yang sama atau setara. Selama kewajiban itu belum ditandai selesai oleh petugas, kamu belum bisa mengajukan peminjaman baru.'],
             ['Aku tidak bisa masuk ke akun.',
-             'Pastikan kamu memilih tab “Siswa / Guru”, lalu periksa NIPD atau NIP dan kata sandimu. Bila tetap gagal, minta bantuan petugas GESIT.'],
+             'Pastikan kamu memilih tab “Siswa / Guru”, lalu periksa NIS atau NIP dan kata sandimu. Bila tetap gagal, minta bantuan petugas GESIT.'],
         ];
     @endphp
 

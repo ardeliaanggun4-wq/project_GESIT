@@ -27,7 +27,7 @@ class LupaSandiController extends Controller
             'tanggal_lahir' => ['required', 'date_format:Y-m-d'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ], [
-            'nisn_nip.required' => 'NIPD / NIP wajib diisi.',
+            'nisn_nip.required' => 'NIS / NIP wajib diisi.',
             'email.required' => 'Email akun wajib diisi.',
             'email.email' => 'Format email belum benar.',
             'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',

@@ -278,16 +278,10 @@ dialog.drawer[open]{animation:drawerIn .26s var(--ease)}
 
 @media (max-width:1023px){
     .shell{display:flex;flex-direction:column}
-    .main{flex:1 0 auto;min-height:0}
-    .sidebar{height:auto;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;gap:.25rem 1rem;padding:.5rem var(--s-4) 0;border-right:0;border-bottom:1px solid var(--line)}
-    .side-brand{grid-column:1;grid-row:1;align-self:center}
-    .side-user{grid-column:2;grid-row:1;flex-direction:row;align-items:center;padding:0;border-top:0}
-    .side-user .who{display:none}
-    .side-user .btn{width:auto}
-    .side-nav{grid-column:1/-1;grid-row:2;flex-direction:row;gap:.25rem;overflow-x:auto;padding-bottom:.4rem;scrollbar-width:none}
-    .side-nav::-webkit-scrollbar{display:none}
-    .side-link{white-space:nowrap}
-    .main{padding:var(--s-5) var(--s-4) var(--s-6)}
+    .main{flex:1 0 auto;min-height:0;padding:var(--s-5) var(--s-4) var(--s-6)}
+    /* menu samping jadi laci: disembunyikan, dibuka lewat tombol burger (lihat partials/sidebar-toggle) */
+    .sidebar{position:fixed;top:0;left:0;bottom:0;z-index:60;width:min(18rem,86vw);height:100dvh;overflow-y:auto;overscroll-behavior:contain;transform:translateX(-100%);visibility:hidden;border-right:1px solid var(--line);box-shadow:none}
+    .side-nav{min-height:0}
 }
 
 /* =====================================================================
@@ -299,7 +293,7 @@ dialog.drawer[open]{animation:drawerIn .26s var(--ease)}
 .auth-art svg.rak{width:100%;max-width:34rem;height:auto;margin:0 auto}
 .auth-form{display:flex;align-items:center;justify-content:center;padding:var(--s-5) var(--s-4)}
 .auth-card{width:100%;max-width:24rem;animation:pageIn .4s var(--ease) both}
-.auth-brand-m{margin-bottom:var(--s-6)}
+.auth-brand-m{display:flex;margin-bottom:var(--s-4)}
 @media (min-width:900px){
     .auth{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
     .auth-art{display:flex}
@@ -566,7 +560,6 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .side-card .sc-label{position:relative;display:flex;align-items:center;gap:.4rem;margin-bottom:.55rem;font-size:.8125rem;font-weight:600;color:rgba(255,255,255,.85)}
 .side-card .clock{position:relative;font:600 1.65rem/1 var(--font-head);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
 .side-card .sc-date{position:relative;margin-top:.35rem;font-size:.875rem;color:rgba(255,255,255,.88)}
-@media (max-width:1023px){.side-card{display:none}}
 
 /* footer */
 .main>:has(+ .site-foot){margin-bottom:var(--s-7)}

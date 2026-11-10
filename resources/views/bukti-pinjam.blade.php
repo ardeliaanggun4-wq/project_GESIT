@@ -44,7 +44,7 @@
     <h2>Peminjam</h2>
     <table class="data">
         <tr><td class="k">Nama</td><td>{{ $p->user->name }}</td></tr>
-        <tr><td class="k">NIPD / NIP</td><td>{{ $p->user->nisn_nip ?: '-' }}</td></tr>
+        <tr><td class="k">NIS / NIP</td><td>{{ $p->user->nisn_nip ?: '-' }}</td></tr>
         <tr><td class="k">Kelas / Jabatan</td><td>{{ $p->user->kelas_jabatan ?: '-' }}</td></tr>
     </table>
 

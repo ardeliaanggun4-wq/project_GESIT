@@ -4,7 +4,7 @@
 
 @section('content')
     @php
-        $labelNomor = $jenis === 'siswa' ? 'NIPD' : 'NIP';
+        $labelNomor = $jenis === 'siswa' ? 'NIS' : 'NIP';
         $labelInfo  = $jenis === 'siswa' ? 'Kelas' : 'Mata pelajaran';
         $adaFilter  = request()->filled('cari');
         $tglFmt     = fn ($t) => $t ? \Illuminate\Support\Carbon::parse($t)->format('d/m/Y') : null;
@@ -18,7 +18,7 @@
                 <span class="line"><span style="--i:0">Data <span class="hl">Pengguna</span></span></span>
             </h1>
             <p class="page-lead rise" style="--i:2">
-                Hanya NIPD dan NIP yang ada di daftar ini yang bisa mendaftar akun GESIT. Tambah, ubah, atau impor datanya di sini.
+                Hanya NIS dan NIP yang ada di daftar ini yang bisa mendaftar akun GESIT. Tambah, ubah, atau impor datanya di sini.
             </p>
             <div class="hero-actions rise" style="--i:3">
                 <button type="button" data-open="dlg-tambah" data-reset
@@ -85,7 +85,7 @@
                         <div class="list-main">
                             <div class="list-title">{{ $u->name }}</div>
                             <div class="list-sub">
-                                {{ $u->role === 'siswa' ? 'Siswa' : 'Guru' }} · {{ $u->role === 'siswa' ? 'NIPD' : 'NIP' }} {{ $u->nisn_nip }} · {{ $u->email }}
+                                {{ $u->role === 'siswa' ? 'Siswa' : 'Guru' }} · {{ $u->role === 'siswa' ? 'NIS' : 'NIP' }} {{ $u->nisn_nip }} · {{ $u->email }}
                                 · daftar {{ $u->created_at?->translatedFormat('j M, H:i') }}
                             </div>
                         </div>

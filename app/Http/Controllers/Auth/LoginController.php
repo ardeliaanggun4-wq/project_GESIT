@@ -29,7 +29,7 @@ class LoginController extends Controller
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()->withErrors([
-                'nisn_nip' => 'NIPD / NIP atau kata sandi salah.',
+                'nisn_nip' => 'NIS / NIP atau kata sandi salah.',
             ])->onlyInput('nisn_nip');
         }
 

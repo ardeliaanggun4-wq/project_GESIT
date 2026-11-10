@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 // Letak file: app/Http/Controllers/Admin/PenggunaController.php (FILE BARU)
-// Kelola data induk siswa/guru (daftar NIPD/NIP yang boleh mendaftar), setujui akun baru,
+// Kelola data induk siswa/guru (daftar NIS/NIP yang boleh mendaftar), setujui akun baru,
 // dan atur ulang kata sandi akun siswa/guru.
 
 use App\Http\Controllers\Controller;
@@ -261,7 +261,7 @@ class PenggunaController extends Controller
 
     private function pesan(string $jenis): array
     {
-        $label = $jenis === 'siswa' ? 'NIPD' : 'NIP';
+        $label = $jenis === 'siswa' ? 'NIS' : 'NIP';
 
         return [
             'nomor.required'         => $label . ' wajib diisi.',
