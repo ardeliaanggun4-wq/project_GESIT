@@ -91,7 +91,7 @@
                         <label class="label" for="input-nisn" id="label-nisn">NIS / NIP</label>
                         <input type="text" name="nisn_nip" id="input-nisn" class="field"
                                inputmode="numeric" autocomplete="username"
-                               placeholder="Contoh: 23409 (siswa) atau 197512112005011005 (guru)"
+                               placeholder="NIS (siswa) atau NIP (guru)"
                                value="{{ old('nisn_nip') }}" required autofocus
                                @if ($errors->any()) aria-invalid="true" aria-describedby="galat" @endif>
                     </div>
@@ -130,7 +130,7 @@
 
     <script>
         const peran = {
-            siswa: { catatan: 'Siswa masuk dengan NIS, guru dengan NIP.', label: 'NIS / NIP', contoh: 'Contoh: 23409 (siswa) atau 197512112005011005 (guru)' },
+            siswa: { catatan: 'Siswa masuk dengan NIS, guru dengan NIP.', label: 'NIS / NIP', contoh: 'NIS (siswa) atau NIP (guru)' },
             admin: { catatan: 'Petugas GESIT masuk dengan NIP.', label: 'NIP petugas', contoh: 'Contoh: 0011234567' }
         };
 
